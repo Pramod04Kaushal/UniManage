@@ -1,0 +1,306 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>UniManage | Register</title>
+
+    <link rel="icon"
+          type="image/png"
+          href="~/images/logo.png" />
+
+    <link rel="icon"
+          type="image/png"
+          href="~/images/logo.png" />
+
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/register.css" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body class="register-body">
+
+    <div class="register-container">
+
+        <!-- LEFT SIDE -->
+
+        <div class="register-left">
+
+            <img src="~/images/university1.jpg"
+                 class="left-image" />
+
+            <div class="overlay"></div>
+
+            <div class="welcome-text">
+
+                <h1>Join UniManage</h1>
+
+                <p>
+                    Create your university account
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+
+        <div class="register-right">
+
+            <div class="register-card">
+
+                <div class="logo">
+
+                    <img src="~/images/logo.png"
+                         class="logo-img" />
+
+                </div>
+
+                <h2>Create Account</h2>
+
+                <p class="subtitle">
+                    Start your academic journey
+                </p>
+
+                <div class="progress-container">
+
+                    <div class="progress-line active-line"></div>
+
+                    <div class="progress-line"></div>
+
+                    <div class="progress-line"></div>
+
+                </div>
+
+                <form id="registerForm">
+
+                    <!-- STEP 1 -->
+
+                    <div class="form-step active">
+
+                        <input type="text"
+                               placeholder="Full Name"
+                               class="input-box" />
+
+                        <input type="date"
+                               class="input-box" />
+
+                        <select class="input-box" required>
+
+                            <option value="" disabled selected>
+                                Select Gender
+                            </option>
+
+                            <option>Male</option>
+                            <option>Female</option>
+
+                        </select>
+
+                        <button type="button"
+                                class="next-btn">
+
+                            Next
+
+                        </button>
+
+                    </div>
+
+                    <!-- STEP 2 -->
+
+                    <div class="form-step">
+
+                        <input type="text"
+                               placeholder="Address"
+                               class="input-box" />
+
+                        <input type="text"
+                               placeholder="Phone Number"
+                               class="input-box" />
+
+                        <input type="email"
+                               placeholder="Email Address"
+                               class="input-box" />
+
+                        <input type="password"
+                               placeholder="Password"
+                               class="input-box" />
+
+                        <div class="button-group">
+
+                            <button type="button"
+                                    class="prev-btn">
+
+                                Previous
+
+                            </button>
+
+                            <button type="button"
+                                    class="next-btn">
+
+                                Next
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- STEP 3 -->
+
+                    <div class="form-step">
+
+                        <p class="step-description">
+
+                            Secure your account with a strong password
+                            and confirm it before creating your profile.
+
+                        </p>
+
+                        <input type="password"
+                               placeholder="Confirm Password"
+                               class="input-box" />
+
+                        <label class="terms">
+
+                            <input type="checkbox" />
+
+                            I agree to terms and conditions
+
+                        </label>
+
+                        <div class="button-group">
+
+                            <button type="button"
+                                    class="prev-btn">
+
+                                Previous
+
+                            </button>
+
+                            <button type="submit"
+                                    class="register-btn">
+
+                                Create Account
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+                <a href="/Account/Login"
+                   class="login-link">
+
+                    Already have an account?
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!--NEXT BUTTON-->
+    <script>
+
+        // FORM STEPS
+
+        const steps =
+            document.querySelectorAll(".form-step");
+
+        // MODERN PROGRESS LINES
+
+        const progressLines =
+            document.querySelectorAll(".progress-line");
+
+        // BUTTONS
+
+        const nextBtns =
+            document.querySelectorAll(".next-btn");
+
+        const prevBtns =
+            document.querySelectorAll(".prev-btn");
+
+        // CURRENT STEP
+
+        let currentStep = 0;
+
+        // UPDATE FUNCTION
+
+        function updateSteps() {
+
+            // REMOVE ACTIVE STEP
+
+            steps.forEach(step => {
+
+                step.classList.remove("active");
+            });
+
+            // SHOW CURRENT STEP
+
+            steps[currentStep]
+                .classList.add("active");
+
+            // RESET PROGRESS LINES
+
+            progressLines.forEach(line => {
+
+                line.classList.remove("active-line");
+            });
+
+            // ACTIVATE CURRENT LINES
+
+            for(let i = 0; i <= currentStep; i++){
+
+                progressLines[i]
+                    .classList.add("active-line");
+            }
+        }
+
+        // NEXT BUTTON
+
+        nextBtns.forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                if(currentStep < steps.length - 1){
+
+                    currentStep++;
+
+                    updateSteps();
+                }
+            });
+        });
+
+        // PREVIOUS BUTTON
+
+        prevBtns.forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                if(currentStep > 0){
+
+                    currentStep--;
+
+                    updateSteps();
+                }
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>

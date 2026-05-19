@@ -1,0 +1,24 @@
+:root {
+    --primary-blue: #2563EB;
+    --dark-blue: #1E3A8A;
+    --navy: #0F172A;
+    --white: #FFFFFF;
+    --light-gray: #F1F5F9;
+    --main-font: 'Poppins', sans-serif;
+}
+
+/* RESET */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* BODY */
+
+body {
+    font-family: var(--main-font);
+}
+
+
