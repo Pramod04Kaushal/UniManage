@@ -1,0 +1,274 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Add Admin";
+}
+
+<div class="page-header">
+
+    <h1>Add Administrator</h1>
+
+    <p>
+        Create a new administrator account for UniManage
+    </p>
+
+</div>
+
+<div class="form-container">
+
+    <form>
+
+        <!-- PROFILE PICTURE -->
+
+        <div class="profile-upload-section">
+
+            <div class="profile-preview">
+
+                <img id="profilePreview"
+                     src="~/images/default-user.png"
+                     alt="Profile Preview" />
+
+            </div>
+
+            <div class="upload-controls">
+
+                <label class="upload-btn">
+
+                    Upload Profile Picture
+
+                    <input type="file"
+                           id="profileImageInput"
+                           accept="image/*"
+                           hidden />
+
+                </label>
+
+                <p class="upload-text">
+                    JPG, PNG or JPEG
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- PERSONAL INFORMATION -->
+
+        <div class="form-section">
+
+            <h2>Personal Information</h2>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Full Name</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter full name" />
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+
+                    <input type="email"
+                           class="form-control"
+                           placeholder="Enter email address" />
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter phone number" />
+                </div>
+
+                <div class="form-group">
+                    <label>Date of Birth</label>
+
+                    <input type="date"
+                           class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label>Gender</label>
+
+                    <select class="form-control">
+
+                        <option>Select Gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ADMINISTRATIVE INFORMATION -->
+
+        <div class="form-section">
+
+            <h2>Administrative Information</h2>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Admin ID</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter admin ID" />
+                </div>
+
+                <div class="form-group">
+                    <label>Department</label>
+
+                    <select class="form-control">
+
+                        <option>Select Department</option>
+                        <option>IT Administration</option>
+                        <option>Academic Affairs</option>
+                        <option>Finance</option>
+                        <option>Student Services</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Position</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter position" />
+                </div>
+
+                <div class="form-group">
+                    <label>Office Location</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter office location" />
+                </div>
+
+                <div class="form-group">
+                    <label>Access Level</label>
+
+                    <select class="form-control">
+
+                        <option>Select Access Level</option>
+                        <option>Super Admin</option>
+                        <option>System Admin</option>
+                        <option>Department Admin</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ACCOUNT INFORMATION -->
+
+        <div class="form-section">
+
+            <h2>Account Information</h2>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Username</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter username" />
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+
+                    <input type="password"
+                           class="form-control"
+                           placeholder="Enter password" />
+                </div>
+
+                <div class="form-group">
+                    <label>Confirm Password</label>
+
+                    <input type="password"
+                           class="form-control"
+                           placeholder="Confirm password" />
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+
+                    <select class="form-control">
+
+                        <option>Active</option>
+                        <option>Inactive</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BUTTONS -->
+
+        <div class="button-group">
+
+            <a href="/Admin/Users"
+               class="cancel-btn">
+
+                Cancel
+
+            </a>
+
+            <button type="submit"
+                    class="save-btn">
+
+                Save Administrator
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+
+    const profileInput =
+        document.getElementById("profileImageInput");
+
+    const profilePreview =
+        document.getElementById("profilePreview");
+
+    profileInput.addEventListener("change", function () {
+
+        const file = this.files[0];
+
+        if (file) {
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+
+                profilePreview.src = e.target.result;
+
+            }
+
+            reader.readAsDataURL(file);
+
+        }
+
+    });
+
+</script>

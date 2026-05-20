@@ -1,0 +1,65 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Courses";
+}
+
+<div class="table-container">
+
+    <div class="table-top">
+
+        <a href="/Admin/AddCourse"
+           class="add-user-btn">
+
+            Add Course
+
+        </a>
+
+        <div class="table-search">
+
+            <input type="text"
+                   placeholder="Search courses..." />
+
+        </div>
+
+    </div>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>ID</th>
+                <th>Course Name</th>
+                <th>Department</th>
+                <th>Duration</th>
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+
+                <td>1</td>
+                <td>BSc Software Engineering</td>
+                <td>Computing</td>
+                <td>4 Years</td>
+
+                <td>
+
+                    <button>Edit</button>
+
+                    <button>Delete</button>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>

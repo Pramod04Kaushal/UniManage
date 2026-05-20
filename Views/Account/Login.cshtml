@@ -66,16 +66,23 @@
                     Login to continue
                 </p>
 
+                @if (ViewBag.Error != null)
+                {
+                    <p style="color:red; margin-bottom:15px;">
+                        @ViewBag.Error
+                    </p>
+                }
+
                 <!-- FORM -->
-                <form>
+                <form asp-controller="Account" asp-action="Login" method="post">
 
                     <!-- EMAIL -->
-                    <input type="email"
+                    <input type="email" name="email"
                            placeholder="Email Address"
                            class="input-box" />
 
                     <!-- PASSWORD -->
-                    <input type="password"
+                    <input type="password" name="password"
                            placeholder="Password"
                            class="input-box" />
 

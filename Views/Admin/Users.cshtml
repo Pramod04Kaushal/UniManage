@@ -1,0 +1,147 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Users";
+}
+
+
+
+<div class="table-container">
+
+    <div class="table-top">
+
+        <button id="openModalBtn"
+                class="add-user-btn">
+
+            Add User
+
+        </button>
+
+        <div class="table-search">
+
+            <input type="text"
+                   placeholder="Search users..." />
+
+        </div>
+
+    </div>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>1</td>
+                <td>John Doe</td>
+                <td>john@gmail.com</td>
+                <td>Student</td>
+
+                <td>
+                    <button>Edit</button>
+                    <button>Delete</button>
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+    <!-- Pop Up - Select User -->
+
+    <div id="userTypeModal" class="modal">
+
+        <div class="user-type-modal">
+
+            <span id="closeModalBtn" class="close-btn">
+                &times;
+            </span>
+
+            <h2>Select User Type</h2>
+
+            <div class="user-type-container">
+
+                <!-- STUDENT -->
+
+                <a href="/Admin/AddStudent"
+                   class="user-card">
+
+                    <img src="~/images/student.png" />
+
+                    <h3>Student</h3>
+
+                </a>
+
+                <!-- LECTURER -->
+
+                <a href="/Admin/AddLecturer"
+                   class="user-card">
+
+                    <img src="~/images/lecturer.png" />
+
+                    <h3>Lecturer</h3>
+
+                </a>
+
+                <!-- ADMIN -->
+
+                <a href="/Admin/AddAdmin"
+                   class="user-card">
+
+                    <img src="~/images/admin.png" />
+
+                    <h3>Admin</h3>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    const modal =
+        document.getElementById("userTypeModal");
+
+    const openBtn =
+        document.getElementById("openModalBtn");
+
+    const closeBtn =
+        document.getElementById("closeModalBtn");
+
+    openBtn.onclick = function () {
+
+        modal.style.display = "block";
+
+    }
+
+    closeBtn.onclick = function () {
+
+        modal.style.display = "none";
+
+    }
+
+    window.onclick = function (event) {
+
+        if (event.target == modal) {
+
+            modal.style.display = "none";
+
+        }
+
+    }
+
+</script>
