@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <base href="@(Url.Content("~/"))" />
+
+    <title>@ViewData["Title"]</title>
+
+    <link rel="stylesheet" href="~/css/admin.css" />
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- SIDEBAR -->
+
+        <div class="sidebar">
+
+            <div class="logo">
+                <img src="~/images/full.png" alt="Logo" />
+            </div>
+
+            <ul>
+
+                <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")">
+
+                    <a asp-controller="Admin"
+                       asp-action="Dashboard">
+
+                        Dashboard
+
+                    </a>
+
+                </li>
+
+                <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "active" : "")">
+
+                    <a asp-controller="Admin"
+                       asp-action="Users">
+
+                        Users
+
+                    </a>
+
+                </li>
+
+                <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Courses" ? "active" : "")">
+
+                    <a asp-controller="Admin"
+                       asp-action="Courses">
+
+                        Courses
+
+                    </a>
+
+                </li>
+
+                <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Enrollments" ? "active" : "")">
+
+                    <a asp-controller="Admin"
+                       asp-action="Enrollments">
+
+                        Enrollments
+
+                    </a>
+
+                </li>
+
+                <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")">
+
+                    <a asp-controller="Admin"
+                       asp-action="Reports">
+
+                        Reports
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+        <!-- MAIN CONTENT -->
+
+        <div class="main-content">
+
+            <!-- NAVBAR -->
+
+            <div class="navbar">
+
+                <input type="text"
+                       placeholder="Search..." />
+
+                <h3>Admin</h3>
+
+            </div>
+
+            <!-- CONTENT -->
+
+            <div class="content">
+
+                @RenderBody()
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

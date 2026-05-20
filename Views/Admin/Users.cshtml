@@ -1,0 +1,46 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Users";
+}
+
+<h1>User Management</h1>
+
+<div class="table-container">
+
+    <button class="add-btn">
+        Add User
+    </button>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>1</td>
+                <td>John Doe</td>
+                <td>john@gmail.com</td>
+                <td>Student</td>
+
+                <td>
+                    <button>Edit</button>
+                    <button>Delete</button>
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
