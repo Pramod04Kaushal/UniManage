@@ -11,7 +11,10 @@
 
     <link rel="stylesheet" href="~/css/admin.css" />
 
+
     <link rel="stylesheet" href="~/css/admin-forms.css" />
+
+
 
 </head>
 
@@ -62,6 +65,7 @@
 
                 </li>
 
+
                 <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Modules" ? "active" : "")">
 
                     <a asp-controller="Admin"
@@ -74,6 +78,7 @@
                 </li>
 
          
+
 
                 <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Enrollments" ? "active" : "")">
 
@@ -109,7 +114,11 @@
 
             <div class="navbar">
 
+
                 <h2>@ViewData["Title"]</h2>
+
+
+
 
                 <h3>Admin</h3>
 

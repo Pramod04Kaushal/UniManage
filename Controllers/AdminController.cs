@@ -14,6 +14,11 @@ namespace UniManage.Controllers
             return View();
         }
 
+        public IActionResult Courses()
+        {
+            return View();
+        }
+
         public IActionResult Modules()
         {
             return View();
@@ -45,11 +50,6 @@ namespace UniManage.Controllers
         }
 
         public IActionResult AddModule()
-        {
-            return View();
-        }
-
-        public IActionResult Courses()
         {
             return View();
         }

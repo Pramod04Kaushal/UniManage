@@ -13,6 +13,7 @@ body {
     display: flex;
 }
 
+
 /* PAGE TOP */
 
 .page-top {
@@ -32,6 +33,7 @@ body {
     outline: none;
     font-size: 14px;
 }
+
 
 /* SIDEBAR */
 
@@ -96,6 +98,8 @@ body {
 
 /* NAVBAR */
 
+/* NAVBAR */
+
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -154,7 +158,9 @@ body {
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
     overflow-x: auto;
+
 }
 
 table {
@@ -183,6 +189,7 @@ table {
     border-radius: 8px;
     cursor: pointer;
 }
+
 
 table button {
     padding: 8px 15px;
@@ -237,3 +244,6 @@ table button {
     .add-user-btn:hover {
         background: #1d4ed8;
     }
+
+
+

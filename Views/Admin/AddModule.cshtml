@@ -5,7 +5,7 @@
 
 <div class="form-container">
 
-    <form>
+    <form method="post" enctype="multipart/form-data">
 
         <!-- MODULE INFORMATION -->
 
@@ -15,34 +15,46 @@
 
             <div class="form-grid">
 
+                <!-- Module Name -->
                 <div class="form-group">
 
                     <label>Module Name</label>
 
                     <input type="text"
                            class="form-control"
-                           placeholder="Enter course name" />
+                           placeholder="Enter module name" />
 
                 </div>
 
+                <!-- Module Code -->
                 <div class="form-group">
 
                     <label>Module Code</label>
 
                     <input type="text"
                            class="form-control"
-                           placeholder="Enter course code" />
+                           placeholder="Enter module code" />
 
                 </div>
 
+                <!-- Department -->
+                <div class="form-group">
 
+                    <label>Department</label>
 
+                    <select class="form-control">
 
+                        <option>Select Department</option>
+                        <option>Information Technology</option>
+                        <option>Computer Science</option>
+                        <option>Software Engineering</option>
+                        <option>Data Science</option>
 
+                    </select>
 
+                </div>
 
-
-
+                <!-- Credits -->
                 <div class="form-group">
 
                     <label>Credits</label>
@@ -53,18 +65,67 @@
 
                 </div>
 
+            </div>
 
+        </div>
+
+        <!-- MODULE MATERIALS -->
+
+        <div class="form-section">
+
+            <h2>Module Materials</h2>
+
+            <div class="materials-grid">
+
+                <!-- PDF -->
+                <div class="form-group">
+
+                    <label>Upload PDF Notes</label>
+
+                    <input type="file"
+                           class="form-control"
+                           accept=".pdf" />
+
+                </div>
+
+                <!-- Presentation -->
+                <div class="form-group">
+
+                    <label>Upload Presentation</label>
+
+                    <input type="file"
+                           class="form-control"
+                           accept=".ppt,.pptx" />
+
+                </div>
+
+                <!-- Video -->
+                <div class="form-group">
+
+                    <label>Upload Video Lecture</label>
+
+                    <input type="file"
+                           class="form-control"
+                           accept="video/*" />
+
+                </div>
 
             </div>
 
         </div>
 
-        <!-- COURSE DESCRIPTION -->
+
+
+
+
+
+
+
+        <!-- MODULE DESCRIPTION -->
 
         <div class="form-section">
 
-            <h2>Course Description</h2>
-
+            <h2>Module Description</h2>
             <div class="form-group">
 
                 <label>Description</label>
@@ -129,7 +190,7 @@
             <button type="submit"
                     class="save-btn">
 
-                Save Course
+                Save Module
 
             </button>
 
