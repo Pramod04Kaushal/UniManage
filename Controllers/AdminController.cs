@@ -13,6 +13,18 @@ namespace UniManage.Controllers
         }
         public IActionResult Dashboard()
         {
+            ViewBag.TotalStudents =
+                _context.Students.Count();
+
+            ViewBag.TotalLecturers =
+                _context.Lecturers.Count();
+
+            ViewBag.TotalCourses =
+                _context.Courses.Count();
+
+            ViewBag.TotalEnrollments =
+                _context.Enrollments.Count();
+
             return View();
         }
 
