@@ -5,7 +5,7 @@
 
 <div class="form-container">
 
-    <form>
+    <form asp-action="AddCourse" method="post">
 
         <!-- COURSE INFORMATION -->
 
@@ -20,6 +20,7 @@
                     <label>Course Name</label>
 
                     <input type="text"
+                           name="CourseName"
                            class="form-control"
                            placeholder="Enter course name" />
 
@@ -31,7 +32,7 @@
 
                     <label>Department</label>
 
-                    <select class="form-control">
+                    <select name="Department" class="form-control">
 
                         <option>Select Department</option>
 
@@ -47,7 +48,7 @@
 
                     <label>Semesters</label>
 
-                    <select class="form-control">
+                    <select name="Semesters" class="form-control">
 
                         <option>Select Selesters</option>
 
@@ -64,7 +65,7 @@
 
                     <label>Duration</label>
 
-                    <select class="form-control">
+                    <select name="Duration" class="form-control">
 
                         <option>Select Duration</option>
 
@@ -83,25 +84,10 @@
 
                 <div class="form-group">
 
-                    <label>Intake</label>
-
-                    <select class="form-control">
-
-                        <option>Select Intake</option>
-
-                        <option>January</option>
-                        <option>May</option>
-                        <option>September</option>
-
-                    </select>
-
-                </div>
-
-                <div class="form-group">
-
                     <label>Course Fee</label>
 
                     <input type="number"
+                           name="CourseFee"
                            class="form-control"
                            placeholder="Enter course fee" />
 
@@ -111,7 +97,7 @@
 
                     <label>Qualification Type</label>
 
-                    <select class="form-control">
+                    <select name="QualificationType" class="form-control">
 
                         <option>Select Qualification</option>
 
@@ -123,6 +109,139 @@
                     </select>
 
                 </div>
+
+
+
+
+                <div class="form-group">
+
+                    <label>Intake</label>
+
+                    <div class="checkbox-group">
+
+                        <label class="checkbox-item">
+
+                            <input type="checkbox" name="Intake" value="January" />
+
+                            January
+
+                        </label>
+
+                        <label class="checkbox-item">
+
+                            <input type="checkbox" name="Intake" value="May" />
+
+                            May
+
+                        </label>
+
+                        <label class="checkbox-item">
+
+                            <input type="checkbox" name="Intake" value="September" />
+
+                            September
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+        <div class="form-section">
+
+            <div class="module-header">
+
+                <h2>Course Modules</h2>
+
+                <button type="button"
+                        class="add-module-btn">
+
+                    + Add Module
+
+                </button>
+
+            </div>
+
+            <!-- Added Modules Table -->
+
+            <table class="module-table" id="moduleTable" style="display:none;">
+
+                <thead>
+
+                    <tr>
+                        <th>Module</th>
+                        <th>Credits</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="moduleTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- MODULE MODAL -->
+
+        <div class="module-modal" id="moduleModal">
+
+            <div class="module-modal-content">
+
+                <span class="close-modal">&times;</span>
+
+                <h2>Add Module</h2>
+
+                <!-- Module -->
+                <div class="form-group">
+
+                    <label>Select Module</label>
+
+                    <select class="form-control" id="moduleSelect">
+
+                        @foreach (var module in ViewBag.Modules)
+                        {
+                            <option value="@module.ModuleID">
+                                @module.ModuleName
+                            </option>
+                        }
+
+                    </select>
+
+
+
+                </div>
+
+                <!-- Semester -->
+                <div class="form-group">
+
+                    <label>Select Semester</label>
+
+                    <select class="form-control" id="semesterSelect">
+
+                        <option>Semester 1</option>
+                        <option>Semester 2</option>
+                        <option>Semester 3</option>
+                        <option>Semester 4</option>
+
+                    </select>
+
+                </div>
+
+                <button type="button"
+                        class="save-btn"
+                        id="saveModuleBtn">
+
+                    Add Module
+
+                </button>
 
             </div>
 
@@ -138,8 +257,9 @@
 
                 <label>Course Description</label>
 
-                <textarea class="form-control textarea"
-                          placeholder="Enter course description"></textarea>
+<textarea name="Description"
+          class="form-control textarea"
+          placeholder="Enter course description"></textarea>
 
             </div>
 
@@ -168,3 +288,128 @@
     </form>
 
 </div>
+
+
+<script>
+
+    const modal = document.getElementById("moduleModal");
+    const openBtn = document.querySelector(".add-module-btn");
+    const closeBtn = document.querySelector(".close-modal");
+    const saveBtn = document.getElementById("saveModuleBtn");
+
+    openBtn.onclick = () => {
+        modal.style.display = "flex";
+    };
+
+    closeBtn.onclick = () => {
+        modal.style.display = "none";
+    };
+
+    saveBtn.onclick = () => {
+
+            const moduleSelect = document.getElementById("moduleSelect");
+
+    const module =
+        moduleSelect.options[moduleSelect.selectedIndex].text;
+
+    const moduleId = moduleSelect.value;
+        const semester = document.getElementById("semesterSelect").value;
+
+        const table = document.getElementById("moduleTable");
+        const tbody = document.getElementById("moduleTableBody");
+
+        table.style.display = "table";
+
+        // Semester IDs
+        const semesterId = semester.replace(/\s+/g, "-");
+
+        // Check if semester section exists
+        let semesterRow = document.getElementById(semesterId);
+
+        // Create semester section if not exists
+        if (!semesterRow) {
+
+            semesterRow = document.createElement("tr");
+
+            semesterRow.id = semesterId;
+            semesterRow.classList.add("semester-row");
+
+            semesterRow.innerHTML = `
+                <td colspan="3">
+                    <strong>${semester}</strong>
+                </td>
+            `;
+
+            // Get all existing semester rows
+            const existingSemesters =
+                document.querySelectorAll(".semester-row");
+
+            let inserted = false;
+
+            existingSemesters.forEach(existingRow => {
+
+                const existingSemester =
+                    existingRow.id.replace("Semester-", "");
+
+                const currentSemester =
+                    semester.replace("Semester ", "");
+
+                if (
+                    parseInt(currentSemester) <
+                    parseInt(existingSemester)
+                ) {
+
+                    tbody.insertBefore(
+                        semesterRow,
+                        existingRow
+                    );
+
+                    inserted = true;
+                }
+            });
+
+            // Add at bottom if no earlier semester found
+            if (!inserted) {
+                tbody.appendChild(semesterRow);
+            }
+        }
+
+    const moduleRow = document.createElement("tr");
+
+    moduleRow.innerHTML = `
+        <td>
+            ${module}
+
+            <input type="hidden"
+                   name="SelectedModules"
+                   value="${moduleId}" />
+        </td>
+
+        <td>4</td>
+
+        <td>
+            <button type="button"
+                    class="remove-btn">
+
+                Remove
+
+            </button>
+        </td>
+    `;
+
+        // Insert module AFTER semester heading
+        let nextRow = semesterRow.nextSibling;
+
+        while (
+            nextRow &&
+            !nextRow.classList?.contains("semester-row")
+        ) {
+            nextRow = nextRow.nextSibling;
+        }
+
+        tbody.insertBefore(moduleRow, nextRow);
+
+        modal.style.display = "none";
+    };
+
+</script>

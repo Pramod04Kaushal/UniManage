@@ -5,7 +5,11 @@
 
 <div class="form-container">
 
-    <form method="post" enctype="multipart/form-data">
+    <form asp-controller="Admin"
+          asp-action="AddModule"
+          method="post"
+          enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
 
         <!-- MODULE INFORMATION -->
 
@@ -21,6 +25,7 @@
                     <label>Module Name</label>
 
                     <input type="text"
+                           name="ModuleName"
                            class="form-control"
                            placeholder="Enter module name" />
 
@@ -32,27 +37,32 @@
                     <label>Module Code</label>
 
                     <input type="text"
+                           name="ModuleCode"
                            class="form-control"
-                           placeholder="Enter module code" />
+                           value="@ViewBag.ModuleCode"
+                           readonly />
 
                 </div>
 
-                <!-- Department -->
-                <div class="form-group">
 
-                    <label>Department</label>
 
-                    <select class="form-control">
 
-                        <option>Select Department</option>
-                        <option>Information Technology</option>
-                        <option>Computer Science</option>
-                        <option>Software Engineering</option>
-                        <option>Data Science</option>
+                    <!-- Department -->
+                    <div class="form-group">
 
-                    </select>
+                        <label>Department</label>
 
-                </div>
+                        <select name="Department"
+                                class="form-control">
+
+                            <option>Information Technology</option>
+                            <option>Computer Science</option>
+                            <option>Software Engineering</option>
+                            <option>Data Science</option>
+
+                        </select>
+
+                    </div>
 
                 <!-- Credits -->
                 <div class="form-group">
@@ -60,6 +70,7 @@
                     <label>Credits</label>
 
                     <input type="number"
+                           name="Credits"
                            class="form-control"
                            placeholder="Enter credits" />
 
@@ -83,6 +94,7 @@
                     <label>Upload PDF Notes</label>
 
                     <input type="file"
+                           name="PdfFile"
                            class="form-control"
                            accept=".pdf" />
 
@@ -94,6 +106,7 @@
                     <label>Upload Presentation</label>
 
                     <input type="file"
+                           name="PresentationFile"
                            class="form-control"
                            accept=".ppt,.pptx" />
 
@@ -105,6 +118,7 @@
                     <label>Upload Video Lecture</label>
 
                     <input type="file"
+                           name="VideoFile"
                            class="form-control"
                            accept="video/*" />
 
@@ -130,8 +144,9 @@
 
                 <label>Description</label>
 
-                <textarea class="form-control textarea"
-                          placeholder="Enter course description"></textarea>
+<textarea name="Description"
+          class="form-control textarea"
+          placeholder="Enter course description"></textarea>
 
             </div>
 
@@ -149,11 +164,17 @@
 
                     <label>Assign Lecturer</label>
 
-                    <select class="form-control">
+                    <select name="LecturerID"
+                            class="form-control">
 
-                        <option>Select Lecturer</option>
-                        <option>Dr. John Smith</option>
-                        <option>Prof. Sarah Lee</option>
+                        <option value="0">Select Lecturer</option>
+
+                        @foreach (var lecturer in ViewBag.Lecturers)
+                        {
+                            <option value="@lecturer.LecturerID">
+                                @lecturer.FullName
+                            </option>
+                        }
 
                     </select>
 
@@ -163,7 +184,8 @@
 
                     <label>Course Status</label>
 
-                    <select class="form-control">
+                    <select name="Status"
+                            class="form-control">
 
                         <option>Active</option>
                         <option>Inactive</option>
