@@ -21,4 +21,62 @@ body {
     font-family: var(--main-font);
 }
 
+.student-navbar {
+    background: #081028;
+    padding: 20px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
+.student-logo h2 {
+    color: #2f80ff;
+    margin: 0;
+}
+
+.student-menu {
+    display: flex;
+    gap: 30px;
+}
+
+    .student-menu a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        transition: 0.3s;
+    }
+
+        .student-menu a:hover {
+            color: #2f80ff;
+        }
+
+.student-content {
+    padding: 40px;
+    background: #f4f7fc;
+    min-height: 100vh;
+}
+
+.dashboard-cards {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.dashboard-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 250px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+    .dashboard-card h2 {
+        margin: 0;
+        font-size: 35px;
+        color: #2f80ff;
+    }
+
+    .dashboard-card p {
+        margin-top: 10px;
+    }

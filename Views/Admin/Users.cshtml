@@ -88,6 +88,8 @@
 
                 <th>Created Date</th>
 
+                <th>Actions</th>
+
                 
 
             </tr>
@@ -98,7 +100,8 @@
 
             @foreach (var user in Model)
             {
-                <tr>
+                <tr ondblclick="window.location='/Admin/UserDetails/@user.UserID'"
+                    style="cursor:pointer;">
 
                     <td>@user.UserID</td>
 
@@ -114,15 +117,80 @@
 
                     <td>
 
-                        <span class="status-active">
+                        <span class="@(user.Status == "Inactive"
+                                  ? "status-inactive"
+                                  : "status-active")">
 
-                            Active
+                            @(string.IsNullOrEmpty(user.Status)
+                                                    ? "Active"
+                                                    : user.Status)
 
-                        </span>
+                    </span>
 
                     </td>
 
                     <td>@user.CreatedAt.ToString("dd MMM yyyy")</td>
+
+                    <td onclick ="event.stopPropagation();">
+
+                        <div class="action-dropdown">
+
+                            <button type="button"
+                                    class="action-btn"
+                                    onclick="toggleDropdown(event, this)">
+
+                                ⋮
+
+                            </button>
+
+                            <div class="dropdown-content">
+
+                                <a href="/Admin/UserDetails/@user.UserID">
+
+                                    View
+
+                                </a>
+
+                            @if (user.Role == "Student")
+                                {
+                                    <a href="/Admin/EditStudent/@user.UserID">
+                                        Edit
+                                    </a>
+                                }
+                                else if (user.Role == "Lecturer")
+                                {
+                                    <a href="/Admin/EditLecturer/@user.UserID">
+                                        Edit
+                                    </a>
+                                }
+                                else if (user.Role == "Admin")
+                                {
+                                    <a href="/Admin/EditAdmin/@user.UserID">
+                                        Edit
+                                    </a>
+                                }
+
+                                <a href="/Admin/DisableUser/@user.UserID"
+                                   onclick="return confirm('Disable this user?');">
+
+                                    @(user.Status == "Inactive"
+                                                                    ? "Enable"
+                                                                    : "Disable")
+
+                                </a>
+
+                                <a href="/Admin/DeleteUser/@user.UserID"
+                                   onclick="return confirm('Delete this user permanently?');">
+
+                                    Delete
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </td>
 
                 </tr>
             }
@@ -240,6 +308,45 @@
                 ? ""
                 : "none";
         });
+    });
+
+</script>
+
+
+<script>
+
+    function toggleDropdown(event, button)
+    {
+        event.stopPropagation();
+
+        // CLOSE ALL DROPDOWNS
+
+        document
+            .querySelectorAll(".dropdown-content")
+            .forEach(menu =>
+            {
+                if (menu !== button.nextElementSibling)
+                {
+                    menu.classList.remove("show");
+                }
+            });
+
+        // TOGGLE CURRENT
+
+        button.nextElementSibling
+            .classList.toggle("show");
+    }
+
+    // CLOSE WHEN CLICK OUTSIDE
+
+    document.addEventListener("click", function ()
+    {
+        document
+            .querySelectorAll(".dropdown-content")
+            .forEach(menu =>
+            {
+                menu.classList.remove("show");
+            });
     });
 
 </script>

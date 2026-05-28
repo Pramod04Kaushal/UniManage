@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
 
 namespace UniManage.Models
 {
@@ -12,7 +13,7 @@ namespace UniManage.Models
 
         public string Address { get; set; }
 
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         public string Gender { get; set; }
 
@@ -25,5 +26,11 @@ namespace UniManage.Models
         public string AccessLevel { get; set; }
 
         public string Status { get; set; }
+
+        public int UserID { get; set; }
+
+        public IFormFile? ProfileImageFile { get; set; }
+
+        public string? ProfileImage { get; set; }
     }
 }

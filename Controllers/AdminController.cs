@@ -2,6 +2,7 @@
 using UniManage.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.IO;
 
 namespace UniManage.Controllers
 {
@@ -40,6 +41,50 @@ namespace UniManage.Controllers
             }
 
             return View(users.ToList());
+        }
+        // GET: /Admin/UserDetails/5
+        public IActionResult UserDetails(int id)
+        {
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // STUDENT
+
+            if (user.Role == "Student")
+            {
+                var student = _context.Students
+                    .FirstOrDefault(s => s.UserID == user.UserID);
+
+                ViewBag.Student = student;
+
+                return View("ViewStudent", user);
+            }
+
+            // LECTURER
+
+            if (user.Role == "Lecturer")
+            {
+                var lecturer = _context.Lecturers
+                    .FirstOrDefault(l => l.UserID == user.UserID);
+
+                ViewBag.Lecturer = lecturer;
+
+                return View("ViewLecturer", user);
+            }
+
+            // ADMIN
+
+            if (user.Role == "Admin")
+            {
+                return View("ViewAdmin", user);
+            }
+
+            return RedirectToAction("Users");
         }
 
         public IActionResult Courses(string departmentFilter = "ALL")
@@ -146,6 +191,14 @@ namespace UniManage.Controllers
 
                 Department = model.Department,
 
+                Address = model.Address,
+
+                DateOfBirth = model.DateOfBirth,
+
+                Gender = model.Gender,
+
+                Status = model.Status,
+
                 CreatedAt = DateTime.Now
             };
 
@@ -163,10 +216,255 @@ namespace UniManage.Controllers
 
                 Department = model.Department,
 
-                Semester = model.Semester
+                Semester = model.Semester,
+
+                Course = model.Course,
+
+                EnrollmentYear = model.EnrollmentYear
             };
 
             _context.Students.Add(student);
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Users");
+        }
+
+        [HttpGet]
+        public IActionResult EditStudent(int id)
+        {
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == id);
+
+            var student = _context.Students
+                .FirstOrDefault(s => s.UserID == id);
+
+            if (user == null || student == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
+            AddStudentViewModel model =
+                new AddStudentViewModel()
+                {
+                    UserID = user.UserID,
+
+                    FullName = user.FullName,
+
+                    Email = user.Email,
+
+                    Phone = user.Phone,
+
+                    Address = user.Address,
+
+                    Department = user.Department,
+
+                    DateOfBirth = user.DateOfBirth,
+
+                    Gender = user.Gender,
+
+                    Status = user.Status,
+
+                    ProfileImage = user.ProfileImage,
+
+                    Semester = student.Semester,
+
+                    Course = student.Course,
+
+                    EnrollmentYear =
+                        student.EnrollmentYear
+                };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult EditStudent(AddStudentViewModel model)
+        {
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == model.UserID);
+
+            var student = _context.Students
+                .FirstOrDefault(s => s.UserID == model.UserID);
+
+            if (user == null || student == null)
+            {
+                return NotFound();
+            }
+
+            // UPDATE USER
+
+            user.FullName = model.FullName;
+
+            user.Email = model.Email;
+
+            user.Phone = model.Phone;
+
+            user.Address = model.Address;
+
+            user.Department = model.Department;
+
+            user.DateOfBirth = model.DateOfBirth;
+
+            user.Gender = model.Gender;
+
+            user.Status = model.Status;
+
+            // UPDATE STUDENT
+
+            student.Semester = model.Semester;
+
+            student.Course = model.Course;
+
+            student.EnrollmentYear =
+                model.EnrollmentYear;
+
+            if (model.ProfileImageFile != null)
+            {
+                string fileName =
+                    Guid.NewGuid().ToString() +
+                    Path.GetExtension(
+                        model.ProfileImageFile.FileName);
+
+                string folderPath =
+                    Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot/images");
+
+                string filePath =
+                    Path.Combine(folderPath, fileName);
+
+                using (var stream =
+                    new FileStream(filePath, FileMode.Create))
+                {
+                    model.ProfileImageFile.CopyTo(stream);
+                }
+
+                user.ProfileImage = fileName;
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Users");
+        }
+
+        public IActionResult EditLecturer(int id)
+        {
+            var user = _context.Users
+                .FirstOrDefault(x => x.UserID == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var lecturer = _context.Lecturers
+                .FirstOrDefault(x => x.UserID == id);
+
+            var model = new AddLecturerViewModel()
+            {
+                UserID = user.UserID,
+
+                FullName = user.FullName,
+
+                Email = user.Email,
+
+                Phone = user.Phone,
+
+                Address = user.Address,
+
+                Department = user.Department,
+
+                DateOfBirth = user.DateOfBirth,
+
+                Gender = user.Gender,
+
+                Status = user.Status,
+
+                Specialization = lecturer?.Specialization,
+
+                Qualification = lecturer?.Qualification,
+
+                ExperienceYears = lecturer?.ExperienceYears,
+
+                ProfileImage = user.ProfileImage
+            };
+
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult EditLecturer(AddLecturerViewModel model)
+        {
+            var user = _context.Users
+                .FirstOrDefault(x => x.UserID == model.UserID);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var lecturer = _context.Lecturers
+                .FirstOrDefault(x => x.UserID == model.UserID);
+
+            // UPDATE USER
+
+            user.FullName = model.FullName;
+
+            user.Email = model.Email;
+
+            user.Phone = model.Phone;
+
+            user.Address = model.Address;
+
+            user.Department = model.Department;
+
+            user.DateOfBirth = model.DateOfBirth;
+
+            user.Gender = model.Gender;
+
+            user.Status = model.Status;
+
+            // PROFILE IMAGE
+
+            if (model.ProfileImageFile != null)
+            {
+                string fileName =
+                    Guid.NewGuid().ToString()
+                    + Path.GetExtension(model.ProfileImageFile.FileName);
+
+                string folder =
+                    Path.Combine(Directory.GetCurrentDirectory(),
+                    "wwwroot/images");
+
+                string filePath =
+                    Path.Combine(folder, fileName);
+
+                using (var stream =
+                    new FileStream(filePath, FileMode.Create))
+                {
+                    model.ProfileImageFile.CopyTo(stream);
+                }
+
+                user.ProfileImage = fileName;
+            }
+
+            // UPDATE LECTURER
+
+            if (lecturer != null)
+            {
+                lecturer.Specialization = model.Specialization;
+
+                lecturer.Qualification = model.Qualification;
+
+                lecturer.ExperienceYears = model.ExperienceYears;
+            }
 
             _context.SaveChanges();
 
@@ -208,6 +506,14 @@ namespace UniManage.Controllers
                 Role = "Lecturer",
 
                 Department = model.Department,
+
+                Address = model.Address,
+
+                DateOfBirth = model.DateOfBirth,
+
+                Gender = model.Gender,
+
+                Status = model.Status,
 
                 CreatedAt = DateTime.Now
             };
@@ -265,10 +571,120 @@ namespace UniManage.Controllers
 
                 Role = "Admin",
 
+                Department = model.Department,
+
+                Address = model.Address,
+
+                DateOfBirth = model.DateOfBirth,
+
+                Gender = model.Gender,
+
+                Status = model.Status,
+
                 CreatedAt = DateTime.Now
             };
 
             _context.Users.Add(user);
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Users");
+        }
+
+        [HttpGet]
+        public IActionResult EditAdmin(int id)
+        {
+            var user = _context.Users
+                .FirstOrDefault(x => x.UserID == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
+            var model = new AddAdminViewModel()
+            {
+                UserID = user.UserID,
+
+                FullName = user.FullName,
+
+                Email = user.Email,
+
+                Phone = user.Phone,
+
+                Address = user.Address,
+
+                Department = user.Department,
+
+                DateOfBirth = user.DateOfBirth,
+
+                Gender = user.Gender,
+
+                Status = user.Status,
+
+                ProfileImage = user.ProfileImage
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult EditAdmin(AddAdminViewModel model)
+        {
+            var user = _context.Users
+                .FirstOrDefault(x => x.UserID == model.UserID);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // UPDATE USER
+
+            user.FullName = model.FullName;
+
+            user.Email = model.Email;
+
+            user.Phone = model.Phone;
+
+            user.Address = model.Address;
+
+            user.Department = model.Department;
+
+            user.DateOfBirth = model.DateOfBirth;
+
+            user.Gender = model.Gender;
+
+            user.Status = model.Status;
+
+            // PROFILE IMAGE
+
+            if (model.ProfileImageFile != null)
+            {
+                string fileName =
+                    Guid.NewGuid().ToString()
+                    + Path.GetExtension(
+                        model.ProfileImageFile.FileName);
+
+                string folder =
+                    Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot/images");
+
+                string filePath =
+                    Path.Combine(folder, fileName);
+
+                using (var stream =
+                    new FileStream(filePath, FileMode.Create))
+                {
+                    model.ProfileImageFile.CopyTo(stream);
+                }
+
+                user.ProfileImage = fileName;
+            }
 
             _context.SaveChanges();
 
@@ -466,8 +882,66 @@ namespace UniManage.Controllers
 
             return new JsonResult(courses);
         }
+
+
+        public IActionResult DisableUser(int id)
+        {
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.Status =
+    user.Status == "Inactive"
+    ? "Active"
+    : "Inactive";
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Users");
+        }
+
+        public IActionResult DeleteUser(int id)
+        {
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // PREVENT SELF DELETE
+
+            if (user.Email == User.Identity.Name)
+            {
+                return RedirectToAction("Users");
+            }
+
+            var student = _context.Students
+                .FirstOrDefault(s => s.UserID == id);
+
+            if (student != null)
+            {
+                _context.Students.Remove(student);
+            }
+
+            var lecturer = _context.Lecturers
+                .FirstOrDefault(l => l.UserID == id);
+
+            if (lecturer != null)
+            {
+                _context.Lecturers.Remove(lecturer);
+            }
+
+            _context.Users.Remove(user);
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Users");
+        }
     }
-
-
-
 }

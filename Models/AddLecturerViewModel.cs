@@ -1,9 +1,16 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
 
 namespace UniManage.Models
 {
     public class AddLecturerViewModel
     {
+        public int UserID { get; set; }
+
+        public IFormFile? ProfileImageFile { get; set; }
+
+        public string? ProfileImage { get; set; }
+
         public string FullName { get; set; }
 
         public string Email { get; set; }
@@ -12,7 +19,7 @@ namespace UniManage.Models
 
         public string Address { get; set; }
 
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         public string Gender { get; set; }
 
@@ -20,9 +27,9 @@ namespace UniManage.Models
 
         public string Specialization { get; set; }
 
-        public string Qualification { get; set; }
+        public string? Qualification { get; set; }
 
-        public int ExperienceYears { get; set; }
+        public int? ExperienceYears { get; set; }
 
         public string Status { get; set; }
     }

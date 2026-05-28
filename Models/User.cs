@@ -26,5 +26,15 @@ namespace UniManage.Models
         public DateTime CreatedAt { get; set; }
 
         public string? Department { get; set; }
+
+        public string? Address { get; set; }
+
+        public DateTime? DateOfBirth { get; set; }
+
+        public string? Gender { get; set; }
+
+        public string? Status { get; set; }
+
+
     }
 }

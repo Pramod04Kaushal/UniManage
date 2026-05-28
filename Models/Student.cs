@@ -14,5 +14,9 @@ namespace UniManage.Models
         public string Department { get; set; }
 
         public int Semester { get; set; }
+
+        public string? Course { get; set; }
+
+        public int? EnrollmentYear { get; set; }
     }
 }

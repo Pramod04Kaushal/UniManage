@@ -274,6 +274,15 @@ table button {
     display: inline-block;
 }
 
+.status-inactive {
+    background: #FEE2E2;
+    color: #DC2626;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
 /* ACTION BUTTONS */
 
 .edit-btn,
@@ -338,6 +347,61 @@ table td {
 .filter-dropdown:focus {
     border-color: #2563EB;
 }
+
+
+/*Action Dots*/
+.action-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.action-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #F3F4F6;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    color: #111827;
+    transition: 0.2s;
+}
+
+    .action-btn:hover {
+        background: #E5E7EB;
+    }
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 42px;
+    background: white;
+    min-width: 160px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    overflow: hidden;
+    z-index: 9999;
+}
+    .dropdown-content.show {
+        display: block;
+    }
+
+    .dropdown-content a {
+        display: block;
+        padding: 12px 16px;
+        text-decoration: none;
+        color: #111827;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+        .dropdown-content a:hover {
+            background: #F3F4F6;
+        }
+
+
 
 
 

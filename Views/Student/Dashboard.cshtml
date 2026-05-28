@@ -1,0 +1,105 @@
+﻿@model List<UniManage.Models.Course>
+
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewData["Title"] = "Student Dashboard";
+}
+
+<div class="dashboard-container">
+
+    <div class="dashboard-header">
+
+        <h1>
+            Welcome, @ViewBag.StudentName
+        </h1>
+
+        <p>
+            Registration No: @ViewBag.RegNum
+        </p>
+
+        <p>
+            Department: @ViewBag.Department
+        </p>
+
+        <p>
+            Semester: @ViewBag.Semester
+        </p>
+
+    </div>
+
+    <div class="dashboard-cards">
+
+        <div class="dashboard-card">
+
+            <h2>@ViewBag.TotalCourses</h2>
+
+            <p>Enrolled Courses</p>
+
+        </div>
+
+        <div class="dashboard-card">
+
+            <h2>@ViewBag.TotalModules</h2>
+
+            <p>Total Modules</p>
+
+        </div>
+
+    </div>
+
+    <div class="table-container">
+
+        <div class="table-top">
+
+            <h2>
+                My Courses
+            </h2>
+
+        </div>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Course Code</th>
+
+                    <th>Course Name</th>
+
+                    <th>Department</th>
+
+                    <th>Duration</th>
+
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var course in Model)
+                {
+                    <tr>
+
+                        <td>@course.CourseCode</td>
+
+                        <td>@course.CourseName</td>
+
+                        <td>@course.Department</td>
+
+                        <td>@course.Duration</td>
+
+                        <td>@course.Status</td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

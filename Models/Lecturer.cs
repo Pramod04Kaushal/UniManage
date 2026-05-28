@@ -12,5 +12,9 @@ namespace UniManage.Models
         public string Department { get; set; }
 
         public string Specialization { get; set; }
+
+        public string? Qualification { get; set; }
+
+        public int? ExperienceYears { get; set; }
     }
 }
