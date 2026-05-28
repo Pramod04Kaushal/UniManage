@@ -21,8 +21,10 @@ namespace UniManage.Models
 
         public string Phone { get; set; }
 
-        public string ProfileImage { get; set; }
+        public string? ProfileImage { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public string? Department { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UniManage.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace UniManage.Controllers
@@ -28,19 +29,63 @@ namespace UniManage.Controllers
             return View();
         }
 
-        public IActionResult Users()
+        public IActionResult Users(string roleFilter)
         {
-            return View();
+            var users = _context.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(roleFilter)
+                && roleFilter != "ALL")
+            {
+                users = users.Where(u => u.Role == roleFilter);
+            }
+
+            return View(users.ToList());
         }
 
-        public IActionResult Courses()
+        public IActionResult Courses(string departmentFilter = "ALL")
         {
-            return View();
+            // LOAD DEPARTMENTS
+
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
+            // LOAD COURSES
+
+            var courses =
+                _context.Courses.AsQueryable();
+
+            // FILTER BY DEPARTMENT
+
+            if (departmentFilter != "ALL")
+            {
+                courses = courses
+                    .Where(c => c.Department == departmentFilter);
+            }
+
+            return View(courses.ToList());
         }
 
-        public IActionResult Modules()
+        public IActionResult Modules(string departmentFilter = "ALL")
         {
-            return View();
+            // LOAD DEPARTMENTS
+
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
+            // LOAD MODULES
+
+            var modules =
+                _context.Modules.AsQueryable();
+
+            // FILTER BY DEPARTMENT
+
+            if (departmentFilter != "ALL")
+            {
+                modules = modules
+                    .Where(m => m.Department == departmentFilter);
+            }
+
+            return View(modules.ToList());
         }
 
         public IActionResult Enrollments()
@@ -56,6 +101,9 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult AddStudent()
         {
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
             return View();
         }
 
@@ -96,6 +144,8 @@ namespace UniManage.Controllers
 
                 Role = "Student",
 
+                Department = model.Department,
+
                 CreatedAt = DateTime.Now
             };
 
@@ -126,6 +176,9 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult AddLecturer()
         {
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
             return View();
         }
 
@@ -154,6 +207,8 @@ namespace UniManage.Controllers
 
                 Role = "Lecturer",
 
+                Department = model.Department,
+
                 CreatedAt = DateTime.Now
             };
 
@@ -180,6 +235,9 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult AddAdmin()
         {
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
             return View();
         }
         [HttpPost]
@@ -234,13 +292,21 @@ namespace UniManage.Controllers
 
             ViewBag.Lecturers = lecturers;
 
+            // LOAD DEPARTMENTS
+
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
             // AUTO MODULE CODE
 
-            int count = _context.Modules.Count() + 1;
+            int count =
+                _context.Modules.Count() + 1;
 
-            string moduleCode = "MOD" + count.ToString("D3");
+            string moduleCode =
+                "MOD" + count.ToString("D3");
 
-            ViewBag.ModuleCode = moduleCode;
+            ViewBag.ModuleCode =
+                moduleCode;
 
             return View();
         }
@@ -303,11 +369,23 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult AddCourse()
         {
-            ViewBag.Modules = _context.Modules.ToList();
+            // LOAD MODULES
 
-            int count = _context.Courses.Count() + 1;
+            ViewBag.Modules =
+                _context.Modules.ToList();
 
-            ViewBag.CourseCode = "CRS" + count.ToString("D3");
+            // LOAD DEPARTMENTS
+
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
+            // AUTO COURSE CODE
+
+            int count =
+                _context.Courses.Count() + 1;
+
+            ViewBag.CourseCode =
+                "CRS" + count.ToString("D3");
 
             return View();
         }
@@ -373,7 +451,23 @@ namespace UniManage.Controllers
 
             return RedirectToAction("Courses");
         }
+
+        [HttpGet]
+        public JsonResult GetCoursesByDepartment(string department)
+        {
+            var courses = _context.Courses
+                .Where(c => c.Department == department)
+                .Select(c => new
+                {
+                    c.CourseID,
+                    c.CourseName
+                })
+                .ToList();
+
+            return new JsonResult(courses);
+        }
     }
+
 
 
 }

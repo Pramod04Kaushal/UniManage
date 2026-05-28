@@ -1,4 +1,6 @@
-﻿@{
+﻿@model List<UniManage.Models.Course>
+
+@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Courses";
 }
@@ -7,19 +9,48 @@
 
     <div class="table-top">
 
+        <!-- FILTER -->
+
+        <form method="get">
+
+            <select name="departmentFilter"
+                    class="filter-dropdown"
+                    onchange="this.form.submit()">
+
+                <option value="ALL">ALL</option>
+
+                @foreach (var department in ViewBag.Departments)
+                {
+                    <option value="@department.DepartmentName"
+                            selected="@(Context.Request.Query["departmentFilter"] == department.DepartmentName ? "selected" : null)">
+
+                        @department.DepartmentName
+
+                    </option>
+                }
+
+            </select>
+
+        </form>
+
+        <!-- SEARCH -->
+
+        <div class="table-search">
+
+            <input type="text"
+                   id="searchInput"
+                   placeholder="Search courses..." />
+
+        </div>
+
+        <!-- ADD COURSE -->
+
         <a href="/Admin/AddCourse"
            class="add-user-btn">
 
             Add Course
 
         </a>
-
-        <div class="table-search">
-
-            <input type="text"
-                   placeholder="Search courses..." />
-
-        </div>
 
     </div>
 
@@ -29,37 +60,90 @@
 
             <tr>
 
-                <th>ID</th>
+
+                <th>Course Code</th>
                 <th>Course Name</th>
                 <th>Department</th>
+                <th>Qualification</th>
                 <th>Duration</th>
-                <th>Actions</th>
+                <th>Semesters</th>
+                <th>Course Fee</th>
+                <th>Intake</th>
+                <th>Status</th>
 
             </tr>
 
         </thead>
 
-        <tbody>
+        <tbody id="coursesTable">
 
-            <tr>
+            @foreach (var course in Model)
+            {
+                <tr>
 
-                <td>1</td>
-                <td>BSc Software Engineering</td>
-                <td>Computing</td>
-                <td>4 Years</td>
 
-                <td>
 
-                    <button>Edit</button>
+                    <td>@course.CourseCode</td>
 
-                    <button>Delete</button>
+                    <td>@course.CourseName</td>
 
-                </td>
+                    <td>@course.Department</td>
 
-            </tr>
+                    <td>@course.QualificationType</td>
+
+                    <td>@course.Duration</td>
+
+                    <td>@course.Semesters</td>
+
+                    <td>Rs. @course.CourseFee</td>
+
+                    <td>@course.Intake</td>
+
+                    <td>
+
+                        <span class="status-active">
+
+                            @course.Status
+
+                        </span>
+
+                    </td>
+
+                </tr>
+            }
 
         </tbody>
 
     </table>
 
 </div>
+
+
+<script>
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    searchInput.addEventListener("keyup", function () {
+
+        let filter =
+            searchInput.value.toLowerCase();
+
+        let rows =
+            document.querySelectorAll("#coursesTable tr");
+
+        rows.forEach(row => {
+
+            let text =
+                row.innerText.toLowerCase();
+
+            row.style.display =
+                text.includes(filter)
+                ? ""
+                : "none";
+
+        });
+
+    });
+
+</script>

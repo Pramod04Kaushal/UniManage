@@ -24,5 +24,7 @@ namespace UniManage.Models
         public DbSet<CourseModule> CourseModules { get; set; }
 
         public DbSet<Enrollment> Enrollments { get; set; }
+
+        public DbSet<Department> Departments { get; set; }
     }
 }

@@ -127,13 +127,18 @@
                 <div class="form-group">
                     <label>Department</label>
 
-                    <select name="Department"
+                    <select id="departmentDropdown"
+                            name="Department"
                             class="form-control">
 
-                        <option>Select Department</option>
-                        <option>Computing</option>
-                        <option>Business</option>
-                        <option>Engineering</option>
+                        <option value="">Select Department</option>
+
+                        @foreach (var department in ViewBag.Departments)
+                        {
+                            <option value="@department.DepartmentName">
+                                @department.DepartmentName
+                            </option>
+                        }
 
                     </select>
 
@@ -142,13 +147,11 @@
                 <div class="form-group">
                     <label>Course</label>
 
-                    <select name="Course"
+                    <select id="courseDropdown"
+                            name="Course"
                             class="form-control">
 
-                        <option>Select Course</option>
-                        <option>Computing</option>
-                        <option>Business</option>
-                        <option>Engineering</option>
+                        <option value="">Select Course</option>
 
                     </select>
 
@@ -262,5 +265,37 @@
         }
 
     });
+
+</script>
+
+<script>
+
+    document.getElementById("departmentDropdown")
+        .addEventListener("change", function () {
+
+            let department = encodeURIComponent(this.value);
+
+            fetch('/Admin/GetCoursesByDepartment?department=' + department)
+                .then(response => response.json())
+                .then(data => {
+
+                    let courseDropdown =
+                        document.getElementById("courseDropdown");
+
+                    courseDropdown.innerHTML =
+                        '<option value="">Select Course</option>';
+
+                    data.forEach(course => {
+
+                        courseDropdown.innerHTML +=
+                            `<option value="${course.courseName}">
+                                ${course.courseName}
+                             </option>`;
+
+                    });
+
+                });
+
+        });
 
 </script>

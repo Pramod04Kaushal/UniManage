@@ -1,47 +1,146 @@
-﻿@{
+﻿@model List<UniManage.Models.Module>
+
+@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Modules";
 }
 
 <div class="table-container">
 
-    <a href="/Admin/AddModule"
-       class="add-user-btn">
+    <div class="table-top">
 
-        Add Module
+        <!-- FILTER -->
 
-    </a>
+        <form method="get">
+
+            <select name="departmentFilter"
+                    class="filter-dropdown"
+                    onchange="this.form.submit()">
+
+                <option value="ALL">ALL</option>
+
+                @foreach (var department in ViewBag.Departments)
+                {
+                    <option value="@department.DepartmentName"
+                            selected="@(Context.Request.Query["departmentFilter"] == department.DepartmentName ? "selected" : null)">
+
+                        @department.DepartmentName
+
+                    </option>
+                }
+
+            </select>
+
+        </form>
+
+        <!-- SEARCH -->
+
+        <div class="table-search">
+
+            <input type="text"
+                   id="searchInput"
+                   placeholder="Search modules..." />
+
+        </div>
+
+        <!-- ADD MODULE -->
+
+        <a href="/Admin/AddModule"
+           class="add-user-btn">
+
+            Add Module
+
+        </a>
+
+    </div>
 
     <table>
 
         <thead>
 
             <tr>
-                <th>ID</th>
-                <th>Course Name</th>
-                <th>Lecturer</th>
-                <th>Capacity</th>
-                <th>Actions</th>
+
+                <th>Module Code</th>
+                <th>Module Name</th>
+            
+                <th>Department</th>
+            
+                <th>Credits</th>
+         
+      
+                <th>Status</th>
+
             </tr>
 
         </thead>
 
-        <tbody>
+        <tbody id="modulesTable">
 
-            <tr>
-                <td>1</td>
-                <td>Software Engineering</td>
-                <td>Mr. Smith</td>
-                <td>40</td>
+            @foreach (var module in Model)
+            {
+                <tr>
 
-                <td>
-                    <button>Edit</button>
-                    <button>Delete</button>
-                </td>
-            </tr>
+                    <td>@module.ModuleCode</td>
+
+                    <td>@module.ModuleName</td>
+
+             
+
+                    <td>@module.Department</td>
+
+           
+
+                    <td>@module.Credits</td>
+
+             
+
+      
+
+                    <td>
+
+                        <span class="status-active">
+
+                            @module.Status
+
+                        </span>
+
+                    </td>
+
+                </tr>
+            }
 
         </tbody>
 
     </table>
 
 </div>
+
+
+<script>
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    searchInput.addEventListener("keyup", function () {
+
+        let filter =
+            searchInput.value.toLowerCase();
+
+        let rows =
+            document.querySelectorAll("#modulesTable tr");
+
+        rows.forEach(row => {
+
+            let text =
+                row.innerText.toLowerCase();
+
+            row.style.display =
+                text.includes(filter)
+                ? ""
+                : "none";
+
+        });
+
+    });
+
+</script>

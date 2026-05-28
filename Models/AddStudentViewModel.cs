@@ -4,6 +4,7 @@ namespace UniManage.Models
 {
     public class AddStudentViewModel
     {
+        
         public string FullName { get; set; }
 
         public string Email { get; set; }

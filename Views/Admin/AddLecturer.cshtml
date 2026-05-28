@@ -125,15 +125,20 @@
 
 
                 <div class="form-group">
-                    <label>Faculty</label>
+
+                    <label>Department</label>
 
                     <select name="Department"
                             class="form-control">
 
-                        <option>Select Faculty</option>
-                        <option>Computing</option>
-                        <option>Business</option>
-                        <option>Engineering</option>
+                        <option>Select Department</option>
+
+                        @foreach (var department in ViewBag.Departments)
+                        {
+                            <option value="@department.DepartmentName">
+                                @department.DepartmentName
+                            </option>
+                        }
 
                     </select>
 

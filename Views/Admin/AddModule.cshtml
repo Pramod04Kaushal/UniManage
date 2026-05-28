@@ -52,15 +52,19 @@
 
                         <label>Department</label>
 
-                        <select name="Department"
-                                class="form-control">
+                    <select name="Department"
+                            class="form-control">
 
-                            <option>Information Technology</option>
-                            <option>Computer Science</option>
-                            <option>Software Engineering</option>
-                            <option>Data Science</option>
+                        <option>Select Department</option>
 
-                        </select>
+                        @foreach (var department in ViewBag.Departments)
+                        {
+                            <option value="@department.DepartmentName">
+                                @department.DepartmentName
+                            </option>
+                        }
+
+                    </select>
 
                     </div>
 

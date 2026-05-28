@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<UniManage.Models.User>
+@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Users";
 }
@@ -10,19 +11,56 @@
 
     <div class="table-top">
 
+        <!-- FILTER -->
+
+        <form method="get">
+
+            <select name="roleFilter"
+                    class="filter-dropdown"
+                    onchange="this.form.submit()">
+
+                <option value="ALL"
+                        selected="@(Context.Request.Query["roleFilter"] == "ALL" || string.IsNullOrEmpty(Context.Request.Query["roleFilter"]) ? "selected" : null)">
+                    ALL
+                </option>
+
+                <option value="Student"
+                        selected="@(Context.Request.Query["roleFilter"] == "Student" ? "selected" : null)">
+                    Students
+                </option>
+
+                <option value="Lecturer"
+                        selected="@(Context.Request.Query["roleFilter"] == "Lecturer" ? "selected" : null)">
+                    Lecturers
+                </option>
+
+                <option value="Admin"
+                        selected="@(Context.Request.Query["roleFilter"] == "Admin" ? "selected" : null)">
+                    Administrator
+                </option>
+
+            </select>
+
+        </form>
+
+        <!-- SEARCH -->
+
+        <div class="table-search">
+
+            <input type="text"
+                   id="searchInput"
+                   placeholder="Search users..." />
+
+        </div>
+
+        <!-- ADD USER -->
+
         <button id="openModalBtn"
                 class="add-user-btn">
 
             Add User
 
         </button>
-
-        <div class="table-search">
-
-            <input type="text"
-                   placeholder="Search users..." />
-
-        </div>
 
     </div>
 
@@ -33,28 +71,61 @@
         <thead>
 
             <tr>
+
                 <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
+
+                <th>Full Name</th>
+
+                <th>Department</th>
+
                 <th>Role</th>
-                <th>Actions</th>
+
+                <th>Email</th>
+
+                <th>Phone</th>
+
+                <th>Status</th>
+
+                <th>Created Date</th>
+
+                
+
             </tr>
 
         </thead>
 
-        <tbody>
+        <tbody id="usersTable">
 
-            <tr>
-                <td>1</td>
-                <td>John Doe</td>
-                <td>john@gmail.com</td>
-                <td>Student</td>
+            @foreach (var user in Model)
+            {
+                <tr>
 
-                <td>
-                    <button>Edit</button>
-                    <button>Delete</button>
-                </td>
-            </tr>
+                    <td>@user.UserID</td>
+
+                    <td>@user.FullName</td>
+
+                    <td>@user.Department</td>
+
+                    <td>@user.Role</td>
+
+                    <td>@user.Email</td>
+
+                    <td>@user.Phone</td>
+
+                    <td>
+
+                        <span class="status-active">
+
+                            Active
+
+                        </span>
+
+                    </td>
+
+                    <td>@user.CreatedAt.ToString("dd MMM yyyy")</td>
+
+                </tr>
+            }
 
         </tbody>
 
@@ -148,7 +219,30 @@
 
     }
 
+        const searchInput =
+        document.getElementById("searchInput");
+
+    searchInput.addEventListener("keyup", function () {
+
+        let filter =
+            searchInput.value.toLowerCase();
+
+        let rows =
+            document.querySelectorAll("#usersTable tr");
+
+        rows.forEach(row => {
+
+            let text =
+                row.innerText.toLowerCase();
+
+            row.style.display =
+                text.includes(filter)
+                ? ""
+                : "none";
+        });
+    });
+
 </script>
 
-</div>
+
 
