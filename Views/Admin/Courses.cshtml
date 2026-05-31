@@ -70,6 +70,7 @@
                 <th>Course Fee</th>
                 <th>Intake</th>
                 <th>Status</th>
+                <th>Actions</th>
 
             </tr>
 
@@ -79,7 +80,8 @@
 
             @foreach (var course in Model)
             {
-                <tr>
+                <tr ondblclick="window.location='/Admin/ViewCourse/@course.CourseID'"
+                    style="cursor:pointer;">
 
 
 
@@ -101,15 +103,65 @@
 
                     <td>
 
-                        <span class="status-active">
+                        <span class="@(course.Status == "Inactive"
+                                      ? "status-inactive"
+                                      : "status-active")">
 
-                            @course.Status
+                            @(string.IsNullOrEmpty(course.Status)
+                                                    ? "Active"
+                                                    : course.Status)
 
-                        </span>
+                    </span>
+
+                    </td>
+
+                    <td onclick="event.stopPropagation();">
+
+                        <div class="action-dropdown">
+
+                            <button type="button"
+                                    class="action-btn"
+                                    onclick="toggleDropdown(event, this)">
+
+                                ⋮
+
+                            </button>
+
+                            <div class="dropdown-content">
+
+                                <a href="/Admin/ViewCourse/@course.CourseID">
+                                    View
+                                </a>
+
+                                <a href="/Admin/EditCourse/@course.CourseID">
+                                    Edit
+                                </a>
+
+                                <a href="/Admin/DisableCourse/@course.CourseID"
+                                   onclick="return confirm('Change course status?');">
+
+                                    @(course.Status == "Inactive"
+                                                                    ? "Enable"
+                                                                    : "Disable")
+
+                            </a>
+
+                                <a href="/Admin/DeleteCourse/@course.CourseID"
+                                   onclick="return confirm('Delete this course permanently?');">
+
+                                    Delete
+
+                                </a>
+
+                            </div>
+
+                        </div>
 
                     </td>
 
                 </tr>
+
+
             }
 
         </tbody>
@@ -144,6 +196,39 @@
 
         });
 
+    });
+
+</script>
+
+
+<script>
+
+    function toggleDropdown(event, button)
+    {
+        event.stopPropagation();
+
+        document
+            .querySelectorAll(".dropdown-content")
+            .forEach(menu =>
+            {
+                if (menu !== button.nextElementSibling)
+                {
+                    menu.classList.remove("show");
+                }
+            });
+
+        button.nextElementSibling
+            .classList.toggle("show");
+    }
+
+    document.addEventListener("click", function ()
+    {
+        document
+            .querySelectorAll(".dropdown-content")
+            .forEach(menu =>
+            {
+                menu.classList.remove("show");
+            });
     });
 
 </script>

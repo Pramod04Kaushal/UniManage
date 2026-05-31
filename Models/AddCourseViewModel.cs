@@ -23,5 +23,6 @@ namespace UniManage.Models
         public string Status { get; set; }
 
         public List<int> SelectedModules { get; set; }
+        public int LecturerID { get; set; }
     }
 }

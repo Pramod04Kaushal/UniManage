@@ -66,9 +66,10 @@
                 <th>Department</th>
             
                 <th>Credits</th>
-         
-      
+
+
                 <th>Status</th>
+                <th>Actions</th>
 
             </tr>
 
@@ -78,7 +79,8 @@
 
             @foreach (var module in Model)
             {
-                <tr>
+                <tr ondblclick="window.location='/Admin/ViewModule/@module.ModuleID'"
+                    style="cursor:pointer;">
 
                     <td>@module.ModuleCode</td>
 
@@ -92,17 +94,64 @@
 
                     <td>@module.Credits</td>
 
-             
 
-      
+
+
 
                     <td>
 
-                        <span class="status-active">
+                        <span class="@(module.Status == "Inactive"
+                                      ? "status-inactive"
+                                      : "status-active")">
 
-                            @module.Status
+                            @(string.IsNullOrEmpty(module.Status)
+                                                    ? "Active"
+                                                    : module.Status)
 
-                        </span>
+                    </span>
+
+                    </td>
+
+                    <td onclick="event.stopPropagation();">
+
+                        <div class="action-dropdown">
+
+                            <button type="button"
+                                    class="action-btn"
+                                    onclick="toggleDropdown(event, this)">
+
+                                ⋮
+
+                            </button>
+
+                            <div class="dropdown-content">
+
+                                <a href="/Admin/ViewModule/@module.ModuleID">
+                                    View
+                                </a>
+
+                                <a href="/Admin/EditModule/@module.ModuleID">
+                                    Edit
+                                </a>
+
+                                <a href="/Admin/DisableModule/@module.ModuleID">
+
+                                    @(module.Status == "Inactive"
+                                                                    ? "Enable"
+                                                                    : "Disable")
+
+                            </a>
+
+                                <a href="/Admin/DeleteModule/@module.ModuleID"
+                                   onclick="return confirm('Delete this module permanently?');">
+
+                                    Delete
+
+                                </a>
+
+                            </div>
+
+                        </div>
 
                     </td>
 
@@ -141,6 +190,38 @@
 
         });
 
+    });
+
+</script>
+
+<script>
+
+    function toggleDropdown(event, button)
+    {
+        event.stopPropagation();
+
+        document
+            .querySelectorAll(".dropdown-content")
+            .forEach(menu =>
+            {
+                if (menu !== button.nextElementSibling)
+                {
+                    menu.classList.remove("show");
+                }
+            });
+
+        button.nextElementSibling
+            .classList.toggle("show");
+    }
+
+    document.addEventListener("click", function ()
+    {
+        document
+            .querySelectorAll(".dropdown-content")
+            .forEach(menu =>
+            {
+                menu.classList.remove("show");
+            });
     });
 
 </script>

@@ -1,0 +1,175 @@
+﻿@model UniManage.Models.Module
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "View Module";
+}
+
+<div class="form-container">
+
+    <!-- MODULE INFORMATION -->
+
+    <div class="form-section">
+
+        <h2>Module Information</h2>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label>Module Name</label>
+
+                <input type="text"
+                       class="form-control"
+                       value="@Model.ModuleName"
+                       readonly />
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Module Code</label>
+
+                <input type="text"
+                       class="form-control"
+                       value="@Model.ModuleCode"
+                       readonly />
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Department</label>
+
+                <input type="text"
+                       class="form-control"
+                       value="@Model.Department"
+                       readonly />
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Credits</label>
+
+                <input type="text"
+                       class="form-control"
+                       value="@Model.Credits"
+                       readonly />
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODULE MATERIALS -->
+
+    <div class="form-section">
+
+        <h2>Module Materials</h2>
+
+        <div class="materials-grid">
+
+            <div class="form-group">
+
+                <label>PDF Notes</label>
+
+                <input type="text"
+                       class="form-control"
+                       value="@Model.PdfPath"
+                       readonly />
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Presentation</label>
+
+                <input type="text"
+                       class="form-control"
+                       value="@Model.PresentationPath"
+                       readonly />
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Video Lecture</label>
+
+                <input type="text"
+                       class="form-control"
+                       value="@Model.VideoPath"
+                       readonly />
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODULE DESCRIPTION -->
+
+    <div class="form-section">
+
+        <h2>Module Description</h2>
+
+        <div class="form-group">
+
+            <label>Description</label>
+
+            <textarea class="form-control textarea"
+                      readonly>@Model.Description</textarea>
+
+        </div>
+
+    </div>
+
+    <!-- LECTURER INFORMATION -->
+
+    <div class="form-section">
+
+        <h2>Lecturer Assignment</h2>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label>Lecturer ID</label>
+
+                <input type="text"
+                       class="form-control"
+                       value="@Model.LecturerID"
+                       readonly />
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Status</label>
+
+                <input type="text"
+                       class="form-control"
+                       value="@Model.Status"
+                       readonly />
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- BUTTONS -->
+
+    <div class="button-group">
+
+        <a href="/Admin/Modules"
+           class="cancel-btn">
+
+            Back
+
+        </a>
+
+    </div>
+
+</div>

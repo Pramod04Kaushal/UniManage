@@ -1,0 +1,395 @@
+﻿@model UniManage.Models.Course
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Edit Course";
+}
+
+<div class="form-container">
+
+    <form asp-action="EditCourse" method="post">
+
+        <input type="hidden" asp-for="CourseID" />
+
+        <div class="form-section">
+
+            <h2>Course Information</h2>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Course Name</label>
+
+                    <input asp-for="CourseName"
+                           class="form-control" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Department</label>
+
+                    <select asp-for="Department"
+                            class="form-control">
+
+                        @foreach (var department in ViewBag.Departments)
+                        {
+                            <option value="@department.DepartmentName">
+                                @department.DepartmentName
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Lecturer</label>
+
+                    <select asp-for="LecturerID"
+                            class="form-control">
+
+                        <option value="">Select Lecturer</option>
+
+                        @foreach (var lecturer in ViewBag.Lecturers)
+                        {
+                            <option value="@lecturer.LecturerID">
+                                @lecturer.FullName
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Semesters</label>
+
+                    <select asp-for="Semesters"
+                            class="form-control">
+
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="6">6</option>
+                        <option value="8">8</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Duration</label>
+
+                    <select asp-for="Duration"
+                            class="form-control">
+
+                        <option>3 months</option>
+                        <option>6 months</option>
+                        <option>1 Year</option>
+                        <option>2 Years</option>
+                        <option>3 Years</option>
+                        <option>4 Years</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Course Fee</label>
+
+                    <input asp-for="CourseFee"
+                           class="form-control" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Qualification Type</label>
+
+                    <select asp-for="QualificationType"
+                            class="form-control">
+
+                        <option>Certificate</option>
+                        <option>Diploma</option>
+                        <option>Higher Diploma</option>
+                        <option>Bachelor Degree</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Intake</label>
+
+                    <input asp-for="Intake"
+                           class="form-control" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Status</label>
+
+                    <select asp-for="Status"
+                            class="form-control">
+
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="form-section">
+
+            <div class="module-header">
+
+                <h2>Course Modules</h2>
+
+                <button type="button"
+                        class="add-module-btn">
+
+                    + Add Module
+
+                </button>
+
+            </div>
+
+            <table class="module-table" id="moduleTable">
+
+                <thead>
+
+
+                    <tr>
+                        <th>Semester</th>
+                        <th>Module</th>
+                        <th>Credits</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="moduleTableBody">
+
+                    @foreach (var module in ViewBag.CourseModules)
+                    {
+                        <tr>
+
+                            <td>
+                                @module.ModuleName
+
+                                <input type="hidden"
+                                       name="SelectedModules"
+                                       value="@module.ModuleID" />
+                            </td>
+
+                            <td>
+                                @module.Credits
+                            </td>
+
+                            <td>
+
+                                <button type="button"
+                                        class="remove-btn">
+
+                                    Remove
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="form-section">
+
+            <h2>Description</h2>
+
+            <div class="form-group">
+
+                <label>Course Description</label>
+
+                <textarea asp-for="Description"
+                          class="form-control textarea"></textarea>
+
+            </div>
+
+        </div>
+
+        <div class="button-group">
+
+            <a href="/Admin/Courses"
+               class="cancel-btn">
+
+                Cancel
+
+            </a>
+
+            <button type="submit"
+                    class="save-btn">
+
+                Update Course
+
+            </button>
+
+        </div>
+
+        <div class="module-modal" id="moduleModal">
+
+            <div class="module-modal-content">
+
+                <span class="close-modal">&times;</span>
+
+                <h2>Add Module</h2>
+
+                <div class="form-group">
+
+                    <label>Select Module</label>
+
+                    <select class="form-control" id="moduleSelect">
+
+                        @foreach (var module in ViewBag.Modules)
+                        {
+                            <option value="@module.ModuleID"
+                                    data-credits="@module.Credits">
+
+                                @module.ModuleName
+
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Select Semester</label>
+
+                    <select class="form-control" id="semesterSelect">
+
+                        <option>Semester 1</option>
+                        <option>Semester 2</option>
+                        <option>Semester 3</option>
+                        <option>Semester 4</option>
+                        <option>Semester 6</option>
+                        <option>Semester 8</option>
+
+                    </select>
+
+                </div>
+
+                <button type="button"
+                        class="save-btn"
+                        id="saveModuleBtn">
+
+                    Add Module
+
+                </button>
+
+
+
+            </div>
+
+        </div>
+
+    </form>
+    <script>
+
+        const modal = document.getElementById("moduleModal");
+        const openBtn = document.querySelector(".add-module-btn");
+        const closeBtn = document.querySelector(".close-modal");
+        const saveBtn = document.getElementById("saveModuleBtn");
+
+        openBtn.onclick = () => {
+            modal.style.display = "flex";
+        };
+
+        closeBtn.onclick = () => {
+            modal.style.display = "none";
+        };
+
+        saveBtn.onclick = () => {
+
+            const moduleSelect =
+                document.getElementById("moduleSelect");
+
+            const selectedOption =
+                moduleSelect.options[moduleSelect.selectedIndex];
+
+            const moduleName =
+                selectedOption.text;
+
+            const moduleId =
+                selectedOption.value;
+
+            const credits =
+                selectedOption.dataset.credits;
+
+            const semester =
+                document.getElementById("semesterSelect").value;
+
+            const tbody =
+                document.getElementById("moduleTableBody");
+
+            const row =
+                document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${semester}</td>
+
+                <td>
+                    ${moduleName}
+
+                    <input type="hidden"
+                           name="SelectedModules"
+                           value="${moduleId}" />
+                </td>
+
+                <td>${credits}</td>
+
+                <td>
+                    <button type="button"
+                            class="remove-btn">
+
+                        Remove
+
+                    </button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+
+            modal.style.display = "none";
+        };
+
+        document.addEventListener("click", function (e) {
+
+            if (e.target.classList.contains("remove-btn")) {
+
+                e.target.closest("tr").remove();
+
+            }
+
+        });
+
+    </script>
+</div>

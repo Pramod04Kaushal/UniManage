@@ -1,0 +1,218 @@
+﻿@model UniManage.Models.Module
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Edit Module";
+}
+
+<div class="form-container">
+
+    <form asp-controller="Admin"
+          asp-action="EditModule"
+          method="post"
+          enctype="multipart/form-data">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               asp-for="ModuleID" />
+
+        <!-- MODULE INFORMATION -->
+
+        <div class="form-section">
+
+            <h2>Module Information</h2>
+
+            <div class="form-grid">
+
+                <!-- Module Name -->
+
+                <div class="form-group">
+
+                    <label>Module Name</label>
+
+                    <input asp-for="ModuleName"
+                           class="form-control" />
+
+                </div>
+
+                <!-- Module Code -->
+
+                <div class="form-group">
+
+                    <label>Module Code</label>
+
+                    <input asp-for="ModuleCode"
+                           class="form-control"
+                           readonly />
+
+                </div>
+
+                <!-- Department -->
+
+                <div class="form-group">
+
+                    <label>Department</label>
+
+                    <select asp-for="Department"
+                            class="form-control">
+
+                        @foreach (var department in ViewBag.Departments)
+                        {
+                            <option value="@department.DepartmentName">
+                                @department.DepartmentName
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <!-- Credits -->
+
+                <div class="form-group">
+
+                    <label>Credits</label>
+
+                    <input asp-for="Credits"
+                           class="form-control" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- MODULE MATERIALS -->
+
+        <div class="form-section">
+
+            <h2>Module Materials</h2>
+
+            <div class="materials-grid">
+
+                <div class="form-group">
+
+                    <label>Upload PDF Notes</label>
+
+                    <input type="file"
+                           name="PdfFile"
+                           class="form-control"
+                           accept=".pdf" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Upload Presentation</label>
+
+                    <input type="file"
+                           name="PresentationFile"
+                           class="form-control"
+                           accept=".ppt,.pptx" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Upload Video Lecture</label>
+
+                    <input type="file"
+                           name="VideoFile"
+                           class="form-control"
+                           accept="video/*" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- MODULE DESCRIPTION -->
+
+        <div class="form-section">
+
+            <h2>Module Description</h2>
+
+            <div class="form-group">
+
+                <label>Description</label>
+
+                <textarea asp-for="Description"
+                          class="form-control textarea"></textarea>
+
+            </div>
+
+        </div>
+
+        <!-- LECTURER INFORMATION -->
+
+        <div class="form-section">
+
+            <h2>Lecturer Assignment</h2>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Assign Lecturer</label>
+
+                    <select asp-for="LecturerID"
+                            class="form-control">
+
+                        <option value="0">Select Lecturer</option>
+
+                        @foreach (var lecturer in ViewBag.Lecturers)
+                        {
+                            <option value="@lecturer.LecturerID">
+                                @lecturer.FullName
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Module Status</label>
+
+                    <select asp-for="Status"
+                            class="form-control">
+
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BUTTONS -->
+
+        <div class="button-group">
+
+            <a href="/Admin/Modules"
+               class="cancel-btn">
+
+                Cancel
+
+            </a>
+
+            <button type="submit"
+                    class="save-btn">
+
+                Update Module
+
+            </button>
+
+        </div>
+
+    </form>
+
+
+
+</div>

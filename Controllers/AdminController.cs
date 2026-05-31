@@ -786,19 +786,25 @@ namespace UniManage.Controllers
         public IActionResult AddCourse()
         {
             // LOAD MODULES
-
-            ViewBag.Modules =
-                _context.Modules.ToList();
+            ViewBag.Modules = _context.Modules.ToList();
 
             // LOAD DEPARTMENTS
+            ViewBag.Departments = _context.Departments.ToList();
 
-            ViewBag.Departments =
-                _context.Departments.ToList();
+            // LOAD LECTURERS
+            var lecturers = (from l in _context.Lecturers
+                             join u in _context.Users
+                             on l.UserID equals u.UserID
+                             select new
+                             {
+                                 l.LecturerID,
+                                 u.FullName
+                             }).ToList();
+
+            ViewBag.Lecturers = lecturers;
 
             // AUTO COURSE CODE
-
-            int count =
-                _context.Courses.Count() + 1;
+            int count = _context.Courses.Count() + 1;
 
             ViewBag.CourseCode =
                 "CRS" + count.ToString("D3");
@@ -821,6 +827,8 @@ namespace UniManage.Controllers
                 CourseName = model.CourseName,
 
                 Department = model.Department,
+
+                LecturerID = model.LecturerID,
 
                 Semesters = model.Semesters,
 
@@ -943,5 +951,262 @@ namespace UniManage.Controllers
 
             return RedirectToAction("Users");
         }
+
+        public IActionResult ViewCourse(int id)
+        {
+            var course = _context.Courses
+                .FirstOrDefault(c => c.CourseID == id);
+
+            if (course == null)
+                return NotFound();
+
+            ViewBag.CourseModules =
+                (from cm in _context.CourseModules
+                 join m in _context.Modules
+                 on cm.ModuleID equals m.ModuleID
+                 where cm.CourseID == id
+                 select new
+                 {
+                     m.ModuleName,
+                     m.ModuleCode,
+                     cm.Semester,
+                     m.Credits
+                 }).ToList();
+
+            var lecturerName =
+    (from l in _context.Lecturers
+     join u in _context.Users
+     on l.UserID equals u.UserID
+     where l.LecturerID == course.LecturerID
+     select u.FullName)
+     .FirstOrDefault();
+
+            ViewBag.LecturerName = lecturerName;
+
+            return View("ViewCourse", course);
+        }
+
+        public IActionResult DisableCourse(int id)
+        {
+            var course = _context.Courses
+                .FirstOrDefault(c => c.CourseID == id);
+
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            course.Status =
+                course.Status == "Inactive"
+                ? "Active"
+                : "Inactive";
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Courses");
+        }
+
+        public IActionResult DeleteCourse(int id)
+        {
+            var course = _context.Courses
+                .FirstOrDefault(c => c.CourseID == id);
+
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            var courseModules = _context.CourseModules
+                .Where(cm => cm.CourseID == id)
+                .ToList();
+
+            _context.CourseModules.RemoveRange(courseModules);
+
+            _context.Courses.Remove(course);
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Courses");
+        }
+
+        [HttpGet]
+        public IActionResult EditCourse(int id)
+        {
+            var course = _context.Courses
+                .FirstOrDefault(c => c.CourseID == id);
+
+            if (course == null)
+                return NotFound();
+
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
+            ViewBag.Modules =
+                _context.Modules.ToList();
+
+            var lecturers = (from l in _context.Lecturers
+                             join u in _context.Users
+                             on l.UserID equals u.UserID
+                             select new
+                             {
+                                 l.LecturerID,
+                                 u.FullName
+                             }).ToList();
+
+            ViewBag.Lecturers = lecturers;
+
+            ViewBag.CourseModules =
+                (from cm in _context.CourseModules
+                 join m in _context.Modules
+                 on cm.ModuleID equals m.ModuleID
+                 where cm.CourseID == id
+                 select m).ToList();
+
+            return View(course);
+        }
+
+        [HttpPost]
+        public IActionResult EditCourse(
+    Course model,
+    List<int> SelectedModules)
+        {
+            var course = _context.Courses
+                .FirstOrDefault(c => c.CourseID == model.CourseID);
+
+            if (course == null)
+                return NotFound();
+
+            course.CourseName = model.CourseName;
+            course.Department = model.Department;
+            course.LecturerID = model.LecturerID;
+            course.Semesters = model.Semesters;
+            course.Duration = model.Duration;
+            course.CourseFee = model.CourseFee;
+            course.QualificationType = model.QualificationType;
+            course.Intake = model.Intake;
+            course.Description = model.Description;
+            course.Status = model.Status;
+
+            // REMOVE OLD MODULES
+
+            var oldModules =
+                _context.CourseModules
+                .Where(cm => cm.CourseID == course.CourseID)
+                .ToList();
+
+            _context.CourseModules.RemoveRange(oldModules);
+
+            // ADD NEW MODULES
+
+            if (SelectedModules != null)
+            {
+                foreach (var moduleId in SelectedModules)
+                {
+                    _context.CourseModules.Add(
+                        new CourseModule
+                        {
+                            CourseID = course.CourseID,
+                            ModuleID = moduleId,
+                            Semester = 1
+                        });
+                }
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Courses");
+        }
+
+        public IActionResult ViewModule(int id)
+        {
+            var module = _context.Modules
+                .FirstOrDefault(m => m.ModuleID == id);
+
+            if (module == null)
+                return NotFound();
+
+            return View("ViewModule", module);
+        }
+
+        [HttpGet]
+        public IActionResult EditModule(int id)
+        {
+            var module = _context.Modules
+                .FirstOrDefault(m => m.ModuleID == id);
+
+            if (module == null)
+                return NotFound();
+
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
+            ViewBag.Lecturers =
+                (from l in _context.Lecturers
+                 join u in _context.Users
+                 on l.UserID equals u.UserID
+                 select new
+                 {
+                     l.LecturerID,
+                     u.FullName
+                 }).ToList();
+
+            return View(module);
+        }
+
+        public IActionResult DisableModule(int id)
+        {
+            var module = _context.Modules
+                .FirstOrDefault(m => m.ModuleID == id);
+
+            if (module == null)
+                return NotFound();
+
+            module.Status =
+                module.Status == "Inactive"
+                ? "Active"
+                : "Inactive";
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Modules");
+        }
+
+        public IActionResult DeleteModule(int id)
+        {
+            var module = _context.Modules
+                .FirstOrDefault(m => m.ModuleID == id);
+
+            if (module == null)
+                return NotFound();
+
+            _context.Modules.Remove(module);
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Modules");
+        }
+
+        [HttpPost]
+        public IActionResult EditModule(Module model)
+        {
+            var module = _context.Modules
+                .FirstOrDefault(m => m.ModuleID == model.ModuleID);
+
+            if (module == null)
+                return NotFound();
+
+            module.ModuleName = model.ModuleName;
+            module.Department = model.Department;
+            module.Credits = model.Credits;
+            module.Description = model.Description;
+            module.LecturerID = model.LecturerID;
+            module.Status = model.Status;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Modules");
+        }
+
+
     }
 }

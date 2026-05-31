@@ -29,5 +29,7 @@ namespace UniManage.Models
         public string? Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public int? LecturerID { get; set; }
     }
 }

@@ -50,6 +50,26 @@
 
                 <div class="form-group">
 
+                    <label>Lecturer</label>
+
+                    <select name="LecturerID"
+                            class="form-control">
+
+                        <option value="">Select Lecturer</option>
+
+                        @foreach (var lecturer in ViewBag.Lecturers)
+                        {
+                            <option value="@lecturer.LecturerID">
+                                @lecturer.FullName
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
                     <label>Semesters</label>
 
                     <select name="Semesters" class="form-control">
@@ -60,6 +80,8 @@
                         <option>2</option>
                         <option>3</option>
                         <option>4</option>
+                        <option>6</option>
+                        <option>8</option>
 
                     </select>
 
@@ -109,6 +131,7 @@
                         <option>Diploma</option>
                         <option>Higher Diploma</option>
                         <option>Bachelor Degree</option>
+                        <option>Masters</option>
 
                     </select>
 
@@ -234,6 +257,8 @@
                         <option>Semester 2</option>
                         <option>Semester 3</option>
                         <option>Semester 4</option>
+                        <option>Semester 6</option>
+                        <option>Semester 8</option>
 
                     </select>
 
