@@ -34,6 +34,13 @@ namespace UniManage.Controllers
 
             if (user != null)
             {
+                HttpContext.Session.SetInt32(
+                    "UserID",
+                    user.UserID);
+
+                HttpContext.Session.SetString(
+                    "Role",
+                    user.Role);
                 // ADMIN LOGIN
 
                 if (user.Role == "Admin")

@@ -16,6 +16,12 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
+    <link rel="icon"
+          type="image/x-icon"
+          href="~/images/logo.png" />
+
+
+
 </head>
 
 <body>
@@ -28,45 +34,14 @@
 
             <div class="student-logo">
 
+                <img src="~/images/logo.png"
+                     alt="UniManage Logo" />
+
                 <h2>UniManage</h2>
 
             </div>
 
-            <div class="student-menu">
 
-                <a asp-controller="Student"
-                   asp-action="Dashboard">
-
-                    Dashboard
-
-                </a>
-
-                <a href="#">
-
-                    Courses
-
-                </a>
-
-                <a href="#">
-
-                    Assignments
-
-                </a>
-
-                <a href="#">
-
-                    Grades
-
-                </a>
-
-                <a asp-controller="Account"
-                   asp-action="Login">
-
-                    Logout
-
-                </a>
-
-            </div>
 
         </div>
 
@@ -79,6 +54,8 @@
         </div>
 
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 

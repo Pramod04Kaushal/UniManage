@@ -7,99 +7,204 @@
 
 <div class="dashboard-container">
 
-    <div class="dashboard-header">
+    <!-- STUDENT PROFILE -->
 
-        <h1>
-            Welcome, @ViewBag.StudentName
-        </h1>
+    <div class="welcome-banner">
 
-        <p>
-            Registration No: @ViewBag.RegNum
-        </p>
+        <div class="welcome-left">
 
-        <p>
-            Department: @ViewBag.Department
-        </p>
+            <div class="avatar">
+                <i class="fas fa-user-graduate"></i>
+            </div>
 
-        <p>
-            Semester: @ViewBag.Semester
-        </p>
+            <div>
 
-    </div>
+                <h1>
+                    Welcome Back,
+                    @ViewBag.StudentName
+                </h1>
 
-    <div class="dashboard-cards">
+                <p>
+                    @ViewBag.RegNum •
+                    @ViewBag.Department •
+                    Semester @ViewBag.Semester
+                </p>
 
-        <div class="dashboard-card">
-
-            <h2>@ViewBag.TotalCourses</h2>
-
-            <p>Enrolled Courses</p>
+            </div>
 
         </div>
 
-        <div class="dashboard-card">
+        <div class="welcome-right">
 
-            <h2>@ViewBag.TotalModules</h2>
-
-            <p>Total Modules</p>
-
-        </div>
-
-    </div>
-
-    <div class="table-container">
-
-        <div class="table-top">
+            <span class="gpa-label">
+                Academic Progress
+            </span>
 
             <h2>
-                My Courses
+                @ViewBag.Progress%
             </h2>
 
         </div>
 
-        <table>
+    </div>
 
-            <thead>
 
-                <tr>
 
-                    <th>Course Code</th>
+    <!-- DASHBOARD CARDS -->
 
-                    <th>Course Name</th>
+    <div class="dashboard-cards">
 
-                    <th>Department</th>
+        <div class="dashboard-card courses-card">
 
-                    <th>Duration</th>
+            <div class="card-icon">
+                <i class="fas fa-book"></i>
+            </div>
 
-                    <th>Status</th>
+            <div class="card-content">
 
-                </tr>
+                <h2>@ViewBag.TotalCourses</h2>
 
-            </thead>
+                <p>Enrolled Courses</p>
 
-            <tbody>
+            </div>
 
-                @foreach (var course in Model)
-                {
-                    <tr>
+        </div>
 
-                        <td>@course.CourseCode</td>
+        <div class="dashboard-card modules-card">
 
-                        <td>@course.CourseName</td>
+            <div class="card-icon">
+                <i class="fas fa-layer-group"></i>
+            </div>
 
-                        <td>@course.Department</td>
+            <div class="card-content">
 
-                        <td>@course.Duration</td>
+                <h2>@ViewBag.TotalModules</h2>
 
-                        <td>@course.Status</td>
+                <p>Total Modules</p>
 
-                    </tr>
-                }
+            </div>
 
-            </tbody>
+        </div>
 
-        </table>
+        <div class="dashboard-card assignments-card">
+
+            <div class="card-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+
+            <div class="card-content">
+
+                <h2>@ViewBag.PendingAssignments</h2>
+
+                <p>Pending Assignments</p>
+
+            </div>
+
+        </div>
+
+        <div class="dashboard-card grades-card">
+
+            <div class="card-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+
+            <div class="card-content">
+
+                <h2>@ViewBag.AverageGrade%</h2>
+
+                <p>Average Grade</p>
+
+            </div>
+
+        </div>
 
     </div>
 
+    <!-- NOTIFICATIONS -->
+
+
+
+    <!-- UPCOMING ASSIGNMENTS -->
+
+    <div class="dashboard-row">
+
+        <div class="dashboard-widget">
+
+            <div class="widget-header">
+                <h2 class="upcoming-header">
+                    Upcoming Assignments
+                </h2>
+            </div>
+
+            <div class="assignment-item">
+
+                <div>
+                    <h4>Application Development</h4>
+                    <p>Coursework 01</p>
+                </div>
+
+                <span class="assignment-date">
+                    15 Jun 2026
+                </span>
+
+            </div>
+
+            <div class="assignment-item">
+
+                <div>
+                    <h4>ASE</h4>
+                    <p>Coursework 02</p>
+                </div>
+
+                <span class="assignment-date">
+                    20 Jun 2026
+                </span>
+
+            </div>
+
+        </div>
+
+    <!-- RECENT GRADES -->
+
+        <div class="dashboard-widget">
+
+            <div class="widget-header">
+                <h2 class="grades-header">
+                    Recent Grades
+                </h2>
+            </div>
+
+            <div class="grade-item">
+
+                <div>
+                    <h4>Final Project</h4>
+                </div>
+
+                <div class="grade-pending">
+                    Pending
+                </div>
+
+            </div>
+
+            <div class="grade-item">
+
+                <div>
+                    <h4>Software Engineering</h4>
+                </div>
+
+                <div class="grade-score">
+                    75%
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+
 </div>
+
