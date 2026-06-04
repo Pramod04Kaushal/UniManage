@@ -1,0 +1,236 @@
+﻿@model UniManage.Models.User
+
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewData["Title"] = "My Profile";
+}
+
+@if (Model == null)
+{
+    <h2>User Not Found</h2>
+    return;
+}
+
+<div class="profile-dashboard">
+
+
+    <!-- HERO SECTION -->
+
+    <div class="profile-banner">
+
+        <div class="banner-content">
+
+            <div class="banner-left">
+
+                <img src="@(string.IsNullOrEmpty(Model.ProfileImage)
+                                     ? "/images/default-user.png"
+                                     : "/images/" + Model.ProfileImage)"
+                     class="profile-avatar" />
+
+                <div>
+
+                    <h1>@Model.FullName</h1>
+
+                    <p>
+                        @Model.Role • @Model.Department
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="banner-right">
+
+                <a asp-controller="Student"
+                   asp-action="EditProfile"
+                   class="profile-btn">
+
+                    <i class="fas fa-user-edit"></i>
+                    Edit Profile
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- PROGRESS -->
+
+    <div class="info-section">
+
+        <div class="section-header">
+
+            <i class="fas fa-chart-bar"></i>
+
+            <h3>Academic Progress</h3>
+
+        </div>
+
+        <div class="progress-item">
+
+            <label>Semester Progress</label>
+
+            <div class="progress-bar">
+
+                <div class="progress-fill"
+                     style="width:75%">
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="progress-item">
+
+            <label>Course Completion</label>
+
+            <div class="progress-bar">
+
+                <div class="progress-fill"
+                     style="width:60%">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    
+
+    <!-- MAIN CONTENT -->
+
+    <div class="profile-layout">
+
+        <!-- LEFT SIDEBAR -->
+
+        <div class="profile-sidebar">
+
+
+
+
+
+
+        </div>
+
+        <!-- RIGHT CONTENT -->
+
+        <div class="profile-content">
+
+            <!-- PERSONAL -->
+
+            <div class="info-section">
+
+                <div class="section-header">
+
+                    <i class="fas fa-user"></i>
+
+                    <h3>Personal Information</h3>
+
+                </div>
+
+                <div class="info-grid">
+
+                    <div class="info-box">
+
+                        <label>Full Name</label>
+
+                        <p>@Model.FullName</p>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <label>Email Address</label>
+
+                        <p>@Model.Email</p>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <label>Username</label>
+
+                        <p>@Model.Username</p>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <label>Phone Number</label>
+
+                        <p>@Model.Phone</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ACCOUNT -->
+
+            <div class="info-section">
+
+                <div class="section-header">
+
+                    <i class="fas fa-lock"></i>
+
+                    <h3>Account Information</h3>
+
+                </div>
+
+                <div class="info-grid">
+
+                    <div class="info-box">
+
+                        <label>Role</label>
+
+                        <p>@Model.Role</p>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <label>Department</label>
+
+                        <p>@Model.Department</p>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <label>Created Date</label>
+
+                        <p>
+                            @Model.CreatedAt.ToString("dd MMM yyyy")
+                        </p>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <label>Status</label>
+
+                        <p>Active</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+
+        </div>
+
+    </div>
+
+
+</div>

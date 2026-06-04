@@ -496,7 +496,13 @@ td {
     box-shadow: 0 15px 35px rgba(37,99,235,.25);
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+    transition:.3s;
 }
+
+    .welcome-banner:hover {
+        transform:translate(-3px)
+    }
 
 .welcome-left {
     display: flex;

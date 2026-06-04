@@ -1,0 +1,267 @@
+﻿@model UniManage.Models.User
+
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewData["Title"] = "Edit Profile";
+}
+
+<div class="page-header">
+
+    <h1>Edit Profile</h1>
+
+    <p>Manage and update your profile information</p>
+
+</div>
+
+<div class="form-container">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert-success">
+
+            @TempData["Success"]
+
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-danger">
+
+            @TempData["Error"]
+
+        </div>
+    }
+
+    <!-- PROFILE HEADER -->
+
+    <div class="profile-header-card">
+
+        <img src="@(string.IsNullOrEmpty(Model.ProfileImage)
+                                 ? "/images/default-user.png"
+                                 : "/images/" + Model.ProfileImage)"
+             alt="Profile Picture" />
+
+        <div>
+
+            <h2>@Model.FullName</h2>
+
+            <p>@Model.Role • @Model.Department</p>
+
+        </div>
+
+    </div>
+
+    <form asp-action="EditProfile"
+          method="post">
+
+        <input type="hidden"
+               asp-for="UserID" />
+
+        <!-- PERSONAL INFORMATION -->
+
+        <div class="form-section">
+
+            <div class="section-title">
+
+                <i class="fas fa-user"></i>
+
+                <h2>Personal Information</h2>
+
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Full Name</label>
+
+                    <input asp-for="FullName"
+                           class="form-control" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Email Address</label>
+
+                    <input asp-for="Email"
+                           class="form-control" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Phone Number</label>
+
+                    <input asp-for="Phone"
+                           class="form-control" />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Address</label>
+
+                    <input asp-for="Address"
+                           class="form-control" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ACCOUNT INFORMATION -->
+
+        <div class="form-section">
+
+            <div class="section-title">
+
+                <i class="fas fa-lock"></i>
+
+                <h2>Account Information</h2>
+
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Username</label>
+
+                    <input asp-for="Username"
+                           class="form-control" />
+
+                </div>
+
+
+
+            </div>
+
+        </div>
+
+
+
+
+        <button type="button"
+                class="change-password-btn"
+                onclick="openPasswordModal()">
+
+            <i class="fas fa-key"></i>
+            Change Password
+
+        </button>
+
+        <!-- ACTION BUTTONS -->
+
+        <div class="button-group">
+
+            <a asp-action="Profile"
+               class="cancel-btn">
+
+                Cancel
+
+            </a>
+
+            <button type="submit"
+                    class="save-btn">
+
+                <i class="fas fa-save"></i>
+
+                Save Changes
+
+            </button>
+
+        </div>
+
+    </form>
+
+    <div id="passwordModal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>Change Password</h2>
+
+                    <p>Update your account password securely</p>
+
+                </div>
+
+                <span class="close-btn"
+                      onclick="closePasswordModal()">
+                    &times;
+                </span>
+
+            </div>
+
+            <form asp-action="ChangePassword"
+                  method="post">
+
+                <div class="form-group">
+
+                    <label>Current Password</label>
+
+                    <input type="password"
+                           name="CurrentPassword"
+                           class="form-control"
+                           required />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>New Password</label>
+
+                    <input type="password"
+                           name="NewPassword"
+                           class="form-control"
+                           required />
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Confirm Password</label>
+
+                    <input type="password"
+                           name="ConfirmPassword"
+                           class="form-control"
+                           required />
+
+                </div>
+
+                <button type="submit"
+                        class="save-btn">
+
+                    Update Password
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function openPasswordModal() {
+        document.getElementById("passwordModal").style.display = "flex";
+    }
+
+    function closePasswordModal() {
+        document.getElementById("passwordModal").style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        var modal = document.getElementById("passwordModal");
+
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>

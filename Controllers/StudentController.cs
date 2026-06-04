@@ -113,5 +113,130 @@ namespace UniManage.Controllers
 
             return View(courses);
         }
+
+
+
+
+        public IActionResult Profile()
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == userId);
+
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            return View(user);
+        }
+
+        public IActionResult EditProfile()
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == userId);
+
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            return View(user);
+        }
+
+
+
+        [HttpPost]
+        public IActionResult EditProfile(
+            User model,
+            string CurrentPassword,
+            string NewPassword,
+            string ConfirmPassword)
+        {
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == model.UserID);
+
+            if (user == null)
+            {
+                return RedirectToAction("Profile");
+            }
+
+            // UPDATE PROFILE
+
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.Phone = model.Phone;
+            user.Address = model.Address;
+            user.Username = model.Username;
+
+
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Profile");
+        }
+
+        [HttpPost]
+        public IActionResult ChangePassword(
+    string CurrentPassword,
+    string NewPassword,
+    string ConfirmPassword)
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == userId);
+
+            if (user == null)
+            {
+                return RedirectToAction("Profile");
+            }
+
+            if (user.PasswordHash != CurrentPassword)
+            {
+                TempData["Error"] =
+                    "Current password is incorrect.";
+
+                return RedirectToAction("EditProfile");
+            }
+
+            if (NewPassword != ConfirmPassword)
+            {
+                TempData["Error"] =
+                    "Passwords do not match.";
+
+                return RedirectToAction("EditProfile");
+            }
+
+            user.PasswordHash = NewPassword;
+
+            _context.SaveChanges();
+
+            TempData["Success"] =
+                "Password updated successfully.";
+
+            return RedirectToAction("EditProfile");
+        }
     }
 }

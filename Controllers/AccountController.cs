@@ -71,9 +71,25 @@ namespace UniManage.Controllers
         }
 
         // REGISTER PAGE
-        public IActionResult Register()
+        public IActionResult Profile()
         {
-            return View();
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == userId);
+
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            return View(user);
         }
     }
 }
