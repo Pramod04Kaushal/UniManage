@@ -53,6 +53,7 @@
                         <label>Department</label>
 
                     <select name="Department"
+                            id="departmentSelect"
                             class="form-control">
 
                         <option>Select Department</option>
@@ -169,13 +170,15 @@
                     <label>Assign Lecturer</label>
 
                     <select name="LecturerID"
+                            id="lecturerSelect"
                             class="form-control">
 
                         <option value="0">Select Lecturer</option>
 
                         @foreach (var lecturer in ViewBag.Lecturers)
                         {
-                            <option value="@lecturer.LecturerID">
+                            <option value="@lecturer.LecturerID"
+                                    data-department="@lecturer.Department">
                                 @lecturer.FullName
                             </option>
                         }
@@ -223,5 +226,40 @@
         </div>
 
     </form>
+
+    <script>
+
+        const departmentSelect =
+            document.getElementById("departmentSelect");
+
+        const lecturerSelect =
+            document.getElementById("lecturerSelect");
+
+        departmentSelect.addEventListener("change", function () {
+
+            const selectedDepartment =
+                this.value;
+
+            const lecturerOptions =
+                lecturerSelect.querySelectorAll("option");
+
+            lecturerOptions.forEach(option => {
+
+                if (option.value === "0") {
+                    option.hidden = false;
+                    return;
+                }
+
+                const lecturerDepartment =
+                    option.dataset.department;
+
+                option.hidden =
+                    lecturerDepartment !== selectedDepartment;
+            });
+
+            lecturerSelect.value = "0";
+        });
+
+    </script>
 
 </div>

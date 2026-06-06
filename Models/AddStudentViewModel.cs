@@ -31,5 +31,7 @@ namespace UniManage.Models
         public string Status { get; set; }
 
         public string? ProfileImage { get; set; }
+
+        public int? BatchID { get; set; }
     }
 }

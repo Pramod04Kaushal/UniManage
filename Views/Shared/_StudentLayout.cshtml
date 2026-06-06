@@ -33,6 +33,7 @@
 
         <!-- TOP NAVBAR -->
 
+
         <div class="student-navbar">
 
             <div class="student-logo">
@@ -44,7 +45,25 @@
 
             </div>
 
+            <div class="navbar-right">
 
+                <a asp-controller="Student"
+                   asp-action="Messages"
+                   class="message-btn">
+
+                    <i class="fas fa-comments"></i>
+
+                </a>
+
+                <a asp-controller="Student"
+                   asp-action="Profile"
+                   class="profile-btn">
+
+                    <i class="fas fa-user-circle"></i>
+
+                </a>
+
+            </div>
 
         </div>
 

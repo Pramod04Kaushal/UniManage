@@ -149,6 +149,9 @@ namespace UniManage.Controllers
             ViewBag.Departments =
                 _context.Departments.ToList();
 
+            ViewBag.Batches =
+                _context.Batches.ToList();
+
             return View();
         }
 
@@ -220,12 +223,64 @@ namespace UniManage.Controllers
 
                 Course = model.Course,
 
-                EnrollmentYear = model.EnrollmentYear
+                EnrollmentYear = model.EnrollmentYear,
+
+                BatchID = model.BatchID
             };
 
             _context.Students.Add(student);
 
             _context.SaveChanges();
+
+
+            var course = _context.Courses
+                .FirstOrDefault(c => c.CourseName == model.Course);
+
+            if (course != null)
+            {
+                Enrollment enrollment = new Enrollment()
+                {
+                    StudentID = student.StudentID,
+                    CourseID = course.CourseID,
+                    EnrollmentDate = DateTime.Now,
+                    Status = "Active"
+                };
+
+                _context.Enrollments.Add(enrollment);
+
+                _context.SaveChanges();
+            }
+
+            // ADD STUDENT TO COURSE BATCH GROUP
+
+
+            if (course != null)
+            {
+                var messageGroup = _context.MessageGroups
+                    .FirstOrDefault(g =>
+                        g.CourseID == course.CourseID &&
+                        g.BatchID == model.BatchID);
+
+                if (messageGroup != null)
+                {
+                    bool alreadyExists = _context.GroupMembers.Any(gm =>
+                        gm.GroupID == messageGroup.GroupID &&
+                        gm.UserID == user.UserID);
+
+                    if (!alreadyExists)
+                    {
+                        GroupMember groupMember = new GroupMember()
+                        {
+                            GroupID = messageGroup.GroupID,
+                            UserID = user.UserID
+                        };
+
+                        _context.GroupMembers.Add(groupMember);
+
+                        _context.SaveChanges();
+                    }
+                }
+            }
 
             return RedirectToAction("Users");
         }
@@ -522,6 +577,34 @@ namespace UniManage.Controllers
 
             _context.SaveChanges();
 
+            // ADD LECTURER TO ALL GROUPS OF HIS DEPARTMENT
+
+            var groups = _context.MessageGroups
+                .Where(g =>
+                    _context.Courses.Any(c =>
+                        c.CourseID == g.CourseID &&
+                        c.Department == model.Department))
+                .ToList();
+
+            foreach (var group in groups)
+            {
+                bool alreadyExists = _context.GroupMembers.Any(gm =>
+                    gm.GroupID == group.GroupID &&
+                    gm.UserID == user.UserID);
+
+                if (!alreadyExists)
+                {
+                    _context.GroupMembers.Add(
+                        new GroupMember
+                        {
+                            GroupID = group.GroupID,
+                            UserID = user.UserID
+                        });
+                }
+            }
+
+            _context.SaveChanges();
+
             Lecturer lecturer = new Lecturer()
             {
                 UserID = user.UserID,
@@ -695,6 +778,7 @@ namespace UniManage.Controllers
         public IActionResult AddModule()
         {
 
+
             // LOAD LECTURERS
 
             var lecturers = (from l in _context.Lecturers
@@ -703,7 +787,8 @@ namespace UniManage.Controllers
                              select new
                              {
                                  l.LecturerID,
-                                 u.FullName
+                                 u.FullName,
+                                 l.Department
                              }).ToList();
 
             ViewBag.Lecturers = lecturers;
@@ -760,6 +845,46 @@ namespace UniManage.Controllers
 
             _context.SaveChanges();
 
+            // GET COURSES USING THIS MODULE
+
+            var courseIds = _context.CourseModules
+                .Where(cm => cm.ModuleID == module.ModuleID)
+                .Select(cm => cm.CourseID)
+                .ToList();
+
+            // GET LECTURER USER ID
+
+            var lecturer = _context.Lecturers
+                .FirstOrDefault(l => l.LecturerID == model.LecturerID);
+
+            if (lecturer != null)
+            {
+                // GET ALL GROUPS OF THOSE COURSES
+
+                var groups = _context.MessageGroups
+                    .Where(g => courseIds.Contains(g.CourseID))
+                    .ToList();
+
+                foreach (var group in groups)
+                {
+                    bool exists = _context.GroupMembers.Any(gm =>
+                        gm.GroupID == group.GroupID &&
+                        gm.UserID == lecturer.UserID);
+
+                    if (!exists)
+                    {
+                        _context.GroupMembers.Add(
+                            new GroupMember
+                            {
+                                GroupID = group.GroupID,
+                                UserID = lecturer.UserID
+                            });
+                    }
+                }
+
+                _context.SaveChanges();
+            }
+
             return RedirectToAction("Modules");
         }
 
@@ -769,11 +894,13 @@ namespace UniManage.Controllers
         private void PopulateModuleForm()
         {
             var lecturers = (from l in _context.Lecturers
-                             join u in _context.Users on l.UserID equals u.UserID
+                             join u in _context.Users
+                             on l.UserID equals u.UserID
                              select new
                              {
                                  l.LecturerID,
-                                 u.FullName
+                                 u.FullName,
+                                 l.Department
                              }).ToList();
 
             ViewBag.Lecturers = lecturers;
@@ -791,17 +918,7 @@ namespace UniManage.Controllers
             // LOAD DEPARTMENTS
             ViewBag.Departments = _context.Departments.ToList();
 
-            // LOAD LECTURERS
-            var lecturers = (from l in _context.Lecturers
-                             join u in _context.Users
-                             on l.UserID equals u.UserID
-                             select new
-                             {
-                                 l.LecturerID,
-                                 u.FullName
-                             }).ToList();
 
-            ViewBag.Lecturers = lecturers;
 
             // AUTO COURSE CODE
             int count = _context.Courses.Count() + 1;
@@ -828,7 +945,6 @@ namespace UniManage.Controllers
 
                 Department = model.Department,
 
-                LecturerID = model.LecturerID,
 
                 Semesters = model.Semesters,
 
@@ -848,6 +964,65 @@ namespace UniManage.Controllers
             };
 
             _context.Courses.Add(course);
+
+            _context.SaveChanges();
+
+            Batch batch = new Batch()
+            {
+                BatchName = course.CourseName + " Batch",
+                CourseID = course.CourseID,
+                StartYear = DateTime.Now.Year,
+                Status = "Active"
+            };
+
+            _context.Batches.Add(batch);
+            _context.SaveChanges();
+
+            MessageGroup group = new MessageGroup()
+            {
+                BatchID = batch.BatchID,
+                CourseID = course.CourseID,
+                GroupName = batch.BatchName
+            };
+
+            _context.MessageGroups.Add(group);
+            _context.SaveChanges();
+
+            // ADD MODULE LECTURERS TO COURSE GROUPS
+
+            var lecturerIds = _context.Modules
+                .Where(m => model.SelectedModules.Contains(m.ModuleID))
+                .Select(m => m.LecturerID)
+                .Distinct()
+                .ToList();
+
+            var lecturerUserIds = _context.Lecturers
+                .Where(l => lecturerIds.Contains(l.LecturerID))
+                .Select(l => l.UserID)
+                .ToList();
+
+            var groups = _context.MessageGroups
+                .Where(g => g.CourseID == course.CourseID)
+                .ToList();
+
+            foreach (var userId in lecturerUserIds)
+            {
+                foreach (var messageGroup in groups)
+                {
+                    bool exists = _context.GroupMembers.Any(gm =>
+                        gm.GroupID == messageGroup.GroupID &&
+                        gm.UserID == userId);
+
+                    if (!exists)
+                    {
+                        _context.GroupMembers.Add(new GroupMember
+                        {
+                            GroupID = messageGroup.GroupID,
+                            UserID = userId
+                        });
+                    }
+                }
+            }
 
             _context.SaveChanges();
 
@@ -889,6 +1064,29 @@ namespace UniManage.Controllers
                 .ToList();
 
             return new JsonResult(courses);
+        }
+
+        [HttpGet]
+        public JsonResult GetBatchesByCourse(string courseName)
+        {
+            var course = _context.Courses
+                .FirstOrDefault(c => c.CourseName == courseName);
+
+            if (course == null)
+            {
+                return Json(new List<object>());
+            }
+
+            var batches = _context.Batches
+                .Where(b => b.CourseID == course.CourseID)
+                .Select(b => new
+                {
+                    b.BatchID,
+                    b.BatchName
+                })
+                .ToList();
+
+            return Json(batches);
         }
 
 
@@ -973,15 +1171,7 @@ namespace UniManage.Controllers
                      m.Credits
                  }).ToList();
 
-            var lecturerName =
-    (from l in _context.Lecturers
-     join u in _context.Users
-     on l.UserID equals u.UserID
-     where l.LecturerID == course.LecturerID
-     select u.FullName)
-     .FirstOrDefault();
 
-            ViewBag.LecturerName = lecturerName;
 
             return View("ViewCourse", course);
         }
@@ -1044,16 +1234,6 @@ namespace UniManage.Controllers
             ViewBag.Modules =
                 _context.Modules.ToList();
 
-            var lecturers = (from l in _context.Lecturers
-                             join u in _context.Users
-                             on l.UserID equals u.UserID
-                             select new
-                             {
-                                 l.LecturerID,
-                                 u.FullName
-                             }).ToList();
-
-            ViewBag.Lecturers = lecturers;
 
             ViewBag.CourseModules =
                 (from cm in _context.CourseModules
@@ -1078,7 +1258,6 @@ namespace UniManage.Controllers
 
             course.CourseName = model.CourseName;
             course.Department = model.Department;
-            course.LecturerID = model.LecturerID;
             course.Semesters = model.Semesters;
             course.Duration = model.Duration;
             course.CourseFee = model.CourseFee;
@@ -1147,7 +1326,8 @@ namespace UniManage.Controllers
                  select new
                  {
                      l.LecturerID,
-                     u.FullName
+                     u.FullName,
+                     l.Department
                  }).ToList();
 
             return View(module);

@@ -17,5 +17,14 @@ namespace UniManage.Models
         public DateTime Deadline { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public int? LecturerID { get; set; }
+
+        public int? Semester { get; set; }
+
+        public int? BatchID { get; set; }
+
+        public string? AttachmentPath { get; set; }
+        public int ModuleID { get; set; }
     }
 }

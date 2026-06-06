@@ -1,0 +1,66 @@
+﻿@model List<UniManage.Models.Assignment>
+
+@{
+    Layout = "~/Views/Shared/_LecturerLayout.cshtml";
+    ViewData["Title"] = "Assignments";
+}
+
+<link rel="stylesheet"
+      href="~/css/LecturerAssignments.css"
+      asp-append-version="true" />
+
+<div class="dashboard-container">
+
+    <div class="assignment-card">
+
+        <div class="assignment-header">
+
+            <h2>My Assignments</h2>
+
+            <a asp-action="CreateAssignment"
+               class="btn-create">
+                Create Assignment
+            </a>
+
+        </div>
+
+        <table class="assignment-table">
+
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Course ID</th>
+                    <th>Module ID</th>
+                    <th>Deadline</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr ondblclick="location.href='@Url.Action("EditAssignment", "Lecturer", new { id = item.AssignmentID })'"
+                        style="cursor:pointer;">
+
+                        <td>@item.Title</td>
+                        <td>@item.CourseID</td>
+                        <td>@item.ModuleID</td>
+
+                        <td class="deadline">
+                            @item.Deadline.ToString("dd MMM yyyy")
+                        </td>
+
+                        <td>
+                            @item.CreatedAt.ToString("dd MMM yyyy")
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

@@ -1,0 +1,183 @@
+﻿@model UniManage.Models.AddAssignmentViewModel
+
+@{
+    Layout = "~/Views/Shared/_LecturerLayout.cshtml";
+    ViewData["Title"] = "Create Assignment";
+}
+
+<link rel="stylesheet"
+      href="~/css/admin-forms.css"
+      asp-append-version="true" />
+
+<div class="form-container">
+
+    <div class="form-section">
+
+        <h2>Create Assignment</h2>
+
+        <form asp-action="CreateAssignment"
+              method="post"
+              enctype="multipart/form-data">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Assignment Title</label>
+
+                    <input asp-for="Title"
+                           class="form-control" />
+
+                </div>
+
+                <div class="form-group">
+                    <label>Course</label>
+
+                    <select asp-for="CourseID"
+                            class="form-control"
+                            id="courseDropdown">
+
+                        <option value="">Select Course</option>
+
+                        @foreach (var course in ViewBag.Courses)
+                        {
+                            <option value="@course.CourseID">
+                                @course.CourseName
+                            </option>
+                        }
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Module</label>
+
+                    <select asp-for="ModuleID"
+                            class="form-control"
+                            id="moduleDropdown">
+
+                        <option value="">
+                            Select Module
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Batch</label>
+
+                    <select asp-for="BatchID"
+                            class="form-control"
+                            id="batchDropdown">
+
+                        <option value="">
+                            Select Batch
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Deadline</label>
+
+                    <input asp-for="Deadline"
+                           type="datetime-local"
+                           class="form-control" />
+                </div>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>Description</label>
+
+                <textarea asp-for="Description"
+                          rows="5"
+                          class="form-control"></textarea>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Assignment File</label>
+
+                <input asp-for="AttachmentFile"
+                       type="file"
+                       class="form-control" />
+
+            </div>
+
+            <button type="submit" class="btn-primary">
+                Create Assignment
+            </button>
+
+        </form>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $("#courseDropdown").change(function () {
+
+            var courseId = $(this).val();
+
+            // MODULES
+
+            $("#moduleDropdown").empty();
+            $("#moduleDropdown").append(
+                '<option value="">Select Module</option>'
+            );
+
+            // BATCHES
+
+            $("#batchDropdown").empty();
+            $("#batchDropdown").append(
+                '<option value="">Select Batch</option>'
+            );
+
+            if (courseId) {
+
+                // LOAD MODULES
+
+                $.get('/Lecturer/GetModulesByCourse',
+                    { courseId: courseId },
+                    function (data) {
+
+                        $.each(data, function (i, module) {
+
+                            $("#moduleDropdown").append(
+                                '<option value="' + module.moduleID + '">' +
+                                module.moduleCode + ' - ' +
+                                module.moduleName +
+                                '</option>'
+                            );
+
+                        });
+
+                    });
+
+                // LOAD BATCHES
+
+                $.get('/Lecturer/GetBatchesByCourse',
+                    { courseId: courseId },
+                    function (data) {
+
+                        $.each(data, function (i, batch) {
+
+                            $("#batchDropdown").append(
+                                '<option value="' + batch.batchID + '">' +
+                                batch.batchName +
+                                '</option>'
+                            );
+
+                        });
+
+                    });
+            }
+        });
+    </script>
+
+</div>

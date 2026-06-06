@@ -1,0 +1,246 @@
+﻿@model UniManage.Models.Module
+
+@{
+    Layout = "~/Views/Shared/_LecturerLayout.cshtml";
+    ViewData["Title"] = "Module Details";
+}
+
+<link rel="stylesheet" href="~/css/ModuleDetails.css" />
+<link rel="stylesheet" href="~/css/admin-forms.css" />
+
+
+<div class="form-container">
+
+    <!-- MODULE INFORMATION -->
+
+    <div class="form-section">
+
+        <h2>Module Information</h2>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Module Name</label>
+                <input class="form-control"
+                       value="@Model.ModuleName"
+                       readonly />
+            </div>
+
+            <div class="form-group">
+                <label>Module Code</label>
+                <input class="form-control"
+                       value="@Model.ModuleCode"
+                       readonly />
+            </div>
+
+            <div class="form-group">
+                <label>Department</label>
+                <input class="form-control"
+                       value="@Model.Department"
+                       readonly />
+            </div>
+
+            <div class="form-group">
+                <label>Credits</label>
+                <input class="form-control"
+                       value="@Model.Credits"
+                       readonly />
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- DESCRIPTION -->
+
+    <div class="form-section">
+
+        <h2>Module Description</h2>
+
+        <div class="form-group">
+
+            <textarea class="form-control textarea"
+                      readonly>@Model.Description</textarea>
+
+        </div>
+
+    </div>
+
+    <!-- MATERIALS -->
+
+    <div class="form-section">
+
+        <div class="section-header">
+
+            <h2>Learning Materials</h2>
+
+            <button type="button"
+                    class="save-btn"
+                    onclick="openMaterialModal()">
+                <i class="fas fa-plus"></i>
+                Add Material
+            </button>
+
+        </div>
+
+        <table class="material-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Title</th>
+
+                    <th>Type</th>
+
+                    <th>Upload Date</th>
+
+
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var material in ViewBag.Materials)
+                {
+                    <tr ondblclick="window.open('@material.FilePath', '_blank')"
+                        style="cursor:pointer;">
+
+                        <td>@material.Title</td>
+
+                        <td>
+                            @if (material.MaterialType == "PDF")
+                            {
+                                <span class="pdf-badge">PDF</span>
+                            }
+                            else if (material.MaterialType == "PPT")
+                            {
+                                <span class="ppt-badge">PPT</span>
+                            }
+                            else
+                            {
+                                <span class="video-badge">VIDEO</span>
+                            }
+                        </td>
+
+                        <td>
+                            @material.UploadedAt.ToString("dd MMM yyyy")
+                        </td>
+
+                        <td>
+                            <a href="@material.FilePath"
+                               download
+                               class="btn btn-primary btn-sm">
+                                Download
+                            </a>
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<div id="materialModal" class="modal">
+
+    <div class="modal-content">
+
+        <h3>Add Learning Material</h3>
+
+        <form asp-action="UploadMaterial"
+              asp-controller="Lecturer"
+              method="post"
+              enctype="multipart/form-data">
+
+            <input type="hidden"
+                   name="ModuleID"
+                   value="@Model.ModuleID" />
+
+            <div class="form-group">
+
+                <label>Title</label>
+
+                <input type="text"
+                       name="Title"
+                       class="form-control"
+                       required />
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Material Type</label>
+
+                <select name="MaterialType"
+                        class="form-control"
+                        required>
+
+                    <option value="">Select Type</option>
+                    <option value="PDF">PDF</option>
+                    <option value="PPT">PPT</option>
+                    <option value="VIDEO">VIDEO</option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Choose File</label>
+
+                <input type="file"
+                       name="File"
+                       class="form-control"
+                       required />
+
+            </div>
+
+            <div class="modal-buttons">
+
+                <button type="submit"
+                        class="save-btn">
+                    Upload
+                </button>
+
+                <button type="button"
+                        class="cancel-btn"
+                        onclick="closeMaterialModal()">
+                    Cancel
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+    function openMaterialModal() {
+        document.getElementById("materialModal").style.display = "block";
+    }
+
+    function closeMaterialModal() {
+        document.getElementById("materialModal").style.display = "none";
+    }
+
+    window.onclick = function (event) {
+
+        var modal =
+            document.getElementById("materialModal");
+
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+</script>

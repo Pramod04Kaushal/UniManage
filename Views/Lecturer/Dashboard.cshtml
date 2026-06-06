@@ -1,59 +1,163 @@
 ﻿@model List<UniManage.Models.Module>
 
 @{
-    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    Layout = "~/Views/Shared/_LecturerLayout.cshtml";
     ViewData["Title"] = "Lecturer Dashboard";
 }
 
-<div class="dashboard-container">
+<link rel="stylesheet" href="~/css/LecturerDashboard.css" />
 
-    <div class="dashboard-header">
+<div class="dashboard-page">
 
-        <h1>
-            Welcome, @ViewBag.LecturerName
-        </h1>
+    <!-- HERO SECTION -->
 
-        <p>
-            Department: @ViewBag.Department
-        </p>
+    <div class="hero-card">
 
-        <p>
-            Specialization: @ViewBag.Specialization
-        </p>
+        <div class="hero-left">
+
+            <h1>
+                Welcome Back,
+                <span>@ViewBag.LecturerName</span>
+            </h1>
+
+            <p>
+                Manage your modules, students and assignments efficiently.
+            </p>
+
+            <div class="hero-info">
+
+                <div>
+                    <strong>Department</strong>
+                    <span>@ViewBag.Department</span>
+                </div>
+
+                <div>
+                    <strong>Specialization</strong>
+                    <span>@ViewBag.Specialization</span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="hero-right">
+            <i class="fas fa-chalkboard-teacher"></i>
+        </div>
 
     </div>
 
-    <div class="dashboard-cards">
+    <!-- STATISTICS -->
 
-        <div class="dashboard-card">
+    <div class="stats-grid">
 
-            <h2>@ViewBag.TotalModules</h2>
+        <a asp-controller="Lecturer"
+           asp-action="MyModules"
+           class="stat-card stat-link">
 
-            <p>Total Modules</p>
+            <div class="icon blue">
+                <i class="fas fa-book"></i>
+            </div>
+
+            <div>
+                <h2>@ViewBag.TotalModules</h2>
+                <p>Total Modules</p>
+            </div>
+
+        </a>
+
+        <div class="stat-card">
+
+            <div class="icon green">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+
+            <div>
+                <h2>@ViewBag.TotalStudents</h2>
+                <p>Total Students</p>
+            </div>
 
         </div>
 
-        <div class="dashboard-card">
+        <a asp-controller="Lecturer"
+           asp-action="Assignments"
+           class="stat-card stat-link">
 
-            <h2>@ViewBag.TotalStudents</h2>
+            <div class="icon orange">
+                <i class="fas fa-file-alt"></i>
+            </div>
 
-            <p>Total Students</p>
+            <div>
+                <h2>@ViewBag.TotalAssignments</h2>
+                <p>Assignments</p>
+            </div>
+
+        </a>
+
+        <div class="stat-card">
+
+            <div class="icon red">
+                <i class="fas fa-clock"></i>
+            </div>
+
+            <div>
+                <h2>@ViewBag.PendingReviews</h2>
+                <p>Pending Reviews</p>
+            </div>
 
         </div>
 
     </div>
 
-    <div class="table-container">
+    <!-- QUICK ACTIONS -->
 
-        <div class="table-top">
+    <div class="section-card">
 
-            <h2>
-                My Modules
-            </h2>
+        <div class="section-header">
+            <h2>Quick Actions</h2>
+        </div>
+
+        <div class="action-grid">
+
+            <a asp-controller="Lecturer"
+               asp-action="CreateAssignment"
+               class="action-card">
+
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Assignment</span>
+
+            </a>
+
+            <a href="#" class="action-card">
+                <i class="fas fa-tasks"></i>
+                <span>Grade Work</span>
+            </a>
+
+            <a href="#" class="action-card">
+                <i class="fas fa-chart-line"></i>
+                <span>Reports</span>
+            </a>
+
+
 
         </div>
 
-        <table>
+    </div>
+
+    <!-- MODULES TABLE -->
+
+    <div class="section-card">
+
+        <div class="table-header">
+
+            <h2>My Modules</h2>
+
+            <span class="module-count">
+                @Model.Count Modules
+            </span>
+
+        </div>
+
+        <table class="module-table">
 
             <thead>
 
@@ -87,7 +191,11 @@
 
                         <td>@module.Credits</td>
 
-                        <td>@module.Status</td>
+                        <td>
+                            <span class="status-badge">
+                                @module.Status
+                            </span>
+                        </td>
 
                     </tr>
                 }

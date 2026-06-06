@@ -30,6 +30,6 @@ namespace UniManage.Models
 
         public DateTime CreatedAt { get; set; }
 
-        public int? LecturerID { get; set; }
+
     }
 }

@@ -121,7 +121,7 @@ body {
 /* CONTENT */
 
 .content {
-    padding: 30px;
+    padding: 0;
 }
 
 /* CARDS */
@@ -153,20 +153,20 @@ body {
 
 /*Other*/
 .table-container {
-    margin-top: 30px;
+    margin-top: 0;
     background: white;
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-
+    width:100%;
     overflow-x: auto;
 
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+    width: max-content;
+    min-width: 100%;
+    table-layout: fixed;
 }
 
     table th {
@@ -179,7 +179,9 @@ table {
     table td {
         padding: 15px;
         border-bottom: 1px solid #ddd;
+
     }
+
 
 .add-btn {
     background: #2563EB;

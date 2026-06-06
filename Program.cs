@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UniManage.Models;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +11,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// ADD THIS
+// SESSION
 builder.Services.AddSession();
+
+// FILE UPLOAD LIMIT (500 MB)
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 524288000;
+});
+
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 524288000;
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 524288000; // 500 MB
+});
 
 var app = builder.Build();
 
@@ -27,7 +45,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// ADD THIS BEFORE AUTHORIZATION
 app.UseSession();
 
 app.UseAuthorization();

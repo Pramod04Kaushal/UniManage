@@ -18,5 +18,7 @@ namespace UniManage.Models
         public string? Course { get; set; }
 
         public int? EnrollmentYear { get; set; }
+
+        public int? BatchID { get; set; }
     }
 }

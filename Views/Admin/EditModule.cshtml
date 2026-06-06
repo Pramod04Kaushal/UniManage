@@ -55,6 +55,7 @@
                     <label>Department</label>
 
                     <select asp-for="Department"
+                            id="departmentSelect"
                             class="form-control">
 
                         @foreach (var department in ViewBag.Departments)
@@ -158,14 +159,18 @@
                     <label>Assign Lecturer</label>
 
                     <select asp-for="LecturerID"
+                            id="lecturerSelect"
                             class="form-control">
 
                         <option value="0">Select Lecturer</option>
 
                         @foreach (var lecturer in ViewBag.Lecturers)
                         {
-                            <option value="@lecturer.LecturerID">
+                            <option value="@lecturer.LecturerID"
+                                    data-department="@lecturer.Department">
+
                                 @lecturer.FullName
+
                             </option>
                         }
 
@@ -213,6 +218,41 @@
 
     </form>
 
+    <script>
 
+        const departmentSelect =
+            document.getElementById("departmentSelect");
+
+        const lecturerSelect =
+            document.getElementById("lecturerSelect");
+
+        function filterLecturers() {
+
+            const selectedDepartment =
+                departmentSelect.value;
+
+            const lecturerOptions =
+                lecturerSelect.querySelectorAll("option");
+
+            lecturerOptions.forEach(option => {
+
+                if (option.value === "0") {
+                    option.hidden = false;
+                    return;
+                }
+
+                option.hidden =
+                    option.dataset.department !== selectedDepartment;
+            });
+        }
+
+        departmentSelect.addEventListener(
+            "change",
+            filterLecturers
+        );
+
+        window.onload = filterLecturers;
+
+    </script>
 
 </div>

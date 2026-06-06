@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - UniManage</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <link rel="stylesheet" href="~/css/LecturerLayout.css" asp-append-version="true" />
+
+    <link rel="icon"
+          type="image/x-icon"
+          href="~/images/logo.png" />
+
+</head>
+
+<body>
+
+    <div class="layout-container">
+
+        <aside class="sidebar">
+
+            <div class="sidebar-header">
+
+                <img src="~/images/full.png"
+                     alt="UniManage Logo"
+                     class="sidebar-logo" />
+
+            </div>
+
+            <ul class="sidebar-menu">
+
+                <li>
+                    <a asp-controller="Lecturer" asp-action="Dashboard">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a asp-controller="Lecturer"
+                       asp-action="MyModules">
+                        <i class="fas fa-book"></i>
+                        My Modules
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="fas fa-file-alt"></i>
+                        Assignments
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="fas fa-check-circle"></i>
+                        Grading
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="fas fa-user-graduate"></i>
+                        Students
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="fas fa-chart-bar"></i>
+                        Reports
+                    </a>
+                </li>
+
+                <li>
+                    <a asp-controller="Lecturer"
+                       asp-action="Messages">
+                        <i class="fas fa-comments"></i>
+                        Messages
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                </li>
+
+                <li>
+                    <a asp-controller="Account" asp-action="Login">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+
+            </ul>
+
+        </aside>
+
+        <main class="main-content">
+
+            <div class="topbar">
+
+                <h4>Lecturer Portal</h4>
+
+                <div class="user-info">
+
+                    <i class="fas fa-user-circle"></i>
+
+                    <span>Lecturer</span>
+
+                </div>
+
+            </div>
+
+            <div class="content-wrapper">
+
+                @RenderBody()
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+
+</html>

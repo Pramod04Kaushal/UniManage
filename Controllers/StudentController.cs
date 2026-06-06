@@ -238,5 +238,125 @@ namespace UniManage.Controllers
 
             return RedirectToAction("EditProfile");
         }
+
+        public IActionResult Messages(int? groupId)
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var student = _context.Students
+                .FirstOrDefault(s => s.UserID == userId);
+
+            if (student == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var groups =
+            (
+                from gm in _context.GroupMembers
+                join mg in _context.MessageGroups
+                    on gm.GroupID equals mg.GroupID
+
+                where gm.UserID == userId
+
+                select new LecturerMessageGroupViewModel
+                {
+                    GroupID = mg.GroupID,
+                    GroupName = mg.GroupName,
+                    BatchName = "",
+                    CourseName = "",
+                    StudentCount = 0
+                }
+            ).ToList();
+
+            ViewBag.SelectedGroupId = groupId;
+
+            if (groupId != null)
+            {
+                var selectedGroup = _context.MessageGroups
+                    .FirstOrDefault(g => g.GroupID == groupId);
+
+                ViewBag.GroupName = selectedGroup?.GroupName;
+
+                ViewBag.Messages = _context.GroupMessages
+                    .Where(m => m.GroupID == groupId)
+                    .OrderBy(m => m.SentAt)
+                    .ToList();
+            }
+
+            return View("StudentMessages", groups);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendMessage(
+    int groupId,
+    string? messageText,
+    IFormFile? file)
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            string? filePath = null;
+            string? fileName = null;
+
+            if (file != null && file.Length > 0)
+            {
+                string uploadFolder = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot/uploads/chatfiles");
+
+                if (!Directory.Exists(uploadFolder))
+                {
+                    Directory.CreateDirectory(uploadFolder);
+                }
+
+                string savedFileName =
+                    Guid.NewGuid().ToString() +
+                    Path.GetExtension(file.FileName);
+
+                string fullPath =
+                    Path.Combine(uploadFolder, savedFileName);
+
+                using (var stream =
+                       new FileStream(fullPath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                filePath = "/uploads/chatfiles/" + savedFileName;
+                fileName = file.FileName;
+            }
+
+            if (!string.IsNullOrWhiteSpace(messageText) || file != null)
+            {
+                GroupMessage message = new GroupMessage
+                {
+                    GroupID = groupId,
+                    SenderUserID = userId.Value,
+                    MessageText = messageText,
+                    FilePath = filePath,
+                    FileName = fileName,
+                    SentAt = DateTime.Now
+                };
+
+                _context.GroupMessages.Add(message);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Messages",
+                new { groupId });
+        }
+
     }
 }
