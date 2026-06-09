@@ -1,0 +1,57 @@
+﻿@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+}
+
+<link rel="stylesheet"
+      href="~/css/Messages.css"
+      asp-append-version="true" />
+
+<div class="chat-container">
+
+    <div class="chat-main">
+
+        <div class="chat-header">
+
+            <img src="~/images/logo.png"
+                 class="group-avatar" />
+
+            <div>
+                <h5>@ViewBag.LecturerName</h5>
+                <small>Lecturer</small>
+            </div>
+
+        </div>
+
+        <div class="chat-body">
+
+            <div class="empty-chat">
+
+                <i class="fas fa-comments"></i>
+
+                <h5>
+                    Start chatting with
+                    @ViewBag.LecturerName
+                </h5>
+
+            </div>
+
+        </div>
+
+        <form class="chat-footer">
+
+            <label class="attach-btn">
+                <i class="fas fa-paperclip"></i>
+            </label>
+
+            <input type="text"
+                   placeholder="Type message..." />
+
+            <button type="submit">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+
+        </form>
+
+    </div>
+
+</div>

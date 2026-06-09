@@ -1,0 +1,24 @@
+﻿namespace UniManage.Models
+{
+    public class MessageViewModel
+    {
+        public int GroupMessageID { get; set; }
+        public int MessageID { get; set; }
+
+        public int SenderUserID { get; set; }
+
+        public string? SenderName { get; set; }
+
+        public string? SenderRole { get; set; }
+
+        public string? MessageText { get; set; }
+
+        public string? FilePath { get; set; }
+
+        public string? FileName { get; set; }
+
+        public DateTime SentAt { get; set; }
+
+
+    }
+}

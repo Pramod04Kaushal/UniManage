@@ -1,4 +1,4 @@
-﻿@model List<UniManage.Models.LecturerMessageGroupViewModel>
+﻿@model UniManage.Models.StudentChatPageViewModel
 
 @{
     Layout = "~/Views/Shared/_StudentLayout.cshtml";
@@ -16,32 +16,55 @@
 
         <div class="search-box">
             <input type="text"
-                   placeholder="Search Student ID or Name" />
+                   placeholder="Search Chats..." />
         </div>
 
         <div class="chat-list">
 
-            @foreach (var group in Model)
+            <div class="chat-section-title">
+                Lecturers
+            </div>
+
+            @foreach (var lecturer in Model.Lecturers)
             {
-                <a class="chat-user @(ViewBag.SelectedGroupId == group.GroupID ? "active" : "")"
-                   href="@Url.Action("Messages",
-                      new { groupId = group.GroupID })">
+                <a class="chat-user"
+                   href="@Url.Action("PrivateChat",
+                                  new { lecturerUserId = lecturer.LecturerUserID })">
 
                 <img src="~/images/logo.png"
                      class="group-avatar" />
 
                     <div>
-                        <h6>@group.ModuleName</h6>
+                        <h6>@lecturer.LecturerName</h6>
 
                         <small>
-                            @group.GroupName
+                            @lecturer.Department
                         </small>
+                    </div>
 
-                        <br />
+                </a>
+                        }
+
+            <div class="chat-section-title">
+                Group Chats
+            </div>
+
+            @foreach (var group in Model.Groups)
+            {
+                <a class="chat-user"
+                   href="@Url.Action("Messages",
+                                  new { groupId = group.GroupID })">
+
+                <img src="~/images/logo.png"
+                     class="group-avatar" />
+
+                    <div>
+                        <h6>
+                            @group.CourseName | @group.BatchName
+                        </h6>
 
                         <small>
-                            @group.BatchName
-                            (@group.StudentCount Students)
+                            Group Chat
                         </small>
                     </div>
 
@@ -56,9 +79,9 @@
 
     <div class="chat-main">
 
-        @if (ViewBag.SelectedGroupId != null)
+        @if (ViewBag.IsPrivateChat == true)
         {
-            <!-- CHAT HEADER -->
+            <!-- PRIVATE CHAT -->
 
             <div class="chat-header">
 
@@ -66,23 +89,28 @@
                      class="group-avatar" />
 
                 <div>
-                    <h5>@ViewBag.GroupName</h5>
-                    <small>Group Chat</small>
+                    <h5>@ViewBag.LecturerName</h5>
+                    <small>Lecturer</small>
                 </div>
 
             </div>
 
-            <!-- CHAT MESSAGES -->
-
             <div class="chat-body">
 
-                @if (ViewBag.Messages != null)
+                @if (ViewBag.PrivateMessages != null)
                 {
-                    @foreach (var message in ViewBag.Messages)
+                    foreach (var message in ViewBag.PrivateMessages)
                     {
                         <div class="message @(message.SenderUserID == Context.Session.GetInt32("UserID")
-                                 ? "sent"
-                                 : "received")">
+                                                             ? "sent"
+                                                             : "received")">
+
+                @if (message.SenderUserID != Context.Session.GetInt32("UserID"))
+                            {
+                                <div class="sender-info">
+                                    <strong>@message.SenderName</strong>
+                                </div>
+                            }
 
                             @if (!string.IsNullOrEmpty(message.MessageText))
                             {
@@ -129,7 +157,117 @@
 
             </div>
 
-            <!-- SEND MESSAGE FORM -->
+            <form method="post"
+                  asp-action="SendPrivateMessage"
+                  asp-controller="Student"
+                  enctype="multipart/form-data"
+                  class="chat-footer">
+
+                <input type="hidden"
+                       name="lecturerUserId"
+                       value="@ViewBag.LecturerUserId" />
+
+                <label for="privateFileInput"
+                       class="attach-btn">
+
+                    <i class="fas fa-paperclip"></i>
+
+                </label>
+
+                <input type="file"
+                       id="privateFileInput"
+                       name="file"
+                       style="display:none;" />
+
+                <span id="privateSelectedFile" class="selected-file"></span>
+
+                <input type="text"
+                       name="messageText"
+                       placeholder="Type message..." />
+
+                <button type="submit">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+
+            </form>
+        }
+        else if (ViewBag.SelectedGroupId != null)
+        {
+            <!-- GROUP CHAT -->
+
+            <div class="chat-header">
+
+                <img src="~/images/logo.png"
+                     class="group-avatar" />
+
+                <div>
+                    <h5>@ViewBag.CourseName</h5>
+                    <small>@ViewBag.BatchName</small>
+                </div>
+
+            </div>
+
+            <div class="chat-body">
+
+                @if (ViewBag.Messages != null)
+                {
+                    @foreach (var message in ViewBag.Messages)
+                    {
+                        <div class="message @(message.SenderUserID == Context.Session.GetInt32("UserID")
+                                                     ? "sent"
+                                                     : "received")">
+
+                @if (message.SenderUserID != Context.Session.GetInt32("UserID"))
+                            {
+                                <div class="sender-info">
+                                    <strong>@message.SenderName</strong>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(message.MessageText))
+                            {
+                                <div>
+                                    @message.MessageText
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(message.FilePath))
+                            {
+                                var extension =
+                                System.IO.Path.GetExtension(message.FileName)
+                                .ToLower();
+
+                                @if (extension == ".jpg" ||
+                                                extension == ".jpeg" ||
+                                                extension == ".png" ||
+                                                extension == ".gif" ||
+                                                extension == ".webp")
+                                {
+                                    <img src="@message.FilePath"
+                                         class="chat-image" />
+                                }
+                                else
+                                {
+                                    <a href="@message.FilePath"
+                                       target="_blank"
+                                       class="chat-file">
+
+                                        <i class="fas fa-file"></i>
+                                        @message.FileName
+
+                                    </a>
+                                }
+                            }
+
+                            <div class="message-time">
+                                @message.SentAt.ToString("hh:mm tt")
+                            </div>
+
+                        </div>
+                    }
+                }
+
+            </div>
 
             <form asp-controller="Student"
                   asp-action="SendMessage"
@@ -141,16 +279,19 @@
                        name="groupId"
                        value="@ViewBag.SelectedGroupId" />
 
-                <label for="fileInput" class="attach-btn">
+                <label for="groupFileInput"
+                       class="attach-btn">
+
                     <i class="fas fa-paperclip"></i>
+
                 </label>
 
                 <input type="file"
-                       id="fileInput"
+                       id="groupFileInput"
                        name="file"
                        style="display:none;" />
 
-                <span id="selectedFile"></span>
+                <span id="groupSelectedFile" class="selected-file"></span>
 
                 <input type="text"
                        name="messageText"
@@ -164,10 +305,12 @@
         }
         else
         {
-            <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="empty-chat">
 
-                <h5 class="text-muted">
-                    Select a group to start chatting
+                <i class="fas fa-comments"></i>
+
+                <h5>
+                    Select a chat to start messaging
                 </h5>
 
             </div>
@@ -177,13 +320,25 @@
 
 </div>
 
-<script>
-    document.getElementById("fileInput")
-        .addEventListener("change", function () {
 
-            if (this.files.length > 0) {
-                document.getElementById("selectedFile")
-                    .innerText = this.files[0].name;
-            }
-        });
+<script>
+    document.getElementById("privateFileInput")
+    ?.addEventListener("change", function () {
+
+        if (this.files.length > 0) {
+            document.getElementById("privateSelectedFile")
+                .innerText = this.files[0].name;
+        }
+
+    });
+
+    document.getElementById("groupFileInput")
+    ?.addEventListener("change", function () {
+
+        if (this.files.length > 0) {
+            document.getElementById("groupSelectedFile")
+                .innerText = this.files[0].name;
+        }
+
+    });
 </script>

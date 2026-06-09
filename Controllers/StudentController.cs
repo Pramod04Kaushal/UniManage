@@ -260,8 +260,15 @@ namespace UniManage.Controllers
             var groups =
             (
                 from gm in _context.GroupMembers
+
                 join mg in _context.MessageGroups
                     on gm.GroupID equals mg.GroupID
+
+                join c in _context.Courses
+                    on mg.CourseID equals c.CourseID
+
+                join b in _context.Batches
+                    on mg.BatchID equals b.BatchID
 
                 where gm.UserID == userId
 
@@ -269,11 +276,40 @@ namespace UniManage.Controllers
                 {
                     GroupID = mg.GroupID,
                     GroupName = mg.GroupName,
-                    BatchName = "",
-                    CourseName = "",
+                    CourseName = c.CourseName,
+                    BatchName = b.BatchName,
                     StudentCount = 0
                 }
             ).ToList();
+
+            var lecturers =
+(
+    from e in _context.Enrollments
+
+    join cm in _context.CourseModules
+        on e.CourseID equals cm.CourseID
+
+    join m in _context.Modules
+        on cm.ModuleID equals m.ModuleID
+
+    join l in _context.Lecturers
+        on m.LecturerID equals l.LecturerID
+
+    join u in _context.Users
+        on l.UserID equals u.UserID
+
+    where e.StudentID == student.StudentID
+
+    select new LecturerChatViewModel
+    {
+        LecturerUserID = u.UserID,
+        LecturerName = u.FullName,
+        Department = l.Department,
+        ChatID = 0
+    }
+)
+.Distinct()
+.ToList();
 
             ViewBag.SelectedGroupId = groupId;
 
@@ -284,13 +320,203 @@ namespace UniManage.Controllers
 
                 ViewBag.GroupName = selectedGroup?.GroupName;
 
-                ViewBag.Messages = _context.GroupMessages
-                    .Where(m => m.GroupID == groupId)
-                    .OrderBy(m => m.SentAt)
-                    .ToList();
+                ViewBag.CourseName =
+(
+    from g in _context.MessageGroups
+    join c in _context.Courses
+        on g.CourseID equals c.CourseID
+    where g.GroupID == groupId
+    select c.CourseName
+).FirstOrDefault();
+
+                ViewBag.BatchName =
+                (
+                    from g in _context.MessageGroups
+                    join b in _context.Batches
+                        on g.BatchID equals b.BatchID
+                    where g.GroupID == groupId
+                    select b.BatchName
+                ).FirstOrDefault();
+
+                ViewBag.Messages =
+                (
+                    from m in _context.GroupMessages
+
+                    join u in _context.Users
+                        on m.SenderUserID equals u.UserID
+
+                    where m.GroupID == groupId
+
+                    orderby m.SentAt
+
+                    select new MessageViewModel
+                    {
+                        GroupMessageID = m.GroupMessageID,
+
+                        SenderUserID = m.SenderUserID,
+
+                        SenderName = u.FullName,
+
+                        SenderRole = u.Role,
+
+                        MessageText = m.MessageText,
+
+                        FilePath = m.FilePath,
+
+                        FileName = m.FileName,
+
+                        SentAt = m.SentAt
+                    }
+                ).ToList();
+            }
+            ViewBag.CurrentUserId = userId;
+            var model = new StudentChatPageViewModel
+            {
+                Groups = groups,
+                Lecturers = lecturers
+            };
+
+            return View("StudentMessages", model);
+        }
+
+        public IActionResult PrivateChat(int lecturerUserId)
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
             }
 
-            return View("StudentMessages", groups);
+            var student = _context.Students
+                .FirstOrDefault(s => s.UserID == userId);
+
+            if (student == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var lecturer = _context.Users
+                .FirstOrDefault(u => u.UserID == lecturerUserId);
+
+            if (lecturer == null)
+            {
+                return NotFound();
+            }
+
+            var chat = _context.PrivateChats
+    .FirstOrDefault(c =>
+        c.StudentUserID == userId.Value &&
+        c.LecturerUserID == lecturerUserId);
+
+            if (chat == null)
+            {
+                chat = new PrivateChat
+                {
+                    StudentUserID = userId.Value,
+                    LecturerUserID = lecturerUserId,
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.PrivateChats.Add(chat);
+                _context.SaveChanges();
+            }
+
+            ViewBag.ChatID = chat.ChatID;
+
+            ViewBag.PrivateMessages =
+            (
+                from m in _context.PrivateMessages
+
+                join u in _context.Users
+                    on m.SenderUserID equals u.UserID
+
+                where m.ChatID == chat.ChatID
+
+                orderby m.SentAt
+
+                select new MessageViewModel
+                {
+                    SenderUserID = m.SenderUserID,
+                    SenderName = u.FullName,
+                    MessageText = m.MessageText,
+                    FilePath = m.FilePath,
+                    FileName = m.FileName,
+                    SentAt = m.SentAt
+                }
+            ).ToList();
+
+            // GROUPS
+
+            var groups =
+            (
+                from gm in _context.GroupMembers
+
+                join mg in _context.MessageGroups
+                    on gm.GroupID equals mg.GroupID
+
+                join c in _context.Courses
+                    on mg.CourseID equals c.CourseID
+
+                join b in _context.Batches
+                    on mg.BatchID equals b.BatchID
+
+                where gm.UserID == userId
+
+                select new LecturerMessageGroupViewModel
+                {
+                    GroupID = mg.GroupID,
+                    GroupName = mg.GroupName,
+                    CourseName = c.CourseName,
+                    BatchName = b.BatchName,
+                    StudentCount = 0
+                }
+            ).ToList();
+
+            // LECTURERS
+
+            var lecturers =
+            (
+                from e in _context.Enrollments
+
+                join cm in _context.CourseModules
+                    on e.CourseID equals cm.CourseID
+
+                join m in _context.Modules
+                    on cm.ModuleID equals m.ModuleID
+
+                join l in _context.Lecturers
+                    on m.LecturerID equals l.LecturerID
+
+                join u in _context.Users
+                    on l.UserID equals u.UserID
+
+                where e.StudentID == student.StudentID
+
+                select new LecturerChatViewModel
+                {
+                    LecturerUserID = u.UserID,
+                    LecturerName = u.FullName,
+                    Department = l.Department,
+                    ChatID = 0
+                }
+            )
+            .Distinct()
+            .ToList();
+
+            ViewBag.IsPrivateChat = true;
+            ViewBag.LecturerName = lecturer.FullName;
+            ViewBag.LecturerUserId = lecturerUserId;
+            ViewBag.CurrentUserId = userId;
+
+            var model = new StudentChatPageViewModel
+            {
+                Groups = groups,
+                Lecturers = lecturers
+            };
+
+            return View("StudentMessages", model);
         }
 
         [HttpPost]
@@ -303,6 +529,14 @@ namespace UniManage.Controllers
                 HttpContext.Session.GetInt32("UserID");
 
             if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var student = _context.Students
+    .FirstOrDefault(s => s.UserID == userId);
+
+            if (student == null)
             {
                 return RedirectToAction("Login", "Account");
             }
@@ -356,6 +590,85 @@ namespace UniManage.Controllers
 
             return RedirectToAction("Messages",
                 new { groupId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendPrivateMessage(
+    int lecturerUserId,
+    string? messageText,
+    IFormFile? file)
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var chat = _context.PrivateChats
+                .FirstOrDefault(c =>
+                    c.StudentUserID == userId.Value &&
+                    c.LecturerUserID == lecturerUserId);
+
+            if (chat == null)
+            {
+                return RedirectToAction(
+                    "PrivateChat",
+                    new { lecturerUserId });
+            }
+
+            string? filePath = null;
+            string? fileName = null;
+
+            if (file != null && file.Length > 0)
+            {
+                string uploadFolder = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot/uploads/chatfiles");
+
+                if (!Directory.Exists(uploadFolder))
+                {
+                    Directory.CreateDirectory(uploadFolder);
+                }
+
+                string savedFileName =
+                    Guid.NewGuid().ToString() +
+                    Path.GetExtension(file.FileName);
+
+                string fullPath =
+                    Path.Combine(uploadFolder, savedFileName);
+
+                using (var stream =
+                       new FileStream(fullPath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                filePath = "/uploads/chatfiles/" + savedFileName;
+                fileName = file.FileName;
+            }
+
+            if (!string.IsNullOrWhiteSpace(messageText) || file != null)
+            {
+                PrivateMessage message =
+                    new PrivateMessage
+                    {
+                        ChatID = chat.ChatID,
+                        SenderUserID = userId.Value,
+                        MessageText = messageText,
+                        FilePath = filePath,
+                        FileName = fileName,
+                        SentAt = DateTime.Now
+                    };
+
+                _context.PrivateMessages.Add(message);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(
+                "PrivateChat",
+                new { lecturerUserId });
         }
 
     }

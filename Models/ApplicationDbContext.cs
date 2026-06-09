@@ -55,6 +55,10 @@ namespace UniManage.Models
 
         public DbSet<GroupMember> GroupMembers { get; set; }
 
+        public DbSet<PrivateChat> PrivateChats { get; set; }
+
+        public DbSet<PrivateMessage> PrivateMessages { get; set; }
+
 
     }
 }
