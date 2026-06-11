@@ -17,5 +17,7 @@ namespace UniManage.Models
         public DateTime SubmissionDate { get; set; }
 
         public string Status { get; set; }
+
+        public decimal? Grade { get; set; }
     }
 }

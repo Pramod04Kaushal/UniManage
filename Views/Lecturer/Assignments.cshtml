@@ -33,6 +33,7 @@
                     <th>Module ID</th>
                     <th>Deadline</th>
                     <th>Created</th>
+                    <th>Submissions</th>
                 </tr>
             </thead>
 
@@ -53,6 +54,18 @@
 
                         <td>
                             @item.CreatedAt.ToString("dd MMM yyyy")
+                        </td>
+
+                        <td>
+
+                            <a asp-action="Submissions"
+                               asp-route-id="@item.AssignmentID"
+                               class="view-submissions-btn">
+
+                                View Submissions
+
+                            </a>
+
                         </td>
                     </tr>
                 }

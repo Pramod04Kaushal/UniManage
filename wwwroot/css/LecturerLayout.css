@@ -91,10 +91,9 @@
 
 .content-wrapper {
     padding: 0;
-    height: calc(100vh - 70px);
-    overflow: hidden;
+    min-height: calc(100vh - 70px);
+    overflow-y: auto;
 }
-
 @media (max-width:768px) {
 
     .sidebar {

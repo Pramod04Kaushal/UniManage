@@ -62,6 +62,10 @@ namespace UniManage.Controllers
 
                 ViewBag.Student = student;
 
+                ViewBag.Batch = _context.Batches
+                    .FirstOrDefault(b =>
+                        b.BatchID == student.BatchID);
+
                 return View("ViewStudent", user);
             }
 
@@ -302,6 +306,21 @@ namespace UniManage.Controllers
             ViewBag.Departments =
                 _context.Departments.ToList();
 
+            var course = _context.Courses
+                .FirstOrDefault(c =>
+                    c.CourseName == student.Course);
+
+            if (course != null)
+            {
+                ViewBag.Batches = _context.Batches
+                    .Where(b => b.CourseID == course.CourseID)
+                    .ToList();
+            }
+            else
+            {
+                ViewBag.Batches = new List<Batch>();
+            }
+
             AddStudentViewModel model =
                 new AddStudentViewModel()
                 {
@@ -328,6 +347,8 @@ namespace UniManage.Controllers
                     Semester = student.Semester,
 
                     Course = student.Course,
+
+                    BatchID = student.BatchID,
 
                     EnrollmentYear =
                         student.EnrollmentYear
@@ -373,6 +394,8 @@ namespace UniManage.Controllers
             student.Semester = model.Semester;
 
             student.Course = model.Course;
+
+            student.BatchID = model.BatchID;
 
             student.EnrollmentYear =
                 model.EnrollmentYear;
@@ -1030,19 +1053,15 @@ namespace UniManage.Controllers
 
             if (model.SelectedModules != null)
             {
-                foreach (var moduleId in model.SelectedModules)
+                for (int i = 0; i < model.SelectedModules.Count; i++)
                 {
-                    CourseModule courseModule =
-                        new CourseModule()
+                    _context.CourseModules.Add(
+                        new CourseModule
                         {
                             CourseID = course.CourseID,
-
-                            ModuleID = moduleId,
-
-                            Semester = 1
-                        };
-
-                    _context.CourseModules.Add(courseModule);
+                            ModuleID = model.SelectedModules[i],
+                            Semester = model.SelectedSemesters[i]
+                        });
                 }
 
                 _context.SaveChanges();

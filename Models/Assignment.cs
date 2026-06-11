@@ -25,6 +25,6 @@ namespace UniManage.Models
         public int? BatchID { get; set; }
 
         public string? AttachmentPath { get; set; }
-        public int ModuleID { get; set; }
+        public int? ModuleID { get; set; }
     }
 }

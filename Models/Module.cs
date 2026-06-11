@@ -16,11 +16,11 @@ namespace UniManage.Models
 
         public int Credits { get; set; }
 
-        public string PdfPath { get; set; }
+        public string? PdfPath { get; set; }
 
-        public string PresentationPath { get; set; }
+        public string? PresentationPath { get; set; }
 
-        public string VideoPath { get; set; }
+        public string? VideoPath { get; set; }
 
         public string Description { get; set; }
 

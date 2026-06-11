@@ -177,6 +177,34 @@
 
                 <div class="form-group">
 
+                    <label>Batch</label>
+
+                    <select id="batchDropdown"
+                            name="BatchID"
+                            class="form-control">
+
+                        @foreach (var batch in ViewBag.Batches)
+                        {
+                            if (batch.BatchID == Model.BatchID)
+                            {
+                                <option value="@batch.BatchID" selected>
+                                    @batch.BatchName
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@batch.BatchID">
+                                    @batch.BatchName
+                                </option>
+                            }
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
                     <label>Semester</label>
 
                     <select asp-for="Semester"
@@ -306,6 +334,39 @@
                         courseDropdown.innerHTML +=
                             `<option value="${course.courseName}">
                                 ${course.courseName}
+                             </option>`;
+
+                    });
+
+                });
+
+        });
+
+</script>
+
+<script>
+
+    document.getElementById("courseDropdown")
+        .addEventListener("change", function () {
+
+            let courseName =
+                encodeURIComponent(this.value);
+
+            fetch('/Admin/GetBatchesByCourse?courseName=' + courseName)
+                .then(response => response.json())
+                .then(data => {
+
+                    let batchDropdown =
+                        document.getElementById("batchDropdown");
+
+                    batchDropdown.innerHTML =
+                        '<option value="">Select Batch</option>';
+
+                    data.forEach(batch => {
+
+                        batchDropdown.innerHTML +=
+                            `<option value="${batch.batchID}">
+                                ${batch.batchName}
                              </option>`;
 
                     });

@@ -24,5 +24,7 @@ namespace UniManage.Models
 
         public List<int> SelectedModules { get; set; }
 
+        public List<int> SelectedSemesters { get; set; }
+
     }
 }

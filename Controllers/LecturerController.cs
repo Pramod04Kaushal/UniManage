@@ -187,9 +187,40 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult CreateAssignment()
         {
-            ViewBag.Courses = _context.Courses.ToList();
+            int? lecturerUserId =
+                HttpContext.Session.GetInt32("UserID");
 
-            ViewBag.Modules = _context.Modules.ToList();
+            if (lecturerUserId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var lecturer = _context.Lecturers
+                .FirstOrDefault(l => l.UserID == lecturerUserId);
+
+            if (lecturer == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var lecturerCourses =
+            (
+                from cm in _context.CourseModules
+                join m in _context.Modules
+                    on cm.ModuleID equals m.ModuleID
+                join c in _context.Courses
+                    on cm.CourseID equals c.CourseID
+                where m.LecturerID == lecturer.LecturerID
+                select c
+            )
+            .Distinct()
+            .ToList();
+
+            ViewBag.Courses = lecturerCourses;
+
+            ViewBag.Modules = _context.Modules
+                .Where(m => m.LecturerID == lecturer.LecturerID)
+                .ToList();
 
             return View();
         }
@@ -253,19 +284,68 @@ namespace UniManage.Controllers
             return RedirectToAction("Dashboard");
         }
 
+        public IActionResult Submissions(int id)
+        {
+            var submissions =
+            (
+                from s in _context.AssignmentSubmissions
+
+                join st in _context.Students
+                    on s.StudentID equals st.StudentID
+
+                join u in _context.Users
+                    on st.UserID equals u.UserID
+
+                where s.AssignmentID == id
+
+                select new SubmissionViewModel
+                {
+                    SubmissionID = s.SubmissionID,
+                    StudentName = u.FullName,
+                    RegNum = st.RegNum,
+                    SubmissionDate = s.SubmissionDate,
+                    Status = s.Status,
+                    FilePath = s.FilePath,
+                    Grade = s.Grade
+                }
+            ).ToList();
+
+            return View(submissions);
+        }
+
         [HttpGet]
         public JsonResult GetModulesByCourse(int courseId)
         {
-            var modules = (from cm in _context.CourseModules
-                           join m in _context.Modules
-                           on cm.ModuleID equals m.ModuleID
-                           where cm.CourseID == courseId
-                           select new
-                           {
-                               m.ModuleID,
-                               m.ModuleName,
-                               m.ModuleCode
-                           }).ToList();
+            int? lecturerUserId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (lecturerUserId == null)
+            {
+                return Json(new List<object>());
+            }
+
+            var lecturer = _context.Lecturers
+                .FirstOrDefault(l => l.UserID == lecturerUserId);
+
+            if (lecturer == null)
+            {
+                return Json(new List<object>());
+            }
+
+            var modules =
+            (
+                from cm in _context.CourseModules
+                join m in _context.Modules
+                    on cm.ModuleID equals m.ModuleID
+                where cm.CourseID == courseId
+                   && m.LecturerID == lecturer.LecturerID
+                select new
+                {
+                    m.ModuleID,
+                    m.ModuleName,
+                    m.ModuleCode
+                }
+            ).ToList();
 
             return Json(modules);
         }
@@ -273,9 +353,40 @@ namespace UniManage.Controllers
         [HttpGet]
         public JsonResult GetBatchesByCourse(int courseId)
         {
+            int? lecturerUserId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (lecturerUserId == null)
+            {
+                return Json(new List<object>());
+            }
+
+            var lecturer = _context.Lecturers
+                .FirstOrDefault(l => l.UserID == lecturerUserId);
+
+            if (lecturer == null)
+            {
+                return Json(new List<object>());
+            }
+
+            bool hasAccess =
+            (
+                from cm in _context.CourseModules
+                join m in _context.Modules
+                    on cm.ModuleID equals m.ModuleID
+                where cm.CourseID == courseId
+                   && m.LecturerID == lecturer.LecturerID
+                select cm
+            ).Any();
+
+            if (!hasAccess)
+            {
+                return Json(new List<object>());
+            }
+
             var batches = _context.Batches
-                .Where(b => b.CourseID == courseId &&
-                            b.Status == "Active")
+                .Where(b => b.CourseID == courseId
+                         && b.Status == "Active")
                 .Select(b => new
                 {
                     b.BatchID,
@@ -285,6 +396,8 @@ namespace UniManage.Controllers
 
             return Json(batches);
         }
+
+
 
         public IActionResult Assignments()
         {

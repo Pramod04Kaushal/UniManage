@@ -96,22 +96,241 @@ namespace UniManage.Controllers
                            where e.StudentID == student.StudentID
                            select c).ToList();
 
-            ViewBag.PendingAssignments = 0;
 
-            ViewBag.AverageGrade = 0;
+            ViewBag.CourseName =
+            (
+                from e in _context.Enrollments
+                join c in _context.Courses
+                    on e.CourseID equals c.CourseID
+                where e.StudentID == student.StudentID
+                select c.CourseName
+            ).FirstOrDefault();
 
-            if (courses.Any())
-            {
-                ViewBag.Progress =
-                    (student.Semester * 100)
-                    / courses.First().Semesters;
-            }
-            else
-            {
-                ViewBag.Progress = 0;
-            }
+            ViewBag.PendingAssignments = pendingAssignments;
+
+            var grades = _context.AssignmentSubmissions
+                .Where(s =>
+                    s.StudentID == student.StudentID &&
+                    s.Grade != null)
+                .Select(s => s.Grade.Value)
+                .ToList();
+
+            ViewBag.AverageGrade =
+                grades.Any()
+                    ? Math.Round(grades.Average(), 0)
+                    : 0;
+
+            int totalAssignments =
+            (
+                from a in _context.Assignments
+                where enrolledCourseIds.Contains(a.CourseID)
+                select a
+            ).Count();
+
+            int completedAssignments =
+            (
+                from s in _context.AssignmentSubmissions
+                join a in _context.Assignments
+                    on s.AssignmentID equals a.AssignmentID
+                where s.StudentID == student.StudentID
+                   && enrolledCourseIds.Contains(a.CourseID)
+                select s
+            ).Count();
+
+            ViewBag.Progress = totalAssignments > 0
+                ? (completedAssignments * 100) / totalAssignments
+                : 0;
 
             return View(courses);
+        }
+
+        public IActionResult Assignments()
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var student = _context.Students
+                .FirstOrDefault(s => s.UserID == userId);
+
+            if (student == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var enrolledCourseIds = _context.Enrollments
+                .Where(e => e.StudentID == student.StudentID)
+                .Select(e => e.CourseID)
+                .ToList();
+
+            var assignments =
+            (
+                from a in _context.Assignments
+
+                join c in _context.Courses
+                    on a.CourseID equals c.CourseID
+
+                where enrolledCourseIds.Contains(a.CourseID)
+
+                select new StudentAssignmentViewModel
+                {
+                    AssignmentID = a.AssignmentID,
+                    Title = a.Title,
+                    CourseName = c.CourseName,
+                    Deadline = a.Deadline,
+                    Description = a.Description,
+                    AttachmentPath = a.AttachmentPath,
+
+                    IsSubmitted =
+                        _context.AssignmentSubmissions.Any(s =>
+                            s.AssignmentID == a.AssignmentID &&
+                            s.StudentID == student.StudentID)
+                }
+            )
+            .OrderBy(a => a.Deadline)
+            .ToList();
+
+            return View(assignments);
+        }
+
+        public IActionResult ViewAssignment(int id)
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var student = _context.Students
+                .FirstOrDefault(s => s.UserID == userId);
+
+            if (student == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var assignment =
+            (
+                from a in _context.Assignments
+
+                join c in _context.Courses
+                    on a.CourseID equals c.CourseID
+
+                where a.AssignmentID == id
+
+                select new StudentAssignmentViewModel
+                {
+                    AssignmentID = a.AssignmentID,
+                    Title = a.Title,
+                    Description = a.Description,
+                    CourseName = c.CourseName,
+                    Deadline = a.Deadline,
+                    AttachmentPath = a.AttachmentPath
+                }
+            ).FirstOrDefault();
+
+            if (assignment == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.HasSubmitted =
+                _context.AssignmentSubmissions.Any(s =>
+                    s.AssignmentID == id &&
+                    s.StudentID == student.StudentID);
+
+            return View(assignment);
+        }
+
+        public IActionResult SubmitAssignment(int id)
+        {
+            var assignment = _context.Assignments
+                .FirstOrDefault(a => a.AssignmentID == id);
+
+            if (assignment == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.AssignmentID = id;
+            ViewBag.AssignmentTitle = assignment.Title;
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitAssignment(
+    int assignmentId,
+    IFormFile file)
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var student = _context.Students
+                .FirstOrDefault(s => s.UserID == userId);
+
+            if (student == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (file == null || file.Length == 0)
+            {
+                return RedirectToAction(
+                    "SubmitAssignment",
+                    new { id = assignmentId });
+            }
+
+            string uploadFolder = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot/uploads/submissions");
+
+            if (!Directory.Exists(uploadFolder))
+            {
+                Directory.CreateDirectory(uploadFolder);
+            }
+
+            string savedFileName =
+                Guid.NewGuid().ToString()
+                + Path.GetExtension(file.FileName);
+
+            string fullPath =
+                Path.Combine(uploadFolder, savedFileName);
+
+            using (var stream =
+                   new FileStream(fullPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            AssignmentSubmission submission =
+                new AssignmentSubmission
+                {
+                    AssignmentID = assignmentId,
+                    StudentID = student.StudentID,
+                    FilePath = "/uploads/submissions/" + savedFileName,
+                    SubmissionDate = DateTime.Now,
+                    Status = "Submitted"
+                };
+
+            _context.AssignmentSubmissions.Add(submission);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(
+                "ViewAssignment",
+                new { id = assignmentId });
         }
 
 

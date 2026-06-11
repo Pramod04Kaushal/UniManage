@@ -1,0 +1,47 @@
+﻿.page-top {
+    margin-bottom: 25px;
+}
+
+    .page-top h1 {
+        font-size: 36px;
+        color: #0f172a;
+    }
+
+.submissions-container {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.submissions-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .submissions-table thead {
+        background: #2563eb;
+        color: white;
+    }
+
+    .submissions-table th {
+        padding: 18px;
+        text-align: left;
+    }
+
+    .submissions-table td {
+        padding: 18px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .submissions-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+.download-btn {
+    background: #10b981;
+    color: white;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+}

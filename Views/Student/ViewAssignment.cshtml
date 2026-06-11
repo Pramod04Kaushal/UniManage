@@ -1,0 +1,91 @@
+﻿@model UniManage.Models.StudentAssignmentViewModel
+
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+}
+
+<link rel="stylesheet"
+      href="~/css/AssignmentView.css"
+      asp-append-version="true" />
+
+<div class="assignment-details-card">
+
+    <div class="assignment-header">
+
+        <h1>@Model.Title</h1>
+
+        <span class="deadline-badge">
+            Due: @Model.Deadline.ToString("dd MMM yyyy")
+        </span>
+
+    </div>
+
+    <div class="assignment-info">
+
+        <div class="info-box">
+            <span>Course</span>
+            <h4>@Model.CourseName</h4>
+        </div>
+
+        <div class="info-box">
+            <span>Status</span>
+
+            @if (ViewBag.HasSubmitted)
+            {
+                <h4 class="submitted-text">
+                    Submitted
+                </h4>
+            }
+            else
+            {
+                <h4 class="pending-text">
+                    Pending
+                </h4>
+            }
+
+        </div>
+
+    </div>
+
+    <div class="description-box">
+
+        <h3>Assignment Description</h3>
+
+        <p>
+            @Model.Description
+        </p>
+
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.AttachmentPath))
+    {
+        <a href="@Model.AttachmentPath"
+           target="_blank"
+           class="download-btn">
+
+            Download Assignment
+
+        </a>
+    }
+
+    <br />
+    <br />
+
+    @if (ViewBag.HasSubmitted)
+    {
+        <div class="submitted-banner">
+            ✓ Assignment Submitted Successfully
+        </div>
+    }
+    else
+    {
+        <a asp-action="SubmitAssignment"
+           asp-route-id="@Model.AssignmentID"
+           class="submit-btn">
+
+            Submit Assignment
+
+        </a>
+    }
+
+</div>

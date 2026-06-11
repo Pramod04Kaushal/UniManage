@@ -1,0 +1,43 @@
+﻿@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+}
+
+<div class="form-container">
+
+    <h2>Submit Assignment</h2>
+
+    <br />
+
+    <h4>@ViewBag.AssignmentTitle</h4>
+
+    <br />
+
+    <form asp-action="SubmitAssignment"
+          method="post"
+          enctype="multipart/form-data">
+
+        <input type="hidden"
+               name="assignmentId"
+               value="@ViewBag.AssignmentID" />
+
+        <div class="form-group">
+
+            <label>Select File</label>
+
+            <input type="file"
+                   name="file"
+                   class="form-control"
+                   required />
+
+        </div>
+
+        <br />
+
+        <button type="submit"
+                class="btn btn-success">
+            Submit Assignment
+        </button>
+
+    </form>
+
+</div>

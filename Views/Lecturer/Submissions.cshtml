@@ -1,0 +1,74 @@
+﻿@model List<UniManage.Models.SubmissionViewModel>
+
+@{
+    Layout = "~/Views/Shared/_LecturerLayout.cshtml";
+    ViewData["Title"] = "Student Submissions";
+}
+
+<link rel="stylesheet"
+      href="~/css/Submissions.css"
+      asp-append-version="true" />
+
+<div class="page-top">
+
+    <h1>Student Submissions</h1>
+
+</div>
+
+<div class="submissions-container">
+
+    <table class="submissions-table">
+
+        <thead>
+
+            <tr>
+                <th>Student Name</th>
+                <th>Registration No</th>
+                <th>Submitted Date</th>
+                <th>Status</th>
+                <th>Grade</th>
+                <th>File</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+
+                    <td>@item.StudentName</td>
+
+                    <td>@item.RegNum</td>
+
+                    <td>
+                        @item.SubmissionDate.ToString("dd MMM yyyy")
+                    </td>
+
+                    <td>@item.Status</td>
+
+                    <td>
+                        @(item.Grade?.ToString() ?? "-")
+                    </td>
+
+                    <td>
+
+                        <a href="@item.FilePath"
+                           target="_blank"
+                           class="download-btn">
+
+                            Download
+
+                        </a>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>

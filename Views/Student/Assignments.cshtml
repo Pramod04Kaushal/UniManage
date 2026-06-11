@@ -1,0 +1,112 @@
+﻿@model List<UniManage.Models.StudentAssignmentViewModel>
+
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewData["Title"] = "Assignments";
+}
+
+<link rel="stylesheet"
+      href="~/css/Assignments.css"
+      asp-append-version="true" />
+
+<div class="page-top">
+
+    <div>
+        <h1>Assignments</h1>
+        <p>View assignment details and download coursework files</p>
+    </div>
+
+</div>
+
+<div class="assignments-container">
+
+    <table class="assignments-table">
+
+        <thead>
+
+            <tr>
+                <th>Assignment</th>
+                <th>Course</th>
+                <th>Deadline</th>
+                <th>Status</th>
+                <th>File</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr ondblclick="location.href='@Url.Action("ViewAssignment", "Student", new { id = item.AssignmentID })'">
+
+                    <td>
+
+                        <a asp-action="ViewAssignment"
+                           asp-route-id="@item.AssignmentID"
+                           class="assignment-link">
+
+                            @item.Title
+
+                        </a>
+
+                    </td>
+
+                    <td>
+                        @item.CourseName
+                    </td>
+
+                    <td>
+
+                        <span class="deadline-badge">
+                            @item.Deadline.ToString("dd MMM yyyy")
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        @if (item.IsSubmitted)
+                        {
+                            <span class="status-submitted">
+                                Submitted
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="status-pending">
+                                Pending
+                            </span>
+                        }
+
+                    </td>
+
+                    <td>
+
+                        @if (!string.IsNullOrEmpty(item.AttachmentPath))
+                        {
+                            <a href="@item.AttachmentPath"
+                               target="_blank"
+                               class="download-btn">
+
+                                Download
+
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="no-file">
+                                No File
+                            </span>
+                        }
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>

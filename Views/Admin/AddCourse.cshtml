@@ -391,9 +391,13 @@
         <td>
             ${module}
 
-            <input type="hidden"
-                   name="SelectedModules"
-                   value="${moduleId}" />
+    <input type="hidden"
+           name="SelectedModules"
+           value="${moduleId}" />
+
+    <input type="hidden"
+           name="SelectedSemesters"
+           value="${semester.replace('Semester ', '')}" />
         </td>
 
         <td>4</td>

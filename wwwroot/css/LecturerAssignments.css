@@ -67,3 +67,19 @@
         background: #f3f6ff;
         cursor: pointer;
     }
+
+
+.view-submissions-btn {
+    background: #2563eb;
+    color: white;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+    .view-submissions-btn:hover {
+        background: #1d4ed8;
+    }

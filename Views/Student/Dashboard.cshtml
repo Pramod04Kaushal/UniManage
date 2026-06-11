@@ -27,7 +27,7 @@
 
                 <p>
                     @ViewBag.RegNum •
-                    @ViewBag.Department •
+                    @ViewBag.CourseName •
                     Semester @ViewBag.Semester
                 </p>
 
@@ -87,7 +87,8 @@
 
         </div>
 
-        <div class="dashboard-card assignments-card">
+        <div class="dashboard-card assignments-card"
+             onclick="location.href='@Url.Action("Assignments", "Student")'">
 
             <div class="card-icon">
                 <i class="fas fa-tasks"></i>
