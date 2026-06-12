@@ -1,0 +1,88 @@
+﻿@model UniManage.Models.AssignmentSubmission
+
+@{
+    Layout = "~/Views/Shared/_LecturerLayout.cshtml";
+    ViewData["Title"] = "Grade Submission";
+}
+
+<link rel="stylesheet"
+      href="~/css/GradeSubmission.css"
+      asp-append-version="true" />
+
+<div class="form-container">
+
+    <div class="grade-card">
+
+
+
+        <div class="student-info">
+
+            <div class="info-box">
+                <div class="info-label">Student</div>
+                <div class="info-value">
+                    @ViewBag.StudentName
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-label">Registration No</div>
+                <div class="info-value">
+                    @ViewBag.RegNum
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-label">Submitted Date</div>
+                <div class="info-value">
+                    @Model.SubmissionDate.ToString("dd MMM yyyy")
+                </div>
+            </div>
+
+        </div>
+
+        <a asp-action="DownloadSubmission"
+           asp-route-id="@Model.SubmissionID"
+           class="download-btn">
+            Download Assignment
+        </a>
+
+        <form asp-action="GradeSubmission"
+              method="post">
+
+            <input type="hidden"
+                   name="submissionId"
+                   value="@Model.SubmissionID" />
+
+            <div class="form-group">
+
+                <label>Grade (0 - 100)</label>
+
+                <input type="number"
+                       name="grade"
+                       min="0"
+                       max="100"
+                       value="@Model.Grade"
+                       class="form-control"
+                       required />
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Feedback</label>
+
+                <textarea name="feedback"
+                          class="form-control">@Model.Feedback</textarea>
+
+            </div>
+
+            <button type="submit"
+                    class="save-btn">
+                Save Grade
+            </button>
+
+        </form>
+
+    </div>
+
+</div>

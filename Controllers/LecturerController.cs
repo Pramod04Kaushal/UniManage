@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UniManage.Models;
@@ -288,29 +289,144 @@ namespace UniManage.Controllers
         {
             var submissions =
             (
-                from s in _context.AssignmentSubmissions
+            from s in _context.AssignmentSubmissions
 
-                join st in _context.Students
-                    on s.StudentID equals st.StudentID
+            join st in _context.Students
+                on s.StudentID equals st.StudentID
 
-                join u in _context.Users
-                    on st.UserID equals u.UserID
+            join u in _context.Users
+                on st.UserID equals u.UserID
 
-                where s.AssignmentID == id
+            where s.AssignmentID == id
 
-                select new SubmissionViewModel
-                {
-                    SubmissionID = s.SubmissionID,
-                    StudentName = u.FullName,
-                    RegNum = st.RegNum,
-                    SubmissionDate = s.SubmissionDate,
-                    Status = s.Status,
-                    FilePath = s.FilePath,
-                    Grade = s.Grade
-                }
+            select new SubmissionViewModel
+            {
+                SubmissionID = s.SubmissionID,
+                StudentName = u.FullName,
+                RegNum = st.RegNum,
+                SubmissionDate = s.SubmissionDate,
+                Status = s.Status,
+                FilePath = s.FilePath,
+                Grade = s.Grade
+            }
             ).ToList();
 
+
+            ViewBag.TotalSubmissions = submissions.Count;
+
+            ViewBag.GradedCount =
+                submissions.Count(s => s.Status == "Graded");
+
+            ViewBag.PendingCount =
+                submissions.Count(s => s.Status != "Graded");
+
+            var assignment =
+                _context.Assignments
+                .FirstOrDefault(a => a.AssignmentID == id);
+
+            ViewBag.AssignmentTitle = assignment?.Title;
+
+            ViewBag.Deadline = assignment?.Deadline;
+
+            ViewBag.ModuleName =
+            (
+                from a in _context.Assignments
+                join m in _context.Modules
+                    on a.ModuleID equals m.ModuleID
+                where a.AssignmentID == id
+                select m.ModuleName
+            ).FirstOrDefault();
+
             return View(submissions);
+
+
+}
+
+
+        public IActionResult DownloadSubmission(int id)
+        {
+            var submission = _context.AssignmentSubmissions
+                .FirstOrDefault(s => s.SubmissionID == id);
+
+            if (submission == null)
+            {
+                return NotFound();
+            }
+
+            string fullPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                submission.FilePath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString())
+            );
+
+            if (!System.IO.File.Exists(fullPath))
+            {
+                return NotFound();
+            }
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(fullPath);
+
+            string fileName = Path.GetFileName(fullPath);
+
+            return File(
+                fileBytes,
+                "application/octet-stream",
+                fileName
+            );
+        }
+
+        public IActionResult GradeSubmission(int id)
+        {
+            var submission =
+                _context.AssignmentSubmissions
+                .FirstOrDefault(s => s.SubmissionID == id);
+
+            if (submission == null)
+            {
+                return NotFound();
+            }
+
+            var student =
+                (from s in _context.Students
+                 join u in _context.Users
+                 on s.UserID equals u.UserID
+                 where s.StudentID == submission.StudentID
+                 select new
+                 {
+                     StudentName = u.FullName,
+                     s.RegNum
+                 }).FirstOrDefault();
+
+            ViewBag.StudentName = student?.StudentName;
+            ViewBag.RegNum = student?.RegNum;
+
+            return View(submission);
+        }
+
+        [HttpPost]
+        public IActionResult GradeSubmission(
+    int submissionId,
+    decimal grade,
+    string? feedback)
+        {
+            var submission =
+                _context.AssignmentSubmissions
+                .FirstOrDefault(s => s.SubmissionID == submissionId);
+
+            if (submission == null)
+            {
+                return NotFound();
+            }
+
+            submission.Grade = grade;
+            submission.Feedback = feedback;
+            submission.Status = "Graded";
+
+            _context.SaveChanges();
+
+            return RedirectToAction(
+                "Submissions",
+                new { id = submission.AssignmentID });
         }
 
         [HttpGet]
@@ -831,6 +947,139 @@ namespace UniManage.Controllers
 
             return RedirectToAction("Messages",
                 new { groupId });
+        }
+
+        public IActionResult Students()
+        {
+            int? lecturerUserId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (lecturerUserId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var lecturer = _context.Lecturers
+                .FirstOrDefault(l => l.UserID == lecturerUserId);
+
+            if (lecturer == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var students =
+            (
+                from e in _context.Enrollments
+
+                join s in _context.Students
+                    on e.StudentID equals s.StudentID
+
+                join u in _context.Users
+                    on s.UserID equals u.UserID
+
+                join cm in _context.CourseModules
+                    on e.CourseID equals cm.CourseID
+
+                join m in _context.Modules
+                    on cm.ModuleID equals m.ModuleID
+
+                where m.LecturerID == lecturer.LecturerID
+
+                select u
+            )
+            .Distinct()
+            .ToList();
+
+            return View(students);
+        }
+
+        public IActionResult ViewStudent(int id)
+        {
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var student = _context.Students
+                .FirstOrDefault(s => s.UserID == id);
+
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Student = student;
+
+            ViewBag.Batch = _context.Batches
+                .FirstOrDefault(b => b.BatchID == student.BatchID);
+
+            return View(user);
+        }
+
+        public IActionResult Profile()
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public IActionResult ChangePassword(
+            string currentPassword,
+            string newPassword,
+            string confirmPassword)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == userId);
+
+            if (user == null)
+            {
+                return RedirectToAction("Profile");
+            }
+
+            if (user.PasswordHash != currentPassword)
+            {
+                TempData["Error"] = "Current password is incorrect.";
+                return RedirectToAction("Profile");
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                TempData["Error"] = "Passwords do not match.";
+                return RedirectToAction("Profile");
+            }
+
+            user.PasswordHash = newPassword;
+
+            _context.SaveChanges();
+
+            TempData["Success"] = "Password updated successfully.";
+
+            return RedirectToAction("Profile");
         }
 
     }

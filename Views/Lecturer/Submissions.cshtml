@@ -9,9 +9,56 @@
       href="~/css/Submissions.css"
       asp-append-version="true" />
 
-<div class="page-top">
+<div class="assignment-card">
 
-    <h1>Student Submissions</h1>
+    <span class="assignment-label">
+        Assignment
+    </span>
+
+    <h2>@ViewBag.AssignmentTitle</h2>
+
+    <p>@ViewBag.ModuleName</p>
+
+    <div class="assignment-footer">
+
+        <div class="deadline-badge">
+
+            Deadline:
+            @(((DateTime?)ViewBag.Deadline)?
+                        .ToString("dd MMM yyyy"))
+
+        </div>
+
+        <div class="mini-stats">
+
+            <div class="mini-stat">
+                Total:
+                <strong>@ViewBag.TotalSubmissions</strong>
+            </div>
+
+            <div class="mini-stat">
+                Graded:
+                <strong>@ViewBag.GradedCount</strong>
+            </div>
+
+            <div class="mini-stat">
+                Pending:
+                <strong>@ViewBag.PendingCount</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="table-top">
+
+    <div class="table-search">
+        <input type="text"
+               id="searchInput"
+               placeholder="Search submissions..." />
+    </div>
 
 </div>
 
@@ -20,7 +67,6 @@
     <table class="submissions-table">
 
         <thead>
-
             <tr>
                 <th>Student Name</th>
                 <th>Registration No</th>
@@ -28,8 +74,8 @@
                 <th>Status</th>
                 <th>Grade</th>
                 <th>File</th>
+                <th>Actions</th>
             </tr>
-
         </thead>
 
         <tbody>
@@ -46,22 +92,50 @@
                         @item.SubmissionDate.ToString("dd MMM yyyy")
                     </td>
 
-                    <td>@item.Status</td>
-
                     <td>
-                        @(item.Grade?.ToString() ?? "-")
+                        @if (item.Status == "Graded")
+                        {
+                            <span class="status-badge graded">
+                                ✓ Graded
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="status-badge submitted">
+                                Submitted
+                            </span>
+                        }
                     </td>
 
                     <td>
+                        @if (item.Grade != null)
+                        {
+                            <span class="grade-pill">
+                                @item.Grade%
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="grade-pill pending">
+                                -
+                            </span>
+                        }
+                    </td>
 
-                        <a href="@item.FilePath"
-                           target="_blank"
+                    <td>
+                        <a asp-action="DownloadSubmission"
+                           asp-route-id="@item.SubmissionID"
                            class="download-btn">
-
                             Download
-
                         </a>
+                    </td>
 
+                    <td>
+                        <a asp-action="GradeSubmission"
+                           asp-route-id="@item.SubmissionID"
+                           class="grade-btn">
+                            Grade
+                        </a>
                     </td>
 
                 </tr>

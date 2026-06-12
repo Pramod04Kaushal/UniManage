@@ -1,0 +1,128 @@
+﻿@model List<UniManage.Models.User>
+
+@{
+    Layout = "~/Views/Shared/_LecturerLayout.cshtml";
+    ViewData["Title"] = "Students";
+}
+
+<link rel="stylesheet"
+      href="~/css/LecturerStudents.css"
+      asp-append-version="true" />
+
+<div class="table-container">
+
+    <div class="table-top">
+
+        <div class="student-count">
+
+            Total Students:
+            <strong>@Model.Count</strong>
+
+        </div>
+
+        <div class="table-search">
+
+            <input type="text"
+                   id="searchInput"
+                   placeholder="Search students..." />
+
+        </div>
+
+    </div>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>ID</th>
+
+                <th>Full Name</th>
+
+                <th>Department</th>
+
+                <th>Email</th>
+
+                <th>Phone</th>
+
+                <th>Status</th>
+
+                <th>Created Date</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="studentsTable">
+
+            @foreach (var student in Model)
+            {
+                <tr ondblclick="window.location='/Lecturer/ViewStudent/@student.UserID'"
+                    style="cursor:pointer;">
+
+                    <td>@student.UserID</td>
+
+                    <td>@student.FullName</td>
+
+                    <td>@student.Department</td>
+
+                    <td>@student.Email</td>
+
+                    <td>@student.Phone</td>
+
+                    <td>
+
+                        <span class="@(student.Status == "Inactive"
+                                                          ? "status-inactive"
+                                                          : "status-active")">
+
+                            @(string.IsNullOrEmpty(student.Status)
+                                                    ? "Active"
+                                                    : student.Status)
+
+                    </span>
+
+                    </td>
+
+                    <td>
+                        @student.CreatedAt.ToString("dd MMM yyyy")
+                    </td>
+
+                </tr>
+                        }
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    searchInput.addEventListener("keyup", function () {
+
+        let filter =
+            searchInput.value.toLowerCase();
+
+        let rows =
+            document.querySelectorAll("#studentsTable tr");
+
+        rows.forEach(row => {
+
+            let text =
+                row.innerText.toLowerCase();
+
+            row.style.display =
+                text.includes(filter)
+                ? ""
+                : "none";
+
+        });
+
+    });
+
+</script>

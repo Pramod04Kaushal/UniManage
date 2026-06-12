@@ -5,30 +5,104 @@
     ViewData["Title"] = "My Modules";
 }
 
-<h2>My Modules</h2>
+<link rel="stylesheet"
+      href="~/css/MyModules.css"
+      asp-append-version="true" />
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Module Name</th>
-            <th>Module Code</th>
-            <th>Department</th>
-            <th>Credits</th>
+<div class="page-header">
 
-        </tr>
-    </thead>
+    <div class="module-count">
 
-    <tbody>
-        @foreach (var module in Model)
-        {
-            <tr ondblclick="window.location='@Url.Action("ModuleDetails", "Lecturer", new { id = module.ModuleID })'"
-                style="cursor:pointer;">
-                <td>@module.ModuleName</td>
-                <td>@module.ModuleCode</td>
-                <td>@module.Department</td>
-                <td>@module.Credits</td>
+        Total Modules:
+        <strong>@Model.Count()</strong>
 
+    </div>
+
+    <div class="table-search">
+
+        <input type="text"
+               id="searchInput"
+               placeholder="Search modules..." />
+
+    </div>
+
+</div>
+
+<div class="modules-container">
+
+    <table class="modules-table">
+
+        <thead>
+
+            <tr>
+                <th>Module Name</th>
+                <th>Module Code</th>
+                <th>Department</th>
+                <th>Credits</th>
             </tr>
-        }
-    </tbody>
-</table>
+
+        </thead>
+
+        <tbody id="modulesTable">
+
+            @foreach (var module in Model)
+            {
+                <tr ondblclick="window.location='@Url.Action("ModuleDetails", "Lecturer", new { id = module.ModuleID })'">
+
+                    <td>@module.ModuleName</td>
+
+                    <td>
+
+                        <span class="module-code">
+                            @module.ModuleCode
+                        </span>
+
+                    </td>
+
+                    <td>@module.Department</td>
+
+                    <td>
+
+                        <span class="credit-badge">
+                            @module.Credits Credits
+                        </span>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    searchInput.addEventListener("keyup", function () {
+
+        let filter =
+            searchInput.value.toLowerCase();
+
+        let rows =
+            document.querySelectorAll("#modulesTable tr");
+
+        rows.forEach(row => {
+
+            let text =
+                row.innerText.toLowerCase();
+
+            row.style.display =
+                text.includes(filter)
+                ? ""
+                : "none";
+
+        });
+
+    });
+
+</script>

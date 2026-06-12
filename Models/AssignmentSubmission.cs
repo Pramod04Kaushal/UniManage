@@ -19,5 +19,7 @@ namespace UniManage.Models
         public string Status { get; set; }
 
         public decimal? Grade { get; set; }
+
+        public string? Feedback { get; set; }
     }
 }

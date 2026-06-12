@@ -53,28 +53,32 @@
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a asp-controller="Lecturer"
+                       asp-action="Assignments">
                         <i class="fas fa-file-alt"></i>
                         Assignments
                     </a>
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a asp-controller="Lecturer"
+                       asp-action="Assignments">
                         <i class="fas fa-check-circle"></i>
                         Grading
                     </a>
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a asp-controller="Lecturer"
+                       asp-action="Students">
                         <i class="fas fa-user-graduate"></i>
                         Students
                     </a>
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a asp-controller="Lecturer"
+                       asp-action="Reports">
                         <i class="fas fa-chart-bar"></i>
                         Reports
                     </a>
@@ -89,7 +93,8 @@
                 </li>
 
                 <li>
-                    <a href="#">
+                    <a asp-controller="Lecturer"
+                       asp-action="Profile">
                         <i class="fas fa-user"></i>
                         Profile
                     </a>
@@ -110,7 +115,10 @@
 
             <div class="topbar">
 
-                <h4>Lecturer Portal</h4>
+                <h4 class="portal-title">
+                    Lecturer Portal
+                    <span>| @ViewData["Title"]</span>
+                </h4>
 
                 <div class="user-info">
 
