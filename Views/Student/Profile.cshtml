@@ -5,6 +5,10 @@
     ViewData["Title"] = "My Profile";
 }
 
+<link rel="stylesheet"
+      href="~/css/StudentProfile.css"
+      asp-append-version="true" />
+
 @if (Model == null)
 {
     <h2>User Not Found</h2>
@@ -59,47 +63,6 @@
 
 
 
-    <!-- PROGRESS -->
-
-    <div class="info-section">
-
-        <div class="section-header">
-
-            <i class="fas fa-chart-bar"></i>
-
-            <h3>Academic Progress</h3>
-
-        </div>
-
-        <div class="progress-item">
-
-            <label>Semester Progress</label>
-
-            <div class="progress-bar">
-
-                <div class="progress-fill"
-                     style="width:75%">
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="progress-item">
-
-            <label>Course Completion</label>
-
-            <div class="progress-bar">
-
-                <div class="progress-fill"
-                     style="width:60%">
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
 
     
 
@@ -107,16 +70,7 @@
 
     <div class="profile-layout">
 
-        <!-- LEFT SIDEBAR -->
 
-        <div class="profile-sidebar">
-
-
-
-
-
-
-        </div>
 
         <!-- RIGHT CONTENT -->
 
@@ -172,6 +126,54 @@
 
             </div>
 
+            <div class="info-section">
+
+                <div class="section-header">
+
+                    <i class="fas fa-user-graduate"></i>
+
+                    <h3>Student Information</h3>
+
+                </div>
+
+                <div class="info-grid">
+
+                    <div class="info-box">
+
+                        <label>Department</label>
+
+                        <p>@Model.Department</p>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <label>Role</label>
+
+                        <p>@Model.Role</p>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <label>Status</label>
+
+                        <p>@Model.Status</p>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <label>Joined Date</label>
+
+                        <p>@Model.CreatedAt.ToString("dd MMM yyyy")</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
             <!-- ACCOUNT -->
 
             <div class="info-section">
@@ -216,7 +218,7 @@
 
                         <label>Status</label>
 
-                        <p>Active</p>
+                        <p>@Model.Status</p>
 
                     </div>
 

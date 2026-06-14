@@ -1082,5 +1082,59 @@ namespace UniManage.Controllers
             return RedirectToAction("Profile");
         }
 
+        public IActionResult EditProfile()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
+
+            var user = _context.Users.FirstOrDefault(u => u.UserID == userId);
+
+            if (user == null)
+                return RedirectToAction("Profile");
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public IActionResult EditProfile(User model, IFormFile? profileImage)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.UserID == model.UserID);
+
+            if (user == null)
+                return RedirectToAction("Profile");
+
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.Phone = model.Phone;
+            user.Address = model.Address;
+            user.DateOfBirth = model.DateOfBirth;
+            user.Gender = model.Gender;
+
+            if (profileImage != null)
+            {
+                string fileName = Guid.NewGuid() + Path.GetExtension(profileImage.FileName);
+
+                string path = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot/images",
+                    fileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    profileImage.CopyTo(stream);
+                }
+
+                user.ProfileImage = fileName;
+            }
+
+            _context.SaveChanges();
+
+            TempData["Success"] = "Profile updated successfully";
+
+            return RedirectToAction("Profile");
+        }
+
     }
 }

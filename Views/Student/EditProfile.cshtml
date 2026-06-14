@@ -5,13 +5,9 @@
     ViewData["Title"] = "Edit Profile";
 }
 
-<div class="page-header">
-
-    <h1>Edit Profile</h1>
-
-    <p>Manage and update your profile information</p>
-
-</div>
+<link rel="stylesheet"
+      href="~/css/StudentEditProfile.css"
+      asp-append-version="true" />
 
 <div class="form-container">
     @if (TempData["Success"] != null)
@@ -36,23 +32,52 @@
 
     <div class="profile-header-card">
 
-        <img src="@(string.IsNullOrEmpty(Model.ProfileImage)
-                                 ? "/images/default-user.png"
-                                 : "/images/" + Model.ProfileImage)"
-             alt="Profile Picture" />
+        <div class="profile-left">
 
-        <div>
+            <img src="@(string.IsNullOrEmpty(Model.ProfileImage)
+                                      ? "/images/default-user.png"
+                                      : "/images/" + Model.ProfileImage)"
+                 class="header-avatar" />
 
-            <h2>@Model.FullName</h2>
+            <div class="profile-info">
 
-            <p>@Model.Role • @Model.Department</p>
+                <h2>@Model.FullName</h2>
+
+                <p>@Model.Role • @Model.Department</p>
+
+            </div>
+
+        </div>
+
+        <div class="profile-right">
+
+            <label for="profileImage"
+                   class="upload-btn">
+
+                Change Photo
+
+            </label>
+
+            <input type="file"
+                   id="profileImage"
+                   name="profileImage"
+                   hidden />
+
+            <button type="button"
+                    class="password-btn"
+                    onclick="openPasswordModal()">
+
+                Change Password
+
+            </button>
 
         </div>
 
     </div>
 
     <form asp-action="EditProfile"
-          method="post">
+          method="post"
+          enctype="multipart/form-data">
 
         <input type="hidden"
                asp-for="UserID" />
@@ -143,17 +168,6 @@
 
 
 
-        <button type="button"
-                class="change-password-btn"
-                onclick="openPasswordModal()">
-
-            <i class="fas fa-key"></i>
-            Change Password
-
-        </button>
-
-        <!-- ACTION BUTTONS -->
-
         <div class="button-group">
 
             <a asp-action="Profile"
@@ -167,7 +181,6 @@
                     class="save-btn">
 
                 <i class="fas fa-save"></i>
-
                 Save Changes
 
             </button>
