@@ -15,5 +15,7 @@
         public string? AttachmentPath { get; set; }
 
         public bool IsSubmitted { get; set; }
+
+        public DateTime? SubmissionDate { get; set; }
     }
 }

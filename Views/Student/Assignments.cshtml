@@ -9,14 +9,112 @@
       href="~/css/Assignments.css"
       asp-append-version="true" />
 
-<div class="page-top">
+
+<div class="assignments-hero">
 
     <div>
         <h1>Assignments</h1>
-        <p>View assignment details and download coursework files</p>
+        <p>Manage coursework, deadlines and downloads</p>
+    </div>
+
+    <div class="assignment-count">
+        @Model.Count Assignment(s)
     </div>
 
 </div>
+
+
+<div class="assignments-grid">
+
+    @foreach (var item in Model)
+    {
+        <div class="assignment-card">
+
+            <div class="card-header">
+
+
+
+                <h3>@item.Title</h3>
+
+                @if (item.IsSubmitted)
+                {
+                    if (item.SubmissionDate > item.Deadline)
+                    {
+                        <span class="status-late">
+                            Late Submission
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="status-submitted">
+                            Submitted
+                        </span>
+                    }
+                }
+                else if (DateTime.Now > item.Deadline)
+                {
+                    <span class="status-overdue">
+                        Overdue
+                    </span>
+                }
+                else
+                {
+                    <span class="status-pending">
+                        Pending
+                    </span>
+                }
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="info-row">
+                    <span>Course</span>
+                    <strong>@item.CourseName</strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Deadline</span>
+                    <strong>@item.Deadline.ToString("dd MMM yyyy")</strong>
+                </div>
+
+                <p class="assignment-preview">
+                    @item.Description
+                </p>
+
+
+
+            </div>
+
+            <div class="card-footer">
+
+                <a asp-action="ViewAssignment"
+                   asp-route-id="@item.AssignmentID"
+                   class="view-btn">
+
+                    View Details
+
+                </a>
+
+                @if (!string.IsNullOrEmpty(item.AttachmentPath))
+                {
+                    <a href="@item.AttachmentPath"
+                       target="_blank"
+                       class="download-btn">
+
+                        Download
+
+                    </a>
+                }
+
+            </div>
+
+        </div>
+    }
+
+</div>
+
+@*
 
 <div class="assignments-container">
 
@@ -110,3 +208,5 @@
     </table>
 
 </div>
+
+*@

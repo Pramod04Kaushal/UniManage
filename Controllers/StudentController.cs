@@ -2,6 +2,7 @@
 using UniManage.Models;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace UniManage.Controllers
 {
@@ -65,12 +66,14 @@ namespace UniManage.Controllers
                 from a in _context.Assignments
                 where enrolledCourseIds.Contains(a.CourseID)
 
-            && !_context.AssignmentSubmissions.Any(s =>
-                    s.AssignmentID == a.AssignmentID
-                    && s.StudentID == student.StudentID)
+                && !_context.AssignmentSubmissions.Any(s =>
+                       s.AssignmentID == a.AssignmentID
+                       && s.StudentID == student.StudentID)
 
-    select a
-).Count();
+
+
+                select a
+                ).Count();
 
             // VIEWBAG
             ViewBag.StudentName = student.FullName;
@@ -141,6 +144,57 @@ namespace UniManage.Controllers
                 ? (completedAssignments * 100) / totalAssignments
                 : 0;
 
+            var upcomingAssignments =
+            (
+                from a in _context.Assignments
+
+                join c in _context.Courses
+                    on a.CourseID equals c.CourseID
+
+                where enrolledCourseIds.Contains(a.CourseID)
+
+                && !_context.AssignmentSubmissions.Any(s =>
+                       s.AssignmentID == a.AssignmentID
+                       && s.StudentID == student.StudentID)
+
+                orderby a.Deadline
+
+                select new
+                {
+                    AssignmentID = a.AssignmentID,
+                    a.Title,
+                    CourseName = c.CourseName,
+                    a.Deadline
+                }
+            )
+            .Take(5)
+            .ToList();
+
+            ViewBag.UpcomingAssignments = upcomingAssignments;
+
+
+            var recentGrades =
+            (
+                from s in _context.AssignmentSubmissions
+
+                join a in _context.Assignments
+                    on s.AssignmentID equals a.AssignmentID
+
+                where s.StudentID == student.StudentID
+
+                orderby s.SubmissionDate descending
+
+                select new
+                {
+                    AssignmentTitle = a.Title,
+                    Grade = s.Grade
+                }
+            )
+            .Take(5)
+            .ToList();
+
+            ViewBag.RecentGrades = recentGrades;
+
             return View(courses);
         }
 
@@ -188,7 +242,15 @@ namespace UniManage.Controllers
                     IsSubmitted =
                         _context.AssignmentSubmissions.Any(s =>
                             s.AssignmentID == a.AssignmentID &&
+                            s.StudentID == student.StudentID),
+
+                    SubmissionDate =
+                        _context.AssignmentSubmissions
+                        .Where(s =>
+                            s.AssignmentID == a.AssignmentID &&
                             s.StudentID == student.StudentID)
+                        .Select(s => (DateTime?)s.SubmissionDate)
+                        .FirstOrDefault()
                 }
             )
             .OrderBy(a => a.Deadline)
@@ -378,15 +440,13 @@ namespace UniManage.Controllers
             return View(user);
         }
 
-
-
         [HttpPost]
-        public IActionResult EditProfile(
+        public async Task<IActionResult> EditProfile(
             User model,
-            string CurrentPassword,
-            string NewPassword,
-            string ConfirmPassword)
+            IFormFile? profileImage)
         {
+
+
             var user = _context.Users
                 .FirstOrDefault(u => u.UserID == model.UserID);
 
@@ -395,20 +455,52 @@ namespace UniManage.Controllers
                 return RedirectToAction("Profile");
             }
 
-            // UPDATE PROFILE
-
             user.FullName = model.FullName;
             user.Email = model.Email;
             user.Phone = model.Phone;
             user.Address = model.Address;
             user.Username = model.Username;
 
+            // SAVE PROFILE IMAGE
+
+            if (profileImage != null && profileImage.Length > 0)
+            {
+                string uploadFolder = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot/images");
+
+                if (!Directory.Exists(uploadFolder))
+                {
+                    Directory.CreateDirectory(uploadFolder);
+                }
+
+                string fileName =
+                    Guid.NewGuid().ToString() +
+                    Path.GetExtension(profileImage.FileName);
+
+                string filePath =
+                    Path.Combine(uploadFolder, fileName);
+
+                using (var stream = new FileStream(
+                    filePath,
+                    FileMode.Create))
+                {
+                    await profileImage.CopyToAsync(stream);
+                }
+
+                user.ProfileImage = fileName;
+            }
+
+            await _context.SaveChangesAsync();
 
 
-            _context.SaveChanges();
 
             return RedirectToAction("Profile");
         }
+
+
+
+
 
         [HttpPost]
         public IActionResult ChangePassword(

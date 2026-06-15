@@ -138,31 +138,48 @@
                 </h2>
             </div>
 
-            <div class="assignment-item">
+            @if (ViewBag.UpcomingAssignments.Count > 0)
+            {
+                @foreach (var assignment in ViewBag.UpcomingAssignments)
+                {
+                    <div class="assignment-item">
 
-                <div>
-                    <h4>Application Development</h4>
-                    <p>Coursework 01</p>
+                        <div>
+                            <h4>
+                                <a asp-action="ViewAssignment"
+                                   asp-route-id="@assignment.AssignmentID"
+                                   class="assignment-link">
+
+                                    @assignment.Title
+
+                                </a>
+                            </h4>
+
+                            <p>@assignment.CourseName</p>
+                        </div>
+
+                        <span class="assignment-date">
+                            @assignment.Deadline.ToString("dd MMM yyyy")
+                        </span>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state">
+
+                    <i class="fas fa-exclamation-circle empty-icon"></i>
+
+                    <h4>No Upcoming Assignments</h4>
+
+                    <p>
+                        You currently have no pending assignments.
+                        New assignments will appear here when lecturers publish them.
+                    </p>
+
                 </div>
-
-                <span class="assignment-date">
-                    15 Jun 2026
-                </span>
-
-            </div>
-
-            <div class="assignment-item">
-
-                <div>
-                    <h4>ASE</h4>
-                    <p>Coursework 02</p>
-                </div>
-
-                <span class="assignment-date">
-                    20 Jun 2026
-                </span>
-
-            </div>
+            }
 
         </div>
 
@@ -176,29 +193,49 @@
                 </h2>
             </div>
 
-            <div class="grade-item">
+            @if (ViewBag.RecentGrades.Count > 0)
+            {
+                @foreach (var grade in ViewBag.RecentGrades)
+                {
+                    <div class="grade-item">
 
-                <div>
-                    <h4>Final Project</h4>
+                        <div>
+                            <h4>@grade.AssignmentTitle</h4>
+                        </div>
+
+                        @if (grade.Grade != null)
+                        {
+                            <div class="grade-score">
+                                @grade.Grade%
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="grade-pending">
+                                Pending
+                            </div>
+                        }
+
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state">
+
+                    <i class="fas fa-chart-line empty-icon"></i>
+
+                    <h4>No Grades Available</h4>
+
+                    <p>
+                        Your graded assignments will appear here once
+                        lecturers have reviewed and published the results.
+                    </p>
+
                 </div>
+            }
 
-                <div class="grade-pending">
-                    Pending
-                </div>
-
-            </div>
-
-            <div class="grade-item">
-
-                <div>
-                    <h4>Software Engineering</h4>
-                </div>
-
-                <div class="grade-score">
-                    75%
-                </div>
-
-            </div>
+        </div>
 
         </div>
 

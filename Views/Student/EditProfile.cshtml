@@ -10,23 +10,7 @@
       asp-append-version="true" />
 
 <div class="form-container">
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert-success">
 
-            @TempData["Success"]
-
-        </div>
-    }
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert-danger">
-
-            @TempData["Error"]
-
-        </div>
-    }
 
     <!-- PROFILE HEADER -->
 
@@ -58,10 +42,7 @@
 
             </label>
 
-            <input type="file"
-                   id="profileImage"
-                   name="profileImage"
-                   hidden />
+
 
             <button type="button"
                     class="password-btn"
@@ -78,6 +59,11 @@
     <form asp-action="EditProfile"
           method="post"
           enctype="multipart/form-data">
+
+        <input type="file"
+               id="profileImage"
+               name="profileImage"
+               hidden />
 
         <input type="hidden"
                asp-for="UserID" />

@@ -102,6 +102,41 @@ body {
         color: #2563eb;
     }
 
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 50px 20px;
+    min-height: 180px;
+}
+
+.empty-icon {
+    font-size: 50px;
+    color: #ef4444;
+    margin-bottom: 15px;
+}
+
+.empty-state h4 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.empty-state p {
+    margin-top: 10px;
+    max-width: 320px;
+    color: #6b7280;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.grades-empty .empty-icon {
+    color: #10b981;
+}
+
 .profile-card {
     background: #fff;
     padding: 20px;
@@ -461,15 +496,15 @@ td {
 }
 
     .student-logo img {
-        width: 45px;
-        height: 45px;
-        object-fit: contain;
+        height: 64px;
+        width: auto;
+        display: block;
     }
 
     .student-logo h2 {
         color: #2f80ff;
         margin: 0;
-        font-size: 34px;
+        font-size: 30px;
         font-weight: 700;
     }
 
