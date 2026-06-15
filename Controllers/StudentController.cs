@@ -636,6 +636,7 @@ namespace UniManage.Controllers
         LecturerUserID = u.UserID,
         LecturerName = u.FullName,
         Department = l.Department,
+        ProfileImage = u.ProfileImage,
 
         ChatID = _context.PrivateChats
             .Where(pc =>
@@ -866,6 +867,7 @@ namespace UniManage.Controllers
                     LecturerUserID = u.UserID,
                     LecturerName = u.FullName,
                     Department = l.Department,
+                    ProfileImage = u.ProfileImage,
                     ChatID = 0
                 }
             )

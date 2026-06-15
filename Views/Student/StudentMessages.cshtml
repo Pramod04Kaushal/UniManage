@@ -20,6 +20,7 @@
 
         <div class="search-box">
             <input type="text"
+                   id="chatSearch"
                    placeholder="Search Chats..." />
         </div>
 
@@ -31,12 +32,21 @@
 
             @foreach (var lecturer in Model.Lecturers)
             {
-                <a class="chat-user"
+                <a class="chat-user searchable-chat"
+                   data-name="@lecturer.LecturerName"
                    href="@Url.Action("PrivateChat",
-                                  new { lecturerUserId = lecturer.LecturerUserID })">
+                                     new { lecturerUserId = lecturer.LecturerUserID })">
 
-                <img src="~/images/logo.png"
-                     class="group-avatar" />
+                @if (!string.IsNullOrEmpty(lecturer.ProfileImage))
+                    {
+                        <img src="~/images/@lecturer.ProfileImage"
+                             class="group-avatar" />
+                    }
+                    else
+                    {
+                        <img src="~/images/default-user.png"
+                             class="group-avatar" />
+                    }
 
                     <div class="chat-user-info">
 
@@ -68,9 +78,10 @@
 
             @foreach (var group in Model.Groups)
             {
-                <a class="chat-user"
+                <a class="chat-user searchable-chat"
+                   data-name="@group.CourseName @group.BatchName"
                    href="@Url.Action("Messages",
-                                  new { groupId = group.GroupID })">
+                                     new { groupId = group.GroupID })">
 
                 <img src="~/images/logo.png"
                      class="group-avatar" />
@@ -102,8 +113,23 @@
 
             <div class="chat-header">
 
-                <img src="~/images/logo.png"
-                     class="group-avatar" />
+                @{
+                    var selectedLecturer =
+                    Model.Lecturers.FirstOrDefault(l =>
+                    l.LecturerUserID == ViewBag.LecturerUserId);
+                }
+
+                @if (selectedLecturer != null &&
+                            !string.IsNullOrEmpty(selectedLecturer.ProfileImage))
+                {
+                    <img src="~/images/@selectedLecturer.ProfileImage"
+                         class="group-avatar" />
+                }
+                else
+                {
+                    <img src="~/images/default-user.png"
+                         class="group-avatar" />
+                }
 
                 <div>
                     <h5>@ViewBag.LecturerName</h5>
@@ -358,4 +384,28 @@
         }
 
     });
+</script>
+
+
+<script>
+    document.getElementById("chatSearch")
+        .addEventListener("keyup", function () {
+
+            let value = this.value.toLowerCase();
+
+            document
+                .querySelectorAll(".searchable-chat")
+                .forEach(function (chat) {
+
+                    let name =
+                        chat.dataset.name.toLowerCase();
+
+                    if (name.includes(value)) {
+                        chat.style.display = "flex";
+                    }
+                    else {
+                        chat.style.display = "none";
+                    }
+                });
+        });
 </script>

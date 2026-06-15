@@ -131,11 +131,44 @@
                     <span>| @ViewData["Title"]</span>
                 </h4>
 
-                <div class="user-info">
+                <div class="profile-dropdown">
 
-                    <i class="fas fa-user-circle"></i>
+                    <div class="user-info profile-trigger">
 
-                    <span>Lecturer</span>
+                        @if (!string.IsNullOrEmpty(ViewBag.NavbarProfileImage))
+                        {
+                            <img src="~/images/@ViewBag.NavbarProfileImage"
+                                 class="nav-profile-pic" />
+                        }
+                        else
+                        {
+                            <img src="~/images/default-user.png"
+                                 class="nav-profile-pic" />
+                        }
+
+                        <span>@ViewBag.NavbarLecturerName</span>
+
+                    </div>
+
+                    <div class="dropdown-menu-custom">
+
+                        <a asp-controller="Lecturer"
+                           asp-action="Profile">
+
+                            <i class="fas fa-user"></i>
+                            My Profile
+
+                        </a>
+
+                        <a asp-controller="Account"
+                           asp-action="Login">
+
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+
+                        </a>
+
+                    </div>
 
                 </div>
 
@@ -156,6 +189,33 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const dropdown =
+                document.querySelector(".profile-dropdown");
+
+            const trigger =
+                document.querySelector(".profile-trigger");
+
+            trigger?.addEventListener("click", function (e) {
+
+                e.stopPropagation();
+
+                dropdown.classList.toggle("active");
+
+            });
+
+            document.addEventListener("click", function () {
+
+                dropdown?.classList.remove("active");
+
+            });
+
+        });
+    </script>
 
 </body>
 

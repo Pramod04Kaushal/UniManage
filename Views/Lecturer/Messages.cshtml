@@ -2,6 +2,7 @@
 
 @{
     Layout = "~/Views/Shared/_LecturerLayout.cshtml";
+    ViewData["Title"] = "Messages";
 }
 
 <link rel="stylesheet"
@@ -16,6 +17,7 @@
 
         <div class="search-box">
             <input type="text"
+                   id="chatSearch"
                    placeholder="Search chats..." />
         </div>
 
@@ -32,12 +34,21 @@
                 @foreach (var chat in ViewBag.PrivateChats)
                 {
                     <a class="chat-user"
+                       data-name="@chat.StudentName.ToLower()"
                        href="@Url.Action("PrivateChat",
-                                                                "Lecturer",
-                                                                new { chatId = chat.ChatID })">
+                                             "Lecturer",
+                                             new { chatId = chat.ChatID })">
 
-                <img src="~/images/logo.png"
-                     class="group-avatar" />
+                @if (!string.IsNullOrEmpty(chat.ProfileImage))
+                        {
+                            <img src="~/images/@chat.ProfileImage"
+                                 class="group-avatar" />
+                        }
+                        else
+                        {
+                            <img src="~/images/default-user.png"
+                                 class="group-avatar" />
+                        }
 
                         <div class="chat-user-info">
 
@@ -71,9 +82,10 @@
             @foreach (var group in Model)
             {
                 <a class="chat-user @(ViewBag.SelectedGroupId == group.GroupID ? "active" : "")"
+                   data-name="@($"{group.CourseName} {group.BatchName}".ToLower())"
                    href="@Url.Action("Messages",
-                                                        "Lecturer",
-                                                        new { groupId = group.GroupID })">
+                                        "Lecturer",
+                                        new { groupId = group.GroupID })">
 
                 <img src="~/images/logo.png"
                      class="group-avatar" />
@@ -103,8 +115,10 @@
 
             <div class="chat-header">
 
-                <img src="~/images/logo.png"
-                     class="group-avatar" />
+                <img src="@(string.IsNullOrEmpty(ViewBag.StudentProfileImage)
+                             ? Url.Content("~/images/default-user.png")
+                             : Url.Content("~/images/" + ViewBag.StudentProfileImage))"
+                 class="group-avatar" />
 
                 <div>
                     <h5>@ViewBag.StudentName</h5>
@@ -365,4 +379,33 @@
         }
 
     });
+</script>
+
+
+<script>
+    document.getElementById("chatSearch")
+        .addEventListener("keyup", function () {
+
+            let searchText = this.value.toLowerCase();
+
+            let chats =
+                document.querySelectorAll(".chat-user");
+
+            chats.forEach(function (chat) {
+
+                let name =
+                    chat.getAttribute("data-name");
+
+                if (name && name.includes(searchText))
+                {
+                    chat.style.display = "flex";
+                }
+                else
+                {
+                    chat.style.display = "none";
+                }
+
+            });
+
+        });
 </script>

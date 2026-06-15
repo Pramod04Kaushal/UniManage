@@ -19,6 +19,7 @@ namespace UniManage.Controllers
         public IActionResult Dashboard()
         {
             LoadUnreadMessageCount();
+            LoadNavbarData();
 
             // GET LOGGED-IN USER ID
 
@@ -85,6 +86,7 @@ namespace UniManage.Controllers
         public IActionResult MyModules()
         {
             LoadUnreadMessageCount();
+            LoadNavbarData();
 
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
@@ -385,6 +387,9 @@ namespace UniManage.Controllers
 
         public IActionResult GradeSubmission(int id)
         {
+
+
+
             var submission =
                 _context.AssignmentSubmissions
                 .FirstOrDefault(s => s.SubmissionID == id);
@@ -526,6 +531,7 @@ namespace UniManage.Controllers
         public IActionResult Assignments()
         {
             LoadUnreadMessageCount();
+            LoadNavbarData();
 
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
@@ -603,6 +609,7 @@ namespace UniManage.Controllers
         public IActionResult Messages(int? groupId)
         {
             LoadUnreadMessageCount();
+            LoadNavbarData();
 
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
@@ -634,6 +641,7 @@ namespace UniManage.Controllers
                     c.ChatID,
                     StudentName = u.FullName,
                     StudentUserID = u.UserID,
+                    ProfileImage = u.ProfileImage,
 
                     UnreadCount =
                         _context.PrivateMessages.Count(m =>
@@ -743,6 +751,7 @@ namespace UniManage.Controllers
         public IActionResult PrivateChat(int chatId)
         {
             LoadUnreadMessageCount();
+            LoadNavbarData();
 
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
@@ -780,7 +789,9 @@ namespace UniManage.Controllers
             ViewBag.IsPrivateChat = true;
             ViewBag.ChatID = chatId;
             ViewBag.StudentName = student?.FullName;
+            ViewBag.StudentProfileImage = student?.ProfileImage;
             ViewBag.CurrentUserId = lecturerUserId;
+
 
             ViewBag.PrivateMessages =
             (
@@ -816,6 +827,7 @@ namespace UniManage.Controllers
                     c.ChatID,
                     StudentName = u.FullName,
                     StudentUserID = u.UserID,
+                    ProfileImage = u.ProfileImage,
 
                     UnreadCount =
                         _context.PrivateMessages.Count(m =>
@@ -1017,6 +1029,7 @@ namespace UniManage.Controllers
         public IActionResult Students()
         {
             LoadUnreadMessageCount();
+            LoadNavbarData();
 
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
@@ -1089,6 +1102,7 @@ namespace UniManage.Controllers
         public IActionResult Profile()
         {
             LoadUnreadMessageCount();
+            LoadNavbarData();
 
             int? userId =
                 HttpContext.Session.GetInt32("UserID");
@@ -1154,6 +1168,7 @@ namespace UniManage.Controllers
         public IActionResult EditProfile()
         {
             LoadUnreadMessageCount();
+            LoadNavbarData();
 
             int? userId = HttpContext.Session.GetInt32("UserID");
 
@@ -1205,6 +1220,24 @@ namespace UniManage.Controllers
             TempData["Success"] = "Profile updated successfully";
 
             return RedirectToAction("Profile");
+        }
+
+        private void LoadNavbarData()
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (userId == null)
+                return;
+
+            var user = _context.Users
+                .FirstOrDefault(u => u.UserID == userId);
+
+            if (user == null)
+                return;
+
+            ViewBag.NavbarLecturerName = user.FullName;
+            ViewBag.NavbarProfileImage = user.ProfileImage;
         }
 
     }

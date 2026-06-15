@@ -8,6 +8,8 @@
 
         public string Department { get; set; } = "";
 
+        public string? ProfileImage { get; set; }
+
         public int ChatID { get; set; }
 
         public int UnreadCount { get; set; }
