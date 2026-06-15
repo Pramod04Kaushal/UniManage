@@ -587,3 +587,25 @@ td {
     font-size: 55px;
     color: white;
 }
+
+
+
+.message-btn {
+    position: relative;
+}
+
+.message-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+}

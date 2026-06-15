@@ -9,5 +9,7 @@
         public string Department { get; set; } = "";
 
         public int ChatID { get; set; }
+
+        public int UnreadCount { get; set; }
     }
 }

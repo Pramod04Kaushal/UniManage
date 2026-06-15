@@ -87,8 +87,19 @@
                 <li>
                     <a asp-controller="Lecturer"
                        asp-action="Messages">
+
                         <i class="fas fa-comments"></i>
-                        Messages
+
+                        <span>Messages</span>
+
+                        @if (ViewBag.TotalUnreadMessages != null &&
+                                                ViewBag.TotalUnreadMessages > 0)
+                        {
+                            <span class="sidebar-badge">
+                                @ViewBag.TotalUnreadMessages
+                            </span>
+                        }
+
                     </a>
                 </li>
 

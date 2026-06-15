@@ -18,6 +18,8 @@ namespace UniManage.Controllers
         // LECTURER DASHBOARD
         public IActionResult Dashboard()
         {
+            LoadUnreadMessageCount();
+
             // GET LOGGED-IN USER ID
 
             int? lecturerUserId =
@@ -82,6 +84,8 @@ namespace UniManage.Controllers
 
         public IActionResult MyModules()
         {
+            LoadUnreadMessageCount();
+
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
 
@@ -107,6 +111,8 @@ namespace UniManage.Controllers
 
         public IActionResult ModuleDetails(int id)
         {
+            LoadUnreadMessageCount();
+
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
 
@@ -188,6 +194,8 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult CreateAssignment()
         {
+            LoadUnreadMessageCount();
+
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
 
@@ -517,6 +525,8 @@ namespace UniManage.Controllers
 
         public IActionResult Assignments()
         {
+            LoadUnreadMessageCount();
+
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
 
@@ -592,6 +602,8 @@ namespace UniManage.Controllers
 
         public IActionResult Messages(int? groupId)
         {
+            LoadUnreadMessageCount();
+
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
 
@@ -621,7 +633,13 @@ namespace UniManage.Controllers
                 {
                     c.ChatID,
                     StudentName = u.FullName,
-                    StudentUserID = u.UserID
+                    StudentUserID = u.UserID,
+
+                    UnreadCount =
+                        _context.PrivateMessages.Count(m =>
+                            m.ChatID == c.ChatID
+                            && m.SenderUserID == u.UserID
+                            && !m.IsRead)
                 }
             ).ToList();
 
@@ -724,6 +742,8 @@ namespace UniManage.Controllers
 
         public IActionResult PrivateChat(int chatId)
         {
+            LoadUnreadMessageCount();
+
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
 
@@ -734,6 +754,20 @@ namespace UniManage.Controllers
 
             var chat = _context.PrivateChats
                 .FirstOrDefault(c => c.ChatID == chatId);
+
+            var unreadMessages = _context.PrivateMessages
+                .Where(m =>
+                    m.ChatID == chatId
+                    && m.SenderUserID != lecturerUserId.Value
+                    && !m.IsRead)
+                .ToList();
+
+            foreach (var message in unreadMessages)
+            {
+                message.IsRead = true;
+            }
+
+            _context.SaveChanges();
 
             if (chat == null)
             {
@@ -771,18 +805,25 @@ namespace UniManage.Controllers
             ).ToList();
 
             var privateChats =
-(
-    from c in _context.PrivateChats
-    join u in _context.Users
-        on c.StudentUserID equals u.UserID
-    where c.LecturerUserID == lecturerUserId.Value
-    select new
-    {
-        c.ChatID,
-        StudentName = u.FullName,
-        StudentUserID = u.UserID
-    }
-).ToList();
+            (
+                from c in _context.PrivateChats
+                join u in _context.Users
+                    on c.StudentUserID equals u.UserID
+                where c.LecturerUserID == lecturerUserId.Value
+
+                select new
+                {
+                    c.ChatID,
+                    StudentName = u.FullName,
+                    StudentUserID = u.UserID,
+
+                    UnreadCount =
+                        _context.PrivateMessages.Count(m =>
+                            m.ChatID == c.ChatID
+                            && m.SenderUserID == u.UserID
+                            && !m.IsRead)
+                }
+            ).ToList();
 
             ViewBag.PrivateChats = privateChats;
 
@@ -949,8 +990,34 @@ namespace UniManage.Controllers
                 new { groupId });
         }
 
+
+        private void LoadUnreadMessageCount()
+        {
+            int? lecturerUserId =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (lecturerUserId == null)
+                return;
+
+            ViewBag.TotalUnreadMessages =
+            (
+                from m in _context.PrivateMessages
+
+                join c in _context.PrivateChats
+                    on m.ChatID equals c.ChatID
+
+                where c.LecturerUserID == lecturerUserId.Value
+                   && m.SenderUserID != lecturerUserId.Value
+                   && !m.IsRead
+
+                select m
+            ).Count();
+        }
+
         public IActionResult Students()
         {
+            LoadUnreadMessageCount();
+
             int? lecturerUserId =
                 HttpContext.Session.GetInt32("UserID");
 
@@ -1021,6 +1088,8 @@ namespace UniManage.Controllers
 
         public IActionResult Profile()
         {
+            LoadUnreadMessageCount();
+
             int? userId =
                 HttpContext.Session.GetInt32("UserID");
 
@@ -1084,6 +1153,8 @@ namespace UniManage.Controllers
 
         public IActionResult EditProfile()
         {
+            LoadUnreadMessageCount();
+
             int? userId = HttpContext.Session.GetInt32("UserID");
 
             if (userId == null)

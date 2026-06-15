@@ -84,6 +84,26 @@ namespace UniManage.Controllers
             ViewBag.TotalCourses = enrolledCourses;
             ViewBag.TotalModules = totalModules;
 
+            var unreadMessageCount =
+            (
+                from pm in _context.PrivateMessages
+
+                join pc in _context.PrivateChats
+                    on pm.ChatID equals pc.ChatID
+
+                where pc.StudentUserID == studentUserId.Value
+                      && pm.SenderUserID != studentUserId.Value
+                      && pm.IsRead == false
+
+                select pm
+            ).Count();
+
+            ViewBag.UnreadMessageCount = unreadMessageCount;
+
+            ViewBag.UnreadMessageCount = unreadMessageCount;
+
+            ViewBag.UnreadMessageCount = unreadMessageCount;
+
             var notifications = _context.Notifications
     .Where(n => n.UserID == studentUserId.Value)
     .OrderByDescending(n => n.CreatedAt)
@@ -616,7 +636,27 @@ namespace UniManage.Controllers
         LecturerUserID = u.UserID,
         LecturerName = u.FullName,
         Department = l.Department,
-        ChatID = 0
+
+        ChatID = _context.PrivateChats
+            .Where(pc =>
+                pc.StudentUserID == userId.Value &&
+                pc.LecturerUserID == u.UserID)
+            .Select(pc => pc.ChatID)
+            .FirstOrDefault(),
+
+        UnreadCount = _context.PrivateMessages
+    .Count(pm =>
+        pm.ChatID ==
+            _context.PrivateChats
+                .Where(pc =>
+                    pc.StudentUserID == userId.Value &&
+                    pc.LecturerUserID == u.UserID)
+                .Select(pc => pc.ChatID)
+                .FirstOrDefault()
+        &&
+        pm.SenderUserID == u.UserID
+        &&
+        !pm.IsRead)
     }
 )
 .Distinct()
@@ -721,6 +761,8 @@ namespace UniManage.Controllers
         c.StudentUserID == userId.Value &&
         c.LecturerUserID == lecturerUserId);
 
+
+
             if (chat == null)
             {
                 chat = new PrivateChat
@@ -733,6 +775,20 @@ namespace UniManage.Controllers
                 _context.PrivateChats.Add(chat);
                 _context.SaveChanges();
             }
+
+            var unreadMessages = _context.PrivateMessages
+                .Where(m =>
+                    m.ChatID == chat.ChatID &&
+                    m.SenderUserID != userId.Value &&
+                    m.IsRead == false)
+                .ToList();
+
+            foreach (var message in unreadMessages)
+            {
+                message.IsRead = true;
+            }
+
+            _context.SaveChanges();
 
             ViewBag.ChatID = chat.ChatID;
 

@@ -39,9 +39,23 @@
                 <img src="~/images/logo.png"
                      class="group-avatar" />
 
-                        <div>
-                            <h6>@chat.StudentName</h6>
+                        <div class="chat-user-info">
+
+                            <div class="chat-top">
+
+                                <h6>@chat.StudentName</h6>
+
+                        @if (chat.UnreadCount > 0)
+                                {
+                                    <span class="chat-badge">
+                                        @chat.UnreadCount
+                                    </span>
+                                }
+
+                            </div>
+
                             <small>Student</small>
+
                         </div>
 
                     </a>

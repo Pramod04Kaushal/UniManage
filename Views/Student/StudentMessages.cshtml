@@ -8,6 +8,10 @@
       href="~/css/Messages.css"
       asp-append-version="true" />
 
+<script>
+    document.body.classList.add("messages-page");
+</script>
+
 <div class="chat-container">
 
     <!-- LEFT SIDEBAR -->
@@ -34,12 +38,25 @@
                 <img src="~/images/logo.png"
                      class="group-avatar" />
 
-                    <div>
-                        <h6>@lecturer.LecturerName</h6>
+                    <div class="chat-user-info">
+
+                        <div class="chat-top">
+
+                            <h6>@lecturer.LecturerName</h6>
+
+                        @if (lecturer.UnreadCount > 0)
+                            {
+                                <span class="chat-badge">
+                                    @lecturer.UnreadCount
+                                </span>
+                            }
+
+                        </div>
 
                         <small>
                             @lecturer.Department
                         </small>
+
                     </div>
 
                 </a>

@@ -19,5 +19,7 @@ namespace UniManage.Models
         public string? FileName { get; set; }
 
         public DateTime SentAt { get; set; }
+
+        public bool IsRead { get; set; } = false;
     }
 }

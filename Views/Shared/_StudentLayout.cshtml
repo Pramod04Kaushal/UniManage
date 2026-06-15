@@ -56,6 +56,13 @@
 
                     <i class="fas fa-comments"></i>
 
+                    @if (ViewBag.UnreadMessageCount > 0)
+                    {
+                        <span class="message-badge">
+                            @ViewBag.UnreadMessageCount
+                        </span>
+                    }
+
                 </a>
 
                 <div class="profile-dropdown">
