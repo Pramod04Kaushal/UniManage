@@ -1,0 +1,220 @@
+﻿@model List<UniManage.Models.ViewModels.ApplicationViewModel>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Course Applications";
+}
+
+<link rel="stylesheet"
+      href="~/css/Applications.css"
+      asp-append-version="true" />
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="toast-success" id="successToast">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="applications-container">
+
+    <div class="filter-bar">
+
+        <form method="get" asp-action="Applications">
+
+            <select id="departmentFilter"
+                    name="departmentFilter"
+                    class="filter-select">
+
+                <option value="ALL">All Departments</option>
+
+                @foreach (var dept in ViewBag.Departments)
+                {
+                    <option value="@dept.DepartmentName">
+                        @dept.DepartmentName
+                    </option>
+                }
+
+            </select>
+
+            <input type="text"
+                   id="searchInput"
+                   name="search"
+                   class="search-box"
+                   placeholder="Search applications..."
+                   value="@Context.Request.Query["search"]" />
+
+
+
+        </form>
+
+    </div>
+
+    <table class="applications-table">
+
+        <thead class="table-dark">
+
+            <tr>
+                <th>Student</th>
+                <th>Email</th>
+                <th>Course</th>
+                <th>Applied Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr class="application-row"
+                    data-student="@item.StudentName.ToLower()"
+                    data-email="@item.Email.ToLower()"
+                    data-course="@item.CourseName.ToLower()">
+
+                    <td>@item.StudentName</td>
+
+                    <td>@item.Email</td>
+
+                    <td>@item.CourseName</td>
+
+                    <td>
+                        @item.AppliedDate.ToString("dd MMM yyyy")
+                    </td>
+
+                    <td>
+
+                        @if (item.Status == "Approved")
+                        {
+                            <span class="status-approved">
+                                Approved
+                            </span>
+                        }
+                        else if (item.Status == "Pending")
+                        {
+                            <span class="status-pending">
+                                Pending
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="status-rejected">
+                                Rejected
+                            </span>
+                        }
+
+                    </td>
+
+                    <td>
+
+                        @if (item.Status == "Pending")
+                        {
+                            <a asp-controller="Admin"
+                               asp-action="ApproveApplication"
+                               asp-route-id="@item.ApplicationID"
+                               class="btn-approve">
+
+                                Approve
+
+                            </a>
+
+                            <a asp-controller="Admin"
+                               asp-action="RejectApplication"
+                               asp-route-id="@item.ApplicationID"
+                               class="btn-reject"
+                               onclick="return confirm('Are you sure you want to reject this application?');">
+
+                                Reject
+
+                            </a>
+                        }
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const searchBox =
+            document.getElementById("searchInput");
+
+        const departmentFilter =
+            document.getElementById("departmentFilter");
+
+        const rows =
+            document.querySelectorAll(".application-row");
+
+        function filterTable() {
+
+            const searchText =
+                searchBox.value.toLowerCase();
+
+            const department =
+                departmentFilter.value;
+
+            rows.forEach(row => {
+
+                const student =
+                    row.dataset.student;
+
+                const email =
+                    row.dataset.email;
+
+                const course =
+                    row.dataset.course;
+
+                const rowDepartment =
+                    row.dataset.department;
+
+                const matchesSearch =
+                    student.includes(searchText) ||
+                    email.includes(searchText) ||
+                    course.includes(searchText);
+
+                const matchesDepartment =
+                    department === "ALL" ||
+                    rowDepartment === department;
+
+                row.style.display =
+                    matchesSearch && matchesDepartment
+                    ? ""
+                    : "none";
+            });
+        }
+
+        searchBox.addEventListener("keyup", filterTable);
+
+        departmentFilter.addEventListener("change", filterTable);
+
+    });
+
+</script>
+
+<script>
+    setTimeout(function () {
+
+        let toast =
+            document.getElementById("successToast");
+
+        if (toast) {
+            toast.style.opacity = "0";
+
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }
+
+    }, 3000);
+</script>

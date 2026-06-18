@@ -25,6 +25,8 @@ namespace UniManage.Models
 
         public DbSet<Enrollment> Enrollments { get; set; }
 
+        public DbSet<CourseApplication> CourseApplications { get; set; }
+
         public DbSet<Notification> Notifications { get; set; }
 
         public DbSet<Department> Departments { get; set; }

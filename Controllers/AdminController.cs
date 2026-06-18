@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UniManage.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using UniManage.Models;
+using UniManage.Models.ViewModels;
 
 namespace UniManage.Controllers
 {
@@ -13,8 +14,17 @@ namespace UniManage.Controllers
         {
             _context = context;
         }
+
+        private void LoadSidebarCounts()
+        {
+            ViewBag.PendingApplications =
+                _context.CourseApplications
+                .Count(a => a.Status == "Pending");
+        }
         public IActionResult Dashboard()
         {
+            LoadSidebarCounts();
+
             ViewBag.TotalStudents =
                 _context.Students.Count();
 
@@ -30,8 +40,12 @@ namespace UniManage.Controllers
             return View();
         }
 
+
+
         public IActionResult Users(string roleFilter)
         {
+            LoadSidebarCounts();
+
             var users = _context.Users.AsQueryable();
 
             if (!string.IsNullOrEmpty(roleFilter)
@@ -45,6 +59,8 @@ namespace UniManage.Controllers
         // GET: /Admin/UserDetails/5
         public IActionResult UserDetails(int id)
         {
+            LoadSidebarCounts();
+
             var user = _context.Users
                 .FirstOrDefault(u => u.UserID == id);
 
@@ -93,6 +109,8 @@ namespace UniManage.Controllers
 
         public IActionResult Courses(string departmentFilter = "ALL")
         {
+            LoadSidebarCounts();
+
             // LOAD DEPARTMENTS
 
             ViewBag.Departments =
@@ -116,6 +134,8 @@ namespace UniManage.Controllers
 
         public IActionResult Modules(string departmentFilter = "ALL")
         {
+            LoadSidebarCounts();
+
             // LOAD DEPARTMENTS
 
             ViewBag.Departments =
@@ -139,17 +159,23 @@ namespace UniManage.Controllers
 
         public IActionResult Enrollments()
         {
+            LoadSidebarCounts();
+
             return View();
         }
 
         public IActionResult Reports()
         {
+            LoadSidebarCounts();
+
             return View();
         }
 
         [HttpGet]
         public IActionResult AddStudent()
         {
+            LoadSidebarCounts();
+
             ViewBag.Departments =
                 _context.Departments.ToList();
 
@@ -162,6 +188,8 @@ namespace UniManage.Controllers
         [HttpPost]
         public IActionResult AddStudent(AddStudentViewModel model)
         {
+            LoadSidebarCounts();
+
             // STUDENT COUNT
 
             int count = _context.Students.Count() + 1;
@@ -292,6 +320,8 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult EditStudent(int id)
         {
+            LoadSidebarCounts();
+
             var user = _context.Users
                 .FirstOrDefault(u => u.UserID == id);
 
@@ -360,6 +390,8 @@ namespace UniManage.Controllers
         [HttpPost]
         public IActionResult EditStudent(AddStudentViewModel model)
         {
+            LoadSidebarCounts();
+
             var user = _context.Users
                 .FirstOrDefault(u => u.UserID == model.UserID);
 
@@ -431,6 +463,8 @@ namespace UniManage.Controllers
 
         public IActionResult EditLecturer(int id)
         {
+            LoadSidebarCounts();
+
             var user = _context.Users
                 .FirstOrDefault(x => x.UserID == id);
 
@@ -480,6 +514,9 @@ namespace UniManage.Controllers
         [HttpPost]
         public IActionResult EditLecturer(AddLecturerViewModel model)
         {
+            LoadSidebarCounts();
+
+
             var user = _context.Users
                 .FirstOrDefault(x => x.UserID == model.UserID);
 
@@ -552,6 +589,8 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult AddLecturer()
         {
+            LoadSidebarCounts();
+
             ViewBag.Departments =
                 _context.Departments.ToList();
 
@@ -561,6 +600,8 @@ namespace UniManage.Controllers
         [HttpPost]
         public IActionResult AddLecturer(AddLecturerViewModel model)
         {
+            LoadSidebarCounts();
+
             int count = _context.Lecturers.Count() + 1;
 
             string username =
@@ -647,6 +688,8 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult AddAdmin()
         {
+            LoadSidebarCounts();
+
             ViewBag.Departments =
                 _context.Departments.ToList();
 
@@ -655,6 +698,8 @@ namespace UniManage.Controllers
         [HttpPost]
         public IActionResult AddAdmin(AddAdminViewModel model)
         {
+            LoadSidebarCounts();
+
             int count = _context.Users.Count() + 1;
 
             string username =
@@ -700,6 +745,8 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult EditAdmin(int id)
         {
+            LoadSidebarCounts();
+
             var user = _context.Users
                 .FirstOrDefault(x => x.UserID == id);
 
@@ -740,6 +787,8 @@ namespace UniManage.Controllers
         [HttpPost]
         public IActionResult EditAdmin(AddAdminViewModel model)
         {
+            LoadSidebarCounts();
+
             var user = _context.Users
                 .FirstOrDefault(x => x.UserID == model.UserID);
 
@@ -801,6 +850,8 @@ namespace UniManage.Controllers
         public IActionResult AddModule()
         {
 
+            LoadSidebarCounts();
+
 
             // LOAD LECTURERS
 
@@ -839,6 +890,8 @@ namespace UniManage.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddModule(AddModuleViewModel model)
         {
+            LoadSidebarCounts();
+
             Module module = new Module()
             {
                 ModuleName = model.ModuleName ?? string.Empty,
@@ -916,6 +969,9 @@ namespace UniManage.Controllers
         // Helper to repopulate ViewBag used both for GET and when returning the view after validation errors
         private void PopulateModuleForm()
         {
+
+            LoadSidebarCounts();
+
             var lecturers = (from l in _context.Lecturers
                              join u in _context.Users
                              on l.UserID equals u.UserID
@@ -935,6 +991,8 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult AddCourse()
         {
+            LoadSidebarCounts();
+
             // LOAD MODULES
             ViewBag.Modules = _context.Modules.ToList();
 
@@ -955,6 +1013,8 @@ namespace UniManage.Controllers
         [HttpPost]
         public IActionResult AddCourse(AddCourseViewModel model)
         {
+            LoadSidebarCounts();
+
             int count = _context.Courses.Count() + 1;
 
             string courseCode =
@@ -1073,6 +1133,8 @@ namespace UniManage.Controllers
         [HttpGet]
         public JsonResult GetCoursesByDepartment(string department)
         {
+            LoadSidebarCounts();
+
             var courses = _context.Courses
                 .Where(c => c.Department == department)
                 .Select(c => new
@@ -1088,6 +1150,8 @@ namespace UniManage.Controllers
         [HttpGet]
         public JsonResult GetBatchesByCourse(string courseName)
         {
+            LoadSidebarCounts();
+
             var course = _context.Courses
                 .FirstOrDefault(c => c.CourseName == courseName);
 
@@ -1111,6 +1175,8 @@ namespace UniManage.Controllers
 
         public IActionResult DisableUser(int id)
         {
+            LoadSidebarCounts();
+
             var user = _context.Users
                 .FirstOrDefault(u => u.UserID == id);
 
@@ -1131,6 +1197,8 @@ namespace UniManage.Controllers
 
         public IActionResult DeleteUser(int id)
         {
+            LoadSidebarCounts();
+
             var user = _context.Users
                 .FirstOrDefault(u => u.UserID == id);
 
@@ -1171,6 +1239,8 @@ namespace UniManage.Controllers
 
         public IActionResult ViewCourse(int id)
         {
+            LoadSidebarCounts();
+
             var course = _context.Courses
                 .FirstOrDefault(c => c.CourseID == id);
 
@@ -1197,6 +1267,8 @@ namespace UniManage.Controllers
 
         public IActionResult DisableCourse(int id)
         {
+            LoadSidebarCounts();
+
             var course = _context.Courses
                 .FirstOrDefault(c => c.CourseID == id);
 
@@ -1217,6 +1289,8 @@ namespace UniManage.Controllers
 
         public IActionResult DeleteCourse(int id)
         {
+            LoadSidebarCounts();
+
             var course = _context.Courses
                 .FirstOrDefault(c => c.CourseID == id);
 
@@ -1241,6 +1315,8 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult EditCourse(int id)
         {
+            LoadSidebarCounts();
+
             var course = _context.Courses
                 .FirstOrDefault(c => c.CourseID == id);
 
@@ -1269,6 +1345,8 @@ namespace UniManage.Controllers
     Course model,
     List<int> SelectedModules)
         {
+            LoadSidebarCounts();
+
             var course = _context.Courses
                 .FirstOrDefault(c => c.CourseID == model.CourseID);
 
@@ -1317,6 +1395,8 @@ namespace UniManage.Controllers
 
         public IActionResult ViewModule(int id)
         {
+            LoadSidebarCounts();
+
             var module = _context.Modules
                 .FirstOrDefault(m => m.ModuleID == id);
 
@@ -1329,6 +1409,8 @@ namespace UniManage.Controllers
         [HttpGet]
         public IActionResult EditModule(int id)
         {
+            LoadSidebarCounts();
+
             var module = _context.Modules
                 .FirstOrDefault(m => m.ModuleID == id);
 
@@ -1354,6 +1436,8 @@ namespace UniManage.Controllers
 
         public IActionResult DisableModule(int id)
         {
+            LoadSidebarCounts();
+
             var module = _context.Modules
                 .FirstOrDefault(m => m.ModuleID == id);
 
@@ -1372,6 +1456,8 @@ namespace UniManage.Controllers
 
         public IActionResult DeleteModule(int id)
         {
+            LoadSidebarCounts();
+
             var module = _context.Modules
                 .FirstOrDefault(m => m.ModuleID == id);
 
@@ -1388,6 +1474,8 @@ namespace UniManage.Controllers
         [HttpPost]
         public IActionResult EditModule(Module model)
         {
+            LoadSidebarCounts();
+
             var module = _context.Modules
                 .FirstOrDefault(m => m.ModuleID == model.ModuleID);
 
@@ -1404,6 +1492,221 @@ namespace UniManage.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("Modules");
+        }
+
+
+        public IActionResult Applications(
+            string departmentFilter = "ALL",
+            string search = "")
+        {
+            LoadSidebarCounts();
+
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
+            ViewBag.PendingApplications =
+                _context.CourseApplications
+                .Count(a => a.Status == "Pending");
+
+            var applications =
+                from a in _context.CourseApplications
+                join u in _context.Users
+                    on a.UserID equals u.UserID
+                join c in _context.Courses
+                    on a.CourseID equals c.CourseID
+                select new ApplicationViewModel
+                {
+                    ApplicationID = a.ApplicationID,
+                    StudentName = u.FullName,
+                    Email = u.Email,
+                    CourseName = c.CourseName,
+                    AppliedDate = a.AppliedDate,
+                    Status = a.Status,
+                    Department = c.Department
+                };
+
+            if (departmentFilter != "ALL")
+            {
+                applications = applications
+                    .Where(a => a.Department == departmentFilter);
+            }
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                applications = applications.Where(a =>
+                    a.StudentName.Contains(search) ||
+                    a.Email.Contains(search) ||
+                    a.CourseName.Contains(search));
+            }
+
+            return View(
+                applications
+                .OrderBy(a =>
+                    a.Status == "Pending" ? 0 :
+                    a.Status == "Approved" ? 1 : 2)
+                .ThenByDescending(a => a.AppliedDate)
+                .ToList());
+        }
+
+        public IActionResult ApproveApplication(int id)
+        {
+            LoadSidebarCounts();
+
+
+            var application =
+                _context.CourseApplications
+                .FirstOrDefault(a =>
+                    a.ApplicationID == id);
+
+            if (application == null)
+            {
+                return RedirectToAction("Applications");
+            }
+
+            application.Status = "Approved";
+
+            var course = _context.Courses
+                .FirstOrDefault(c =>
+                    c.CourseID == application.CourseID);
+
+            var user = _context.Users
+                .FirstOrDefault(u =>
+                    u.UserID == application.UserID);
+
+            var existingStudent =
+                _context.Students
+                .FirstOrDefault(s =>
+                    s.UserID == application.UserID);
+
+            var latestBatch = _context.Batches
+                .Where(b => b.CourseID == application.CourseID)
+                .OrderByDescending(b => b.StartYear)
+                .FirstOrDefault();
+
+            // CREATE STUDENT IF NOT EXISTS
+
+            if (existingStudent == null)
+            {
+                existingStudent = new Student
+                {
+                    UserID = application.UserID,
+                    RegNum = "REG" + application.UserID,
+                    Semester = 1,
+                    Department = course?.Department ?? "Not Assigned",
+                    Course = course?.CourseName,
+                    EnrollmentYear = DateTime.Now.Year,
+                    BatchID = latestBatch?.BatchID
+                };
+
+                _context.Students.Add(existingStudent);
+
+                // SAVE FIRST TO GENERATE STUDENTID
+
+                _context.SaveChanges();
+            }
+
+            // UPDATE COURSE DETAILS
+
+            existingStudent.Department =
+                course?.Department ?? "Not Assigned";
+
+            if (user != null)
+            {
+                user.Department =
+                    course?.Department ?? "Not Assigned";
+            }
+
+            existingStudent.Course =
+                course?.CourseName;
+
+            existingStudent.EnrollmentYear =
+                DateTime.Now.Year;
+
+            existingStudent.BatchID =
+                latestBatch?.BatchID;
+
+
+
+
+            // CREATE ENROLLMENT
+
+            bool alreadyEnrolled =
+                _context.Enrollments.Any(e =>
+                    e.StudentID == existingStudent.StudentID &&
+                    e.CourseID == application.CourseID);
+
+            if (!alreadyEnrolled)
+            {
+                Enrollment enrollment =
+                    new Enrollment
+                    {
+                        StudentID = existingStudent.StudentID,
+                        CourseID = application.CourseID,
+                        EnrollmentDate = DateTime.Now,
+                        Status = "Active"
+                    };
+
+                _context.Enrollments.Add(enrollment);
+            }
+
+
+
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] =
+                "Application approved successfully.";
+
+            return RedirectToAction("Applications");
+
+            if (latestBatch != null)
+            {
+                var messageGroup = _context.MessageGroups
+                    .FirstOrDefault(g =>
+                        g.CourseID == application.CourseID &&
+                        g.BatchID == latestBatch.BatchID);
+
+                if (messageGroup != null)
+                {
+                    bool alreadyMember =
+                        _context.GroupMembers.Any(gm =>
+                            gm.GroupID == messageGroup.GroupID &&
+                            gm.UserID == application.UserID);
+
+                    if (!alreadyMember)
+                    {
+                        _context.GroupMembers.Add(
+                            new GroupMember
+                            {
+                                GroupID = messageGroup.GroupID,
+                                UserID = application.UserID
+                            });
+                    }
+                }
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Applications");
+        }
+
+        public IActionResult RejectApplication(int id)
+        {
+            var application = _context.CourseApplications
+                .FirstOrDefault(a => a.ApplicationID == id);
+
+            if (application == null)
+            {
+                return RedirectToAction("Applications");
+            }
+
+            application.Status = "Rejected";
+
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] =
+                "Application rejected successfully.";
+
+            return RedirectToAction("Applications");
         }
 
 

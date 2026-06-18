@@ -1,0 +1,231 @@
+﻿@model UniManage.Models.ViewModels.ProgramDetailsViewModel
+
+@{
+    ViewData["Title"] = "Program Details";
+}
+
+<link rel="stylesheet"
+      href="~/css/ProgramDetails.css"
+      asp-append-version="true" />
+
+@if (TempData["Message"] != null)
+{
+    <div id="messageModal" class="modal-overlay">
+
+        <div class="message-modal">
+
+            <div class="modal-icon">
+                ✓
+            </div>
+
+            <h3>Application Submitted</h3>
+
+            <p>
+                @TempData["Message"]
+            </p>
+
+            <button onclick="closeModal()"
+                    class="modal-btn">
+                OK
+            </button>
+
+        </div>
+
+    </div>
+}
+
+
+<!-- HERO SECTION -->
+
+<section class="course-hero">
+
+
+
+    <div class="course-overlay">
+
+        <span class="course-badge">
+            @Model.Course.QualificationType
+        </span>
+
+        <h1>
+            @Model.Course.CourseName
+        </h1>
+
+        <p>
+            @Model.Course.Department Department
+        </p>
+
+        @if (ViewBag.IsEnrolled == true)
+        {
+            <button class="progress-btn">
+                In Progress
+            </button>
+        }
+        else
+        {
+            <a asp-action="ApplyCourse"
+               asp-route-id="@Model.Course.CourseID"
+               class="apply-btn">
+                Apply Now
+            </a>
+        }
+
+    </div>
+
+</section>
+
+
+<!-- CONTENT -->
+
+<div class="program-container">
+
+    <!-- INFO CARDS -->
+
+    <div class="info-grid">
+
+        <div class="info-card">
+
+            <h3>Duration</h3>
+
+            <p>@Model.Course.Duration</p>
+
+        </div>
+
+        <div class="info-card">
+
+            <h3>Course Fee</h3>
+
+            <p>
+                Rs. @Model.Course.CourseFee.ToString("N0")
+            </p>
+
+        </div>
+
+        <div class="info-card">
+
+            <h3>Department</h3>
+
+            <p>@Model.Course.Department</p>
+
+        </div>
+
+    </div>
+
+
+    <!-- DESCRIPTION + COURSE INFO -->
+
+    <div class="details-layout">
+
+        <div class="content-card">
+
+            <h2>About This Program</h2>
+
+            <p>
+                @Model.Course.Description
+            </p>
+
+        </div>
+
+        <div class="course-info-box">
+
+            <h3>Course Information</h3>
+
+            <div class="info-row">
+                <span>Qualification</span>
+                <strong>
+                    @Model.Course.QualificationType
+                </strong>
+            </div>
+
+            <div class="info-row">
+                <span>Duration</span>
+                <strong>
+                    @Model.Course.Duration
+                </strong>
+            </div>
+
+            <div class="info-row">
+                <span>Intake</span>
+                <strong>
+                    @Model.Course.Intake
+                </strong>
+            </div>
+
+            <div class="info-row">
+                <span>Fee</span>
+                <strong>
+                    Rs. @Model.Course.CourseFee.ToString("N0")
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MODULES -->
+
+    <div class="content-card">
+
+        <h2>Modules & Subjects</h2>
+
+        <div class="semester-container">
+
+            @foreach (var semesterGroup in Model.Modules.GroupBy(m => m.Semester))
+            {
+                <details class="semester-card">
+
+                    <summary>
+                        Semester @semesterGroup.Key
+                    </summary>
+
+                    <ul class="module-list">
+
+                        @foreach (var module in semesterGroup)
+                        {
+                            <li>
+
+                                <div>
+
+                                    <strong>
+                                        @module.ModuleName
+                                    </strong>
+
+                                    <span>
+                                        (@module.ModuleCode)
+                                    </span>
+
+                                </div>
+
+                                <span class="credit-badge">
+                                    @module.Credits Credits
+                                </span>
+
+                            </li>
+                        }
+
+                    </ul>
+
+                </details>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    function closeModal() {
+
+        const modal =
+            document.getElementById("messageModal");
+
+        if (modal) {
+
+            modal.style.display = "none";
+        }
+    }
+
+</script>

@@ -44,7 +44,9 @@ namespace UniManage.Controllers
 
             if (student == null)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction(
+                    "Programs",
+                    "Admission");
             }
 
             // TOTAL ENROLLED COURSES
@@ -56,6 +58,13 @@ namespace UniManage.Controllers
                 .Where(e => e.StudentID == student.StudentID)
                 .Select(e => e.CourseID)
                 .ToList();
+
+            if (!enrolledCourseIds.Any())
+            {
+                return RedirectToAction(
+                    "Programs",
+                    "Admission");
+            }
 
             int totalModules = _context.CourseModules
                 .Count(cm => enrolledCourseIds.Contains(cm.CourseID));
@@ -1038,6 +1047,41 @@ namespace UniManage.Controllers
             return RedirectToAction(
                 "PrivateChat",
                 new { lecturerUserId });
+        }
+
+        public IActionResult Programs()
+        {
+            ViewBag.Departments =
+                _context.Departments.ToList();
+
+            int? userId =
+                HttpContext.Session.GetInt32("UserID");
+
+            List<int> enrolledCourseIds =
+                new List<int>();
+
+            if (userId != null)
+            {
+                var student = _context.Students
+                    .FirstOrDefault(s => s.UserID == userId);
+
+                if (student != null)
+                {
+                    enrolledCourseIds =
+                        _context.Enrollments
+                        .Where(e => e.StudentID == student.StudentID)
+                        .Select(e => e.CourseID)
+                        .ToList();
+                }
+            }
+
+            ViewBag.EnrolledCourses = enrolledCourseIds;
+
+            var courses = _context.Courses.ToList();
+
+            return View(
+                "~/Views/Admission/Programs.cshtml",
+                courses);
         }
 
     }

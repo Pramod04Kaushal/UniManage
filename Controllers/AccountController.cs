@@ -70,6 +70,38 @@ namespace UniManage.Controllers
             return View();
         }
 
+
+        // REGISTER PAGE
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Register(User user)
+        {
+            user.Role = "Student";
+            user.CreatedAt = DateTime.Now;
+            user.Status = "Active";
+
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            Student student = new Student
+            {
+                UserID = user.UserID,
+                RegNum = "REG" + user.UserID,
+                Semester = 1,
+                Department = "Not Assigned"
+            };
+
+            _context.Students.Add(student);
+            _context.SaveChanges();
+
+            return RedirectToAction("Login");
+        }
+
         // REGISTER PAGE
         public IActionResult Profile()
         {
@@ -99,5 +131,7 @@ namespace UniManage.Controllers
 
             return RedirectToAction("Login", "Account");
         }
+
+
     }
 }

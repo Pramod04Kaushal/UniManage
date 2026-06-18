@@ -1,0 +1,293 @@
+﻿@model List<UniManage.Models.Course>
+
+@{
+    ViewData["Title"] = "Programs";
+}
+
+<link rel="stylesheet"
+      href="~/css/Programs.css"
+      asp-append-version="true" />
+
+<div class="hero-section">
+
+    <div class="hero-content">
+
+        <h1>Shape Your Future</h1>
+
+        <p>
+            Explore our academic programs and
+            start your journey toward success.
+        </p>
+
+        <a href="#programs" class="hero-btn">
+            Browse Programs
+        </a>
+
+    </div>
+
+</div>
+
+<section class="stats-section">
+
+    <div class="stat-card">
+        <h2>@Model.Count()</h2>
+        <p>Programs</p>
+    </div>
+
+    <div class="stat-card">
+        <h2>100+</h2>
+        <p>Students Per Intake</p>
+    </div>
+
+    <div class="stat-card">
+        <h2>4 Years</h2>
+        <p>Average Duration</p>
+    </div>
+
+</section>
+
+<section id="programs" class="programs-section">
+
+    <div class="search-container">
+
+        <div class="search-area">
+
+            <select class="department-dropdown">
+
+                <option value="">All Departments</option>
+
+                @foreach (var department in ViewBag.Departments)
+                {
+                    <option value="@department.DepartmentName">
+                        @department.DepartmentName
+                    </option>
+                }
+
+            </select>
+
+            <input type="text"
+                   id="searchInput"
+                   placeholder="Search Program..." />
+
+        </div>
+
+    </div>
+
+    <div class="category-filters">
+
+        <button class="filter-btn active"
+                data-filter="All">
+            All
+        </button>
+
+        <button class="filter-btn"
+                data-filter="Certificate">
+            Certificate
+        </button>
+
+        <button class="filter-btn"
+                data-filter="Diploma">
+            Diploma
+        </button>
+
+        <button class="filter-btn"
+                data-filter="Higher Diploma">
+            Higher Diploma
+        </button>
+
+        <button class="filter-btn"
+                data-filter="Bachelor Degree">
+            BSc
+        </button>
+
+        <button class="filter-btn"
+                data-filter="Masters">
+            Masters
+        </button>
+
+    </div>
+
+    <div class="program-grid">
+
+        @foreach (var program in Model)
+        {
+            bool isEnrolled =
+            ((List<int>)ViewBag.EnrolledCourses)
+            .Contains(program.CourseID);
+
+            <div class="program-card @(isEnrolled ? "active-course" : "")"
+                 data-qualification="@program.QualificationType"
+                 data-department="@program.Department">
+
+                @if (isEnrolled)
+                {
+                    <div class="active-badge">
+                        ✓ Active
+                    </div>
+                }
+
+                <div class="program-image">
+                    <img src="~/images/university.jpg" alt="Program">
+                </div>
+
+                <div class="program-body">
+
+                    <h3>@program.CourseName</h3>
+
+                    <p class="qualification">
+                        @program.QualificationType
+                    </p>
+
+                    <div class="program-footer">
+
+                        <span class="duration">
+                            @program.Duration
+                        </span>
+
+                        <a asp-controller="Admission"
+                           asp-action="ProgramDetails"
+                           asp-route-id="@program.CourseID"
+                           class="details-btn">
+
+                            View Details
+
+                        </a>
+
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+    <div id="noProgramsMessage" class="no-programs">
+
+        <div class="empty-icon">📚</div>
+
+        <h3>No Programs Found</h3>
+
+        <p>
+            No programs match the selected department
+            or qualification.
+        </p>
+
+    </div>
+
+</section>
+
+
+<script>
+
+    const buttons =
+        document.querySelectorAll('.filter-btn');
+
+    const cards =
+        document.querySelectorAll('.program-card');
+
+    const departmentDropdown =
+        document.querySelector('.department-dropdown');
+
+    const searchInput =
+        document.getElementById('searchInput');
+
+        console.log(searchInput);
+
+    let currentQualification = "All";
+
+    function filterPrograms() {
+
+        const selectedDepartment =
+            departmentDropdown.value;
+
+        const searchText =
+            searchInput.value.toLowerCase();
+
+        let visibleCards = 0;
+
+        cards.forEach(card => {
+
+            const qualification =
+                card.dataset.qualification;
+
+            const department =
+                card.dataset.department;
+
+            const courseName =
+                card.querySelector('h3')
+                    .textContent
+                    .toLowerCase();
+
+            const qualificationMatch =
+                currentQualification === "All" ||
+                qualification === currentQualification;
+
+            const departmentMatch =
+                selectedDepartment === "" ||
+                department === selectedDepartment;
+
+            const searchMatch =
+                courseName.includes(searchText);
+
+            if (
+                qualificationMatch &&
+                departmentMatch &&
+                searchMatch
+            ) {
+                card.style.display = "block";
+                visibleCards++;
+            }
+            else {
+                card.style.display = "none";
+            }
+
+        });
+
+        const message =
+            document.getElementById("noProgramsMessage");
+
+        if (visibleCards === 0) {
+            message.style.display = "block";
+        }
+        else {
+            message.style.display = "none";
+        }
+
+    }
+
+    buttons.forEach(button => {
+
+        button.addEventListener('click', () => {
+
+            buttons.forEach(btn =>
+                btn.classList.remove('active'));
+
+            button.classList.add('active');
+
+            currentQualification =
+                button.dataset.filter;
+
+            filterPrograms();
+
+        });
+
+    });
+
+    departmentDropdown.addEventListener('change', () => {
+
+        filterPrograms();
+
+    });
+
+    searchInput.addEventListener('keyup', () => {
+
+        filterPrograms();
+
+    });
+
+    filterPrograms();
+
+</script>

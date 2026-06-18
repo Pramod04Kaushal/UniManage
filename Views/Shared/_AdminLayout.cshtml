@@ -60,6 +60,24 @@
 
                 </li>
 
+                <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Applications" ? "active" : "")">
+
+                    <a asp-controller="Admin"
+                       asp-action="Applications">
+
+                        Applications
+
+                        @if (ViewBag.PendingApplications > 0)
+                        {
+                            <span class="notification-badge">
+                                @ViewBag.PendingApplications
+                            </span>
+                        }
+
+                    </a>
+
+                </li>
+
                 <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Courses" ? "active" : "")">
 
                     <a asp-controller="Admin"
@@ -97,6 +115,8 @@
 
                 </li>
 
+
+
                 <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Reports" ? "active" : "")">
 
                     <a asp-controller="Admin"
@@ -106,6 +126,17 @@
 
                     </a>
 
+                </li>
+
+                <li class="logout-item">
+                    <a asp-controller="Account"
+                       asp-action="Logout"
+                       class="logout-link">
+
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+
+                    </a>
                 </li>
 
             </ul>

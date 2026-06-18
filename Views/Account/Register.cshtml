@@ -1,4 +1,6 @@
-﻿@{
+﻿@model UniManage.Models.User
+
+@{
     Layout = null;
 }
 
@@ -81,21 +83,25 @@
 
                 </div>
 
-                <form id="registerForm">
+                <form asp-controller="Account"
+                      asp-action="Register"
+                      method="post"
+                      id="registerForm">
 
                     <!-- STEP 1 -->
 
                     <div class="form-step active">
 
-                        <input type="text"
-                               placeholder="Full Name"
-                               class="input-box" />
+                        <input asp-for="FullName"
+                               class="input-box"
+                               placeholder="Full Name" />
 
-                        <input type="text"
-                               placeholder="Address"
-                               class="input-box" />
+                        <input asp-for="Address"
+                               class="input-box"
+                               placeholder="Address" />
 
-                        <select class="input-box" required>
+                        <select asp-for="Gender"
+                                class="input-box">
 
                             <option value="" disabled selected>
                                 Select Gender
@@ -121,17 +127,22 @@
 
 
 
-                        <input type="text"
-                               placeholder="Phone Number"
-                               class="input-box" />
+                        <input asp-for="Phone"
+                               class="input-box"
+                               placeholder="Phone Number" />
 
-                        <input type="email"
-                               placeholder="Email Address"
-                               class="input-box" />
+                        <input asp-for="Email"
+                               class="input-box"
+                               placeholder="Email Address" />
 
-                        <input type="password"
-                               placeholder="Password"
-                               class="input-box" />
+                        <input asp-for="PasswordHash"
+                               type="password"
+                               class="input-box"
+                               placeholder="Password" />
+
+                        <input asp-for="Role"
+                               type="hidden"
+                               value="Student" />
 
                         <div class="button-group">
 
