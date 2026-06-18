@@ -25,17 +25,57 @@ namespace UniManage.Controllers
         {
             LoadSidebarCounts();
 
-            ViewBag.TotalStudents =
-                _context.Students.Count();
+            ViewBag.TotalStudents = _context.Students.Count();
+            ViewBag.TotalLecturers = _context.Lecturers.Count();
+            ViewBag.TotalCourses = _context.Courses.Count();
+            ViewBag.TotalEnrollments = _context.Enrollments.Count();
 
-            ViewBag.TotalLecturers =
-                _context.Lecturers.Count();
+            // STUDENTS PER COURSE
 
-            ViewBag.TotalCourses =
-                _context.Courses.Count();
+            var courseStats =
+                (from c in _context.Courses
+                 join e in _context.Enrollments
+                 on c.CourseID equals e.CourseID into enrollments
 
-            ViewBag.TotalEnrollments =
-                _context.Enrollments.Count();
+                 select new
+                 {
+                     CourseName = c.CourseName,
+                     StudentCount = enrollments.Count()
+                 })
+                 .ToList();
+
+            ViewBag.CourseNames =
+                courseStats.Select(x => x.CourseName).ToList();
+
+            ViewBag.StudentCounts =
+                courseStats.Select(x => x.StudentCount).ToList();
+
+            var recentActivities =
+            (
+                from a in _context.CourseApplications
+
+                join u in _context.Users
+                    on a.UserID equals u.UserID
+
+                join c in _context.Courses
+                    on a.CourseID equals c.CourseID
+
+                orderby a.AppliedDate descending
+
+                select new DashboardActivityViewModel
+                {
+                    ActivityText =
+                        u.FullName + " applied for " +
+                        c.CourseName,
+
+                    ActivityDate =
+                        a.AppliedDate
+                }
+            )
+            .Take(8)
+            .ToList();
+
+            ViewBag.RecentActivities = recentActivities;
 
             return View();
         }
@@ -167,6 +207,254 @@ namespace UniManage.Controllers
         public IActionResult Reports()
         {
             LoadSidebarCounts();
+
+            ViewBag.TotalStudents =
+                _context.Students.Count();
+
+            ViewBag.TotalLecturers =
+                _context.Lecturers.Count();
+
+            ViewBag.TotalCourses =
+                _context.Courses.Count();
+
+            ViewBag.TotalEnrollments =
+                _context.Enrollments.Count();
+
+            // STUDENTS BY DEPARTMENT
+
+            var studentDepartments =
+                _context.Students
+                .GroupBy(s => s.Department)
+                .Select(g => new
+                {
+                    Department = g.Key,
+                    Count = g.Count()
+                })
+                .ToList();
+
+            ViewBag.StudentDepartments =
+                studentDepartments;
+
+            // STUDENTS BY COURSE
+
+            var studentCourses =
+            (
+                from e in _context.Enrollments
+                join c in _context.Courses
+                    on e.CourseID equals c.CourseID
+
+                group e by c.CourseName into g
+
+                select new
+                {
+                    CourseName = g.Key,
+                    Count = g.Count()
+                }
+            )
+            .OrderByDescending(x => x.Count)
+            .ToList();
+
+            ViewBag.StudentCourses =
+                studentCourses;
+
+            // LATEST STUDENTS
+
+            var latestStudents =
+                _context.Users
+                .Where(u => u.Role == "Student")
+                .OrderByDescending(u => u.CreatedAt)
+                .Take(5)
+                .ToList();
+
+            ViewBag.LatestStudents =
+                latestStudents;
+
+            // LECTURERS BY DEPARTMENT
+
+            var lecturerDepartments =
+                _context.Lecturers
+                .GroupBy(l => l.Department)
+                .Select(g => new
+                {
+                    Department = g.Key,
+                    Count = g.Count()
+                })
+                .ToList();
+
+            ViewBag.LecturerDepartments =
+                lecturerDepartments;
+
+            // LATEST LECTURERS
+
+            var latestLecturers =
+                _context.Users
+                .Where(u => u.Role == "Lecturer")
+                .OrderByDescending(u => u.CreatedAt)
+                .Take(5)
+                .ToList();
+
+            ViewBag.LatestLecturers =
+                latestLecturers;
+
+            // COURSES BY DEPARTMENT
+
+            var courseDepartments =
+                _context.Courses
+                .GroupBy(c => c.Department)
+                .Select(g => new
+                {
+                    Department = g.Key,
+                    Count = g.Count()
+                })
+                .ToList();
+
+            ViewBag.CourseDepartments =
+                courseDepartments;
+
+            // COURSE STATUS
+
+            ViewBag.ActiveCourses =
+                _context.Courses
+                .Count(c => c.Status == "Active");
+
+            ViewBag.InactiveCourses =
+                _context.Courses
+                .Count(c => c.Status == "Inactive");
+
+            // MOST POPULAR COURSES
+
+            var popularCourses =
+            (
+                from c in _context.Courses
+
+                join e in _context.Enrollments
+                    on c.CourseID equals e.CourseID
+                    into enrollments
+
+                select new
+                {
+                    CourseName = c.CourseName,
+                    Students = enrollments.Count()
+                }
+            )
+            .OrderByDescending(x => x.Students)
+            .Take(5)
+            .ToList();
+
+            ViewBag.PopularCourses =
+                popularCourses;
+
+            // ACTIVE ENROLLMENTS
+
+            ViewBag.ActiveEnrollments =
+                _context.Enrollments
+                .Count(e => e.Status == "Active");
+
+            // INACTIVE ENROLLMENTS
+
+            ViewBag.InactiveEnrollments =
+                _context.Enrollments
+                .Count(e => e.Status == "Inactive");
+
+            // LATEST ENROLLMENTS
+
+            var latestEnrollments =
+            (
+                from e in _context.Enrollments
+
+                join s in _context.Students
+                    on e.StudentID equals s.StudentID
+
+                join u in _context.Users
+                    on s.UserID equals u.UserID
+
+                join c in _context.Courses
+                    on e.CourseID equals c.CourseID
+
+                orderby e.EnrollmentDate descending
+
+                select new
+                {
+                    StudentName = u.FullName,
+                    CourseName = c.CourseName,
+                    EnrollmentDate = e.EnrollmentDate
+                }
+            )
+            .Take(5)
+            .ToList();
+
+            ViewBag.LatestEnrollments =
+                latestEnrollments;
+
+            // ENROLLMENTS BY COURSE
+
+            var enrollmentCourses =
+            (
+                from c in _context.Courses
+
+                join e in _context.Enrollments
+                    on c.CourseID equals e.CourseID
+                    into enrollments
+
+                select new
+                {
+                    CourseName = c.CourseName,
+                    Count = enrollments.Count()
+                }
+            )
+            .OrderByDescending(x => x.Count)
+            .ToList();
+
+            ViewBag.EnrollmentCourses =
+                enrollmentCourses;
+
+            var courseStats =
+                (from c in _context.Courses
+                 join e in _context.Enrollments
+                 on c.CourseID equals e.CourseID
+                 into enrollments
+                 select new
+                 {
+                     CourseName = c.CourseName,
+                     StudentCount = enrollments.Count()
+                 })
+                 .ToList();
+
+            ViewBag.CourseNames =
+                courseStats.Select(x => x.CourseName).ToList();
+
+            ViewBag.CourseCounts =
+                courseStats.Select(x => x.StudentCount).ToList();
+
+            // MOST POPULAR COURSE
+
+            var popularCourse =
+                (from e in _context.Enrollments
+                 join c in _context.Courses
+                 on e.CourseID equals c.CourseID
+                 group e by c.CourseName into g
+                 orderby g.Count() descending
+                 select g.Key)
+                 .FirstOrDefault();
+
+            ViewBag.PopularCourse =
+                popularCourse ?? "No Data";
+
+
+            // LATEST ENROLLMENT
+
+            var latestEnrollment =
+                (from e in _context.Enrollments
+                 join s in _context.Students
+                 on e.StudentID equals s.StudentID
+                 join u in _context.Users
+                 on s.UserID equals u.UserID
+                 orderby e.EnrollmentDate descending
+                 select u.FullName)
+                 .FirstOrDefault();
+
+            ViewBag.LatestEnrollment =
+                latestEnrollment ?? "No Data";
 
             return View();
         }

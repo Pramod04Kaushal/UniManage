@@ -104,16 +104,7 @@
          
 
 
-                <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Enrollments" ? "active" : "")">
 
-                    <a asp-controller="Admin"
-                       asp-action="Enrollments">
-
-                        Enrollments
-
-                    </a>
-
-                </li>
 
 
 
@@ -172,6 +163,10 @@
         </div>
 
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    @RenderSection("Scripts", required: false)
 
 </body>
 </html>

@@ -3,46 +3,220 @@
     ViewData["Title"] = "Dashboard";
 }
 
+<div class="dashboard-wrapper">
 
+    <div class="welcome-banner">
 
+        <div>
+            <h1>Welcome Back, Admin</h1>
+            <p>
+                Manage students, lecturers, courses and applications
+                from one place.
+            </p>
+        </div>
 
-
-<div class="cards">
-
-    <div class="card">
-
-
-        <h3>Total Students</h3>
-
-        <p>@ViewBag.TotalStudents</p>
-
-    </div>
-
-    <div class="card">
-
-        <h3>Total Lecturers</h3>
-
-        <p>@ViewBag.TotalLecturers</p>
+        <div class="welcome-badge">
+            UniManage
+        </div>
 
     </div>
 
-    <div class="card">
+    <div class="stats-grid">
 
-        <h3>Total Courses</h3>
+        <div class="stat-card students">
 
-        <p>@ViewBag.TotalCourses</p>
+            <div class="stat-icon">🎓</div>
+
+            <div>
+                <h4>Total Students</h4>
+                <h2>@ViewBag.TotalStudents</h2>
+            </div>
+
+        </div>
+
+        <div class="stat-card lecturers">
+
+            <div class="stat-icon">👨‍🏫</div>
+
+            <div>
+                <h4>Total Lecturers</h4>
+                <h2>@ViewBag.TotalLecturers</h2>
+            </div>
+
+        </div>
+
+        <div class="stat-card courses">
+
+            <div class="stat-icon">📚</div>
+
+            <div>
+                <h4>Total Courses</h4>
+                <h2>@ViewBag.TotalCourses</h2>
+            </div>
+
+        </div>
+
+        <div class="stat-card enrollments">
+
+            <div class="stat-icon">📝</div>
+
+            <div>
+                <h4>Total Enrollments</h4>
+                <h2>@ViewBag.TotalEnrollments</h2>
+            </div>
+
+        </div>
 
     </div>
 
-    <div class="card">
+    <div class="dashboard-row">
 
-        <h3>Total Enrollments</h3>
+        <div class="quick-actions">
 
-        <p>@ViewBag.TotalEnrollments</p>
+            <h3>Quick Actions</h3>
 
+            <div class="action-grid">
 
+                <a asp-controller="Admin"
+                   asp-action="AddStudent"
+                   class="action-card">
 
+                    Add Student
+
+                </a>
+
+                <a asp-controller="Admin"
+                   asp-action="AddLecturer"
+                   class="action-card">
+
+                    Add Lecturer
+
+                </a>
+
+                <a asp-controller="Admin"
+                   asp-action="AddCourse"
+                   class="action-card">
+
+                    Add Course
+
+                </a>
+
+                <a asp-controller="Admin"
+                   asp-action="AddModule"
+                   class="action-card">
+
+                    Add Module
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="system-card">
+
+            <h3>System Overview</h3>
+
+            <p>Students: @ViewBag.TotalStudents</p>
+            <p>Lecturers: @ViewBag.TotalLecturers</p>
+            <p>Courses: @ViewBag.TotalCourses</p>
+            <p>Enrollments: @ViewBag.TotalEnrollments</p>
+
+        </div>
+
+    </div>
+
+    <div class="analytics-section">
+
+        <div class="chart-card">
+
+            <div class="card-header">
+                <h3>Enrollment Analytics</h3>
+            </div>
+
+            <canvas id="courseChart"></canvas>
+
+        </div>
+
+        <div class="activity-card">
+
+            <h3>Recent Activity</h3>
+
+            @foreach (var activity in ViewBag.RecentActivities)
+            {
+                <div class="activity-item">
+
+                    <span class="activity-dot"></span>
+
+                    <div>
+
+                        <strong>
+                            @activity.ActivityText
+                        </strong>
+
+                        <br />
+
+                        <small>
+                            @activity.ActivityDate.ToString("dd MMM yyyy")
+                        </small>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
 
     </div>
 
 </div>
+
+
+@section Scripts {
+
+    <script>
+
+        const labels =
+            @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.CourseNames));
+
+        const data =
+            @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.StudentCounts));
+
+        const ctx =
+            document.getElementById('courseChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+
+            data: {
+                labels: labels,
+
+                datasets: [{
+                    label: 'Students',
+                    data: data,
+                    borderWidth: 0,
+                    borderRadius: 10,
+                    backgroundColor: '#2563eb'
+                }]
+            },
+
+            options: {
+                responsive: true,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+    </script>
+
+}
