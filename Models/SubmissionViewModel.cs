@@ -8,6 +8,8 @@
 
         public string RegNum { get; set; }
 
+        public string AssignmentTitle { get; set; }
+
         public DateTime SubmissionDate { get; set; }
 
         public string Status { get; set; }

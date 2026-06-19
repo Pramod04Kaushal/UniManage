@@ -1,0 +1,312 @@
+﻿@model List<UniManage.Models.Module>
+
+@{
+    Layout = "~/Views/Shared/_LecturerLayout.cshtml";
+    ViewData["Title"] = "Reports";
+}
+
+<link rel="stylesheet"
+      href="~/css/LecturerReports.css"
+      asp-append-version="true" />
+
+<div class="reports-page">
+
+
+
+
+    <!-- SUMMARY CARDS -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-number">
+                @ViewBag.TotalModules
+            </div>
+            <div class="stat-label">
+                Total Modules
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">
+                @ViewBag.TotalStudents
+            </div>
+            <div class="stat-label">
+                Total Students
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">
+                @ViewBag.TotalAssignments
+            </div>
+            <div class="stat-label">
+                Assignments
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">
+                @ViewBag.TotalSubmissions
+            </div>
+            <div class="stat-label">
+                Submissions
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">
+                @ViewBag.PendingReviews
+            </div>
+            <div class="stat-label">
+                Pending Reviews
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number">
+                @(ViewBag.AverageGrade)%
+            </div>
+            <div class="stat-label">
+                Average Grade
+            </div>
+        </div>
+
+        <div class="stat-card success-card">
+            <div class="stat-number">
+                @ViewBag.GradedCount
+            </div>
+            <div class="stat-label">
+                Graded Submissions
+            </div>
+        </div>
+
+        <div class="stat-card warning-card">
+            <div class="stat-number">
+                @ViewBag.SubmissionRate
+            </div>
+            <div class="stat-label">
+                Submission Ratio
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CHART -->
+
+    <div class="report-section">
+
+        <div class="section-header">
+            <h3>Overview Analytics</h3>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="summaryChart"></canvas>
+        </div>
+
+    </div>
+
+    <!-- MODULE TABLE -->
+
+    <div class="report-section">
+
+        <div class="section-header">
+            <h3>My Modules</h3>
+        </div>
+
+        @if (Model.Any())
+        {
+            <table class="table table-hover">
+
+                <thead>
+                    <tr>
+                        <th>Module Code</th>
+                        <th>Module Name</th>
+                        <th>Department</th>
+                        <th>Credits</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var module in Model)
+                    {
+                        <tr>
+                            <td>@module.ModuleCode</td>
+                            <td>@module.ModuleName</td>
+                            <td>@module.Department</td>
+                            <td>@module.Credits</td>
+                            <td>@module.Status</td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <span>📚</span>
+                <p>No modules assigned.</p>
+            </div>
+        }
+
+    </div>
+
+    <!-- RECENT SUBMISSIONS -->
+
+    <div class="report-section">
+
+        <div class="section-header">
+            <h3>Recent Submissions</h3>
+        </div>
+
+        @{
+            var submissions =
+            ViewBag.RecentSubmissions
+            as List<UniManage.Models.SubmissionViewModel>;
+        }
+
+        @if (submissions != null && submissions.Any())
+        {
+            <table class="table table-striped">
+
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Assignment</th>
+                        <th>Submission Date</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in submissions)
+                    {
+                        <tr>
+                            <td>@item.StudentName</td>
+                            <td>@item.AssignmentTitle</td>
+                            <td>
+                                @item.SubmissionDate.ToString("dd MMM yyyy")
+                            </td>
+                            <td>
+                                @(item.Grade ?? 0)
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <span>📝</span>
+                <p>No submissions available.</p>
+            </div>
+        }
+
+    </div>
+
+    <div class="report-section">
+
+        <div class="section-header">
+            <h3>Top Performing Students</h3>
+        </div>
+
+        @{
+            var topStudents =
+            ViewBag.HighPerformers
+            as List<UniManage.Models.SubmissionViewModel>;
+        }
+
+        @if (topStudents != null && topStudents.Any())
+        {
+            <table class="table table-hover">
+
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Assignment</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var student in topStudents)
+                    {
+                        <tr>
+                            <td>@student.StudentName</td>
+                            <td>@student.AssignmentTitle</td>
+                            <td>
+                                <strong>@student.Grade</strong>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <span>🏆</span>
+                <p>No graded submissions available.</p>
+            </div>
+        }
+
+    </div>
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    const ctx = document.getElementById('summaryChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [
+                'Modules',
+                'Students',
+                'Assignments',
+                'Submissions'
+            ],
+            datasets: [{
+                label: 'Statistics',
+                data: [
+                    @ViewBag.TotalModules,
+                    @ViewBag.TotalStudents,
+                    @ViewBag.TotalAssignments,
+                    @ViewBag.TotalSubmissions
+                ],
+                backgroundColor: [
+                    '#6366f1',
+                    '#0ea5e9',
+                    '#8b5cf6',
+                    '#ec4899'
+                ],
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+</script>

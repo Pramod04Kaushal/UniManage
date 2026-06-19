@@ -554,6 +554,11 @@ namespace UniManage.Controllers
                 .OrderByDescending(a => a.CreatedAt)
                 .ToList();
 
+            ViewBag.Modules = _context.Modules
+                .Where(m => m.LecturerID == lecturer.LecturerID)
+                .OrderBy(m => m.ModuleName)
+                .ToList();
+
             return View(assignments);
         }
 
@@ -1238,6 +1243,146 @@ namespace UniManage.Controllers
 
             ViewBag.NavbarLecturerName = user.FullName;
             ViewBag.NavbarProfileImage = user.ProfileImage;
+        }
+
+        public IActionResult Reports()
+        {
+            LoadUnreadMessageCount();
+            LoadNavbarData();
+
+            int? lecturerUserId = HttpContext.Session.GetInt32("UserID");
+
+            if (lecturerUserId == null)
+                return RedirectToAction("Login", "Account");
+
+            var lecturer = _context.Lecturers
+                .FirstOrDefault(l => l.UserID == lecturerUserId);
+
+            if (lecturer == null)
+                return RedirectToAction("Login", "Account");
+
+            var modules = _context.Modules
+                .Where(m => m.LecturerID == lecturer.LecturerID)
+                .ToList();
+
+            var moduleIds = modules
+                .Select(m => m.ModuleID)
+                .ToList();
+
+            var assignments = _context.Assignments
+                .Where(a => a.ModuleID.HasValue &&
+                            moduleIds.Contains(a.ModuleID.Value))
+                .ToList();
+
+            var assignmentIds = assignments
+                .Select(a => a.AssignmentID)
+                .ToList();
+
+            var submissions = _context.AssignmentSubmissions
+                .Where(s => assignmentIds.Contains(s.AssignmentID))
+                .ToList();
+
+            var courseIds = assignments
+                .Select(a => a.CourseID)
+                .Distinct()
+                .ToList();
+
+            var totalStudents = _context.Enrollments
+                .Where(e => courseIds.Contains(e.CourseID))
+                .Select(e => e.StudentID)
+                .Distinct()
+                .Count();
+
+            ViewBag.TotalModules = modules.Count;
+            ViewBag.TotalAssignments = assignments.Count;
+            ViewBag.TotalStudents = totalStudents;
+            ViewBag.TotalSubmissions = submissions.Count;
+
+            ViewBag.PendingReviews =
+                submissions.Count(s => s.Grade == null);
+
+            ViewBag.AverageGrade =
+                submissions.Any(s => s.Grade.HasValue)
+                    ? Math.Round(
+                        submissions
+                        .Where(s => s.Grade.HasValue)
+                        .Average(s => (double)s.Grade.Value), 1)
+                    : 0;
+
+            var recentSubmissions =
+            (
+                from s in _context.AssignmentSubmissions
+
+                join st in _context.Students
+                    on s.StudentID equals st.StudentID
+
+                join u in _context.Users
+                    on st.UserID equals u.UserID
+
+                join a in _context.Assignments
+                    on s.AssignmentID equals a.AssignmentID
+
+                where assignmentIds.Contains(s.AssignmentID)
+
+                orderby s.SubmissionDate descending
+
+                select new SubmissionViewModel
+                {
+                    StudentName = u.FullName,
+                    RegNum = st.RegNum,
+                    AssignmentTitle = a.Title,
+                    SubmissionDate = s.SubmissionDate,
+                    Grade = s.Grade,
+                    Status = s.Status,
+                    FilePath = s.FilePath
+                }
+
+            ).Take(5).ToList();
+
+            ViewBag.RecentSubmissions = recentSubmissions;
+
+            ViewBag.GradedCount =
+                submissions.Count(s => s.Grade.HasValue);
+
+            var topStudents =
+            (
+                from s in _context.AssignmentSubmissions
+
+                join st in _context.Students
+                    on s.StudentID equals st.StudentID
+
+                join u in _context.Users
+                    on st.UserID equals u.UserID
+
+                join a in _context.Assignments
+                    on s.AssignmentID equals a.AssignmentID
+
+                where assignmentIds.Contains(s.AssignmentID)
+                   && s.Grade != null
+
+                orderby s.Grade descending
+
+                select new SubmissionViewModel
+                {
+                    StudentName = u.FullName,
+                    RegNum = st.RegNum,
+                    AssignmentTitle = a.Title,
+                    SubmissionDate = s.SubmissionDate,
+                    Grade = s.Grade
+                }
+
+            ).Take(5).ToList();
+
+            ViewBag.HighPerformers = topStudents;
+
+            ViewBag.SubmissionRate =
+                assignments.Count > 0
+                    ? Math.Round(
+                        (double)submissions.Count / assignments.Count,
+                        1)
+                    : 0;
+
+            return View(modules);
         }
 
     }

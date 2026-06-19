@@ -65,7 +65,9 @@
 
         </a>
 
-        <div class="stat-card">
+        <a asp-controller="Lecturer"
+           asp-action="Students"
+           class="stat-card stat-link">
 
             <div class="icon green">
                 <i class="fas fa-user-graduate"></i>
@@ -76,7 +78,7 @@
                 <p>Total Students</p>
             </div>
 
-        </div>
+        </a>
 
         <a asp-controller="Lecturer"
            asp-action="Assignments"
@@ -129,14 +131,22 @@
 
             </a>
 
-            <a href="#" class="action-card">
+            <a asp-controller="Lecturer"
+               asp-action="Assignments"
+               class="action-card">
+
                 <i class="fas fa-tasks"></i>
                 <span>Grade Work</span>
+
             </a>
 
-            <a href="#" class="action-card">
+            <a asp-controller="Lecturer"
+               asp-action="Reports"
+               class="action-card">
+
                 <i class="fas fa-chart-line"></i>
                 <span>Reports</span>
+
             </a>
 
 

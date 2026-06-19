@@ -13,6 +13,31 @@
 
     <div class="table-top">
 
+        <select id="moduleFilter"
+                class="module-filter">
+
+            <option value="">All Modules</option>
+
+            @foreach (var module in ViewBag.Modules)
+            {
+                <option value="@module.ModuleID">
+                    @module.ModuleName
+                </option>
+            }
+
+        </select>
+
+        <div class="filters">
+
+            <input type="text"
+                   id="searchInput"
+                   class="search-box"
+                   placeholder="Search assignment..." />
+
+
+
+        </div>
+
         <a asp-action="CreateAssignment"
            class="create-btn">
 
@@ -45,7 +70,8 @@
 
                 @foreach (var item in Model)
                 {
-                    <tr ondblclick="location.href='@Url.Action("EditAssignment", "Lecturer", new { id = item.AssignmentID })'"
+                    <tr data-module="@item.ModuleID"
+                        ondblclick="location.href='@Url.Action("EditAssignment", "Lecturer", new { id = item.AssignmentID })'"
                         style="cursor:pointer;">
 
                         <td>
@@ -90,5 +116,57 @@
         </table>
 
     </div>
+
+    <script>
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+        const moduleFilter =
+            document.getElementById("moduleFilter");
+
+        const rows =
+            document.querySelectorAll(".assignments-table tbody tr");
+
+        function filterTable() {
+
+            const search =
+                searchInput.value.toLowerCase();
+
+            const module =
+                moduleFilter.value;
+
+            rows.forEach(row => {
+
+                const title =
+                    row.children[0].innerText.toLowerCase();
+
+                const moduleId =
+                    row.dataset.module;
+
+                const matchSearch =
+                    title.includes(search);
+
+                const matchModule =
+                    module === "" || moduleId === module;
+
+                row.style.display =
+                    matchSearch && matchModule
+                        ? ""
+                        : "none";
+            });
+        }
+
+        searchInput.addEventListener(
+            "keyup",
+            filterTable
+        );
+
+        moduleFilter.addEventListener(
+            "change",
+            filterTable
+        );
+
+    </script>
 
 </div>
