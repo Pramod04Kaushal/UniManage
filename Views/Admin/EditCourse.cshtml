@@ -170,6 +170,14 @@
                         <tr>
 
                             <td>
+                                Semester @module.Semester
+
+                                <input type="hidden"
+                                       name="SelectedSemesters"
+                                       value="@module.Semester" />
+                            </td>
+
+                            <td>
                                 @module.ModuleName
 
                                 <input type="hidden"
@@ -182,14 +190,10 @@
                             </td>
 
                             <td>
-
                                 <button type="button"
                                         class="remove-btn">
-
                                     Remove
-
                                 </button>
-
                             </td>
 
                         </tr>
@@ -268,12 +272,12 @@
 
                     <select class="form-control" id="semesterSelect">
 
-                        <option>Semester 1</option>
-                        <option>Semester 2</option>
-                        <option>Semester 3</option>
-                        <option>Semester 4</option>
-                        <option>Semester 6</option>
-                        <option>Semester 8</option>
+                        <option value="1">Semester 1</option>
+                        <option value="2">Semester 2</option>
+                        <option value="3">Semester 3</option>
+                        <option value="4">Semester 4</option>
+                        <option value="6">Semester 6</option>
+                        <option value="8">Semester 8</option>
 
                     </select>
 
@@ -335,28 +339,32 @@
             const row =
                 document.createElement("tr");
 
-            row.innerHTML = `
-                <td>${semester}</td>
+        row.innerHTML = `
+            <td>
+                Semester ${semester}
 
-                <td>
-                    ${moduleName}
+                <input type="hidden"
+                       name="SelectedSemesters"
+                       value="${semester}" />
+            </td>
 
-                    <input type="hidden"
-                           name="SelectedModules"
-                           value="${moduleId}" />
-                </td>
+            <td>
+                ${moduleName}
 
-                <td>${credits}</td>
+                <input type="hidden"
+                       name="SelectedModules"
+                       value="${moduleId}" />
+            </td>
 
-                <td>
-                    <button type="button"
-                            class="remove-btn">
+            <td>${credits}</td>
 
-                        Remove
-
-                    </button>
-                </td>
-            `;
+            <td>
+                <button type="button"
+                        class="remove-btn">
+                    Remove
+                </button>
+            </td>
+        `;
 
             tbody.appendChild(row);
 

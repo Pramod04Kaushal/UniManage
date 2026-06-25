@@ -1325,7 +1325,9 @@ namespace UniManage.Controllers
 
                 QualificationType = model.QualificationType,
 
-                Intake = string.Join(",", model.Intake),
+                Intake = model.Intake != null
+    ? string.Join(",", model.Intake)
+    : "",
 
                 Description = model.Description,
 
@@ -1618,20 +1620,27 @@ namespace UniManage.Controllers
                 _context.Modules.ToList();
 
 
-            ViewBag.CourseModules =
-                (from cm in _context.CourseModules
-                 join m in _context.Modules
-                 on cm.ModuleID equals m.ModuleID
-                 where cm.CourseID == id
-                 select m).ToList();
+ViewBag.CourseModules =
+    (from cm in _context.CourseModules
+     join m in _context.Modules
+     on cm.ModuleID equals m.ModuleID
+     where cm.CourseID == id
+     select new
+     {
+         m.ModuleID,
+         m.ModuleName,
+         m.Credits,
+         cm.Semester
+     }).ToList();
 
             return View(course);
         }
 
         [HttpPost]
         public IActionResult EditCourse(
-    Course model,
-    List<int> SelectedModules)
+            Course model,
+            List<int> SelectedModules,
+            List<int> SelectedSemesters)
         {
             LoadSidebarCounts();
 
@@ -1662,16 +1671,16 @@ namespace UniManage.Controllers
 
             // ADD NEW MODULES
 
-            if (SelectedModules != null)
+            if (SelectedModules != null && SelectedSemesters != null)
             {
-                foreach (var moduleId in SelectedModules)
+                for (int i = 0; i < Math.Min(SelectedModules.Count, SelectedSemesters.Count); i++)
                 {
                     _context.CourseModules.Add(
                         new CourseModule
                         {
                             CourseID = course.CourseID,
-                            ModuleID = moduleId,
-                            Semester = 1
+                            ModuleID = SelectedModules[i],
+                            Semester = SelectedSemesters[i]
                         });
                 }
             }
