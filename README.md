@@ -307,23 +307,4 @@ This project demonstrates:
 
 Software Engineering Undergraduate
 
----
 
-## 📄 License
-
-This project was developed for educational purposes as part of the **CS6004ES – Application Development** coursework.
-
-```
-
-### Optional improvements for GitHub
-
-I also recommend adding:
-
-- `LICENSE`
-- `.gitignore`
-- `CONTRIBUTING.md`
-- `screenshots/` folder with UI images
-- `docs/` folder containing your ER Diagram, Use Case Diagram, and Architecture Diagram
-- `database/UniManageDB.sql` so others can easily set up the database
-
-This README is tailored to your UniManage project and aligns with the coursework requirements, including role-based access, course management, enrollment, assignments, reporting, messaging, and security. :contentReference[oaicite:0]{index=0}
