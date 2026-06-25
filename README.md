@@ -190,24 +190,6 @@ Main tables include:
 
 ---
 
-## 📸 Screenshots
-
-Add screenshots here after deployment.
-
-Example:
-
-```
-screenshots/
-│
-├── login.png
-├── admin-dashboard.png
-├── student-dashboard.png
-├── lecturer-dashboard.png
-└── reports.png
-```
-
----
-
 ## 🚀 Installation
 
 ### Prerequisites
